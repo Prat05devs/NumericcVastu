@@ -1,0 +1,72 @@
+/* Crops of the three supplied border designs. Blend the artwork's white paper
+   with the site's paper token; keep the original maroon motifs and detail. The
+   top crop repeats a clean segment so the source brass mark is excluded.
+   The bands are a quiet accent: each variant is drawn at its source crop size
+   multiplied by --s, so change --s to resize a band without distorting it. */
+.heritage-band {
+  --heritage-paper: var(--ivory);
+  --s: 1;
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+  align-items: stretch;
+  isolation: isolate;
+  line-height: 0;
+  background: var(--heritage-paper);
+  pointer-events: none;
+}
+
+.heritage-band > span {
+  display: block;
+  flex: none;
+  height: 100%;
+  background-image: url('/images/heritage-border-sheet.png');
+  background-color: var(--heritage-paper);
+  background-blend-mode: multiply;
+  background-repeat: no-repeat;
+  image-rendering: auto;
+}
+
+/* Geometric floral mandalas and dotted rules, source y 100–481. */
+.heritage-band-small { --s: .45; height: calc(82px * var(--s)); }
+.heritage-band-small > span {
+  width: calc(243px * var(--s));
+  background-size: calc(606px * var(--s)) calc(331px * var(--s));
+  background-position: calc(-26px * var(--s)) calc(-22px * var(--s));
+}
+
+/* Flowing vine and floral mandalas, source y 564–1001. */
+.heritage-band-floral { --s: .36; height: calc(145px * var(--s)); }
+.heritage-band-floral > span {
+  width: calc(446px * var(--s));
+  background-size: calc(935px * var(--s)) calc(510px * var(--s));
+  background-position: calc(-7px * var(--s)) calc(-187px * var(--s));
+}
+
+/* Jharokha archway silhouette, source y 1074–1536. */
+.heritage-band-temple { --s: .4; height: calc(120px * var(--s)); }
+.heritage-band-temple > span {
+  width: calc(365px * var(--s));
+  background-size: calc(732px * var(--s)) calc(399px * var(--s));
+  background-position: calc(-12px * var(--s)) calc(-279px * var(--s));
+}
+
+.heritage-band-small.heritage-site-header { --s: .34; }
+.heritage-footer-band { margin-top: 45px; }
+
+.arch-art .heritage-band-small { --heritage-paper: var(--sand); --s: .4; border: 0; }
+.arch-art > .heritage-band-small {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+}
+
+@media (max-width: 600px) {
+  .heritage-band-small { --s: .36; }
+  .heritage-band-floral { --s: .26; }
+  .heritage-band-temple { --s: .32; }
+  .heritage-band-small.heritage-site-header { --s: .28; }
+  .arch-art .heritage-band-small { --s: .34; }
+}

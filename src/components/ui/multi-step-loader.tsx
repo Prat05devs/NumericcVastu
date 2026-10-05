@@ -1,0 +1,15 @@
+'use client';
+import { useEffect, useRef, useState } from 'react';
+import { motion, useReducedMotion } from 'motion/react';
+import { Check, X, AlertCircle } from 'lucide-react';
+export type LoadingState={text:string};
+type Props={loadingStates:LoadingState[];loading?:boolean;duration?:number;loop?:boolean;value?:number;status?:'loading'|'success'|'error';title?:string;onClose?:()=>void};
+/** Aceternity Multi Step Loader, adapted to the NumericcVaastu design. Controlled value is for real workflow progress. */
+export function MultiStepLoader({loadingStates,loading=false,duration=2000,loop=false,value,status='loading',title='Preparing your next step',onClose}:Props){
+ const [index,setIndex]=useState(0);const dialog=useRef<HTMLDialogElement>(null);const reduced=useReducedMotion();
+ const active=Math.min(value??index,Math.max(loadingStates.length-1,0));
+ useEffect(()=>{if(!loading){setIndex(0);return}if(value!==undefined||status!=='loading'||loadingStates.length<2)return;const timer=setTimeout(()=>setIndex(current=>loop?(current+1)%loadingStates.length:Math.min(current+1,loadingStates.length-1)),duration);return()=>clearTimeout(timer)},[loading,value,status,loop,duration,index,loadingStates.length]);
+ useEffect(()=>{const el=dialog.current;if(!el)return;if(loading&&!el.open)el.showModal();if(!loading&&el.open)el.close();return()=>{if(el.open)el.close()}},[loading]);
+ if(!loadingStates.length)return null;
+ return <dialog className="nv-loader" ref={dialog} aria-labelledby="nv-loader-heading" onCancel={event=>{if(!onClose)event.preventDefault();else onClose()}}><div className="nv-loader-inner"><div className="nv-loader-top"><img src="/images/logo.png" alt=""/><span>NUMERICCVAASTU</span>{onClose&&<button type="button" className="nv-loader-close" aria-label="Close progress preview" onClick={onClose}><X size={20}/></button>}</div><div className="nv-loader-rule" aria-hidden="true">✼ &nbsp;✼ &nbsp;✼ &nbsp;✼ &nbsp;✼ &nbsp;✼ &nbsp;✼ &nbsp;✼ &nbsp;✼</div><div className="nv-loader-body"><span className="eyebrow">A MOMENT OF INTENTION</span><h2 id="nv-loader-heading">{title}</h2><p className="nv-loader-lede">A considered journey, one step at a time.</p><ol className="nv-loader-steps">{loadingStates.map((item,step)=><motion.li key={`${step}-${item.text}`} initial={false} animate={{opacity:step>active?.55:1}} transition={{duration:reduced?0:.25}} className={step===active?'current':step<active?'done':''}><span className="nv-loader-icon">{step<active||status==='success'&&step===active?<Check size={17}/>:status==='error'&&step===active?<AlertCircle size={17}/>:String(step+1).padStart(2,'0')}</span><span>{item.text}</span></motion.li>)}</ol><div className="nv-loader-status" role="status" aria-live="polite">{status==='success'?'Completed':status==='error'?'This step needs attention':`Step ${active+1} of ${loadingStates.length}: ${loadingStates[active].text}`}</div></div><div className="nv-loader-rail" aria-hidden="true">⌂ &nbsp; ⌂ &nbsp; ⌂ &nbsp; ⌂ &nbsp; ⌂ &nbsp; ⌂ &nbsp; ⌂ &nbsp; ⌂</div></div></dialog>;
+}

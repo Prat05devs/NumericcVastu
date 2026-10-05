@@ -1,0 +1,13 @@
+'use client';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Menu, X, ArrowUpRight } from 'lucide-react';
+import HeritageBand from './HeritageBands';
+import { OfferAnnouncement } from './SalesConversion';
+import { useState } from 'react';
+const nav=[['About','/about'],['Consultations','/consultations'],['Courses','/courses'],['Stories','/testimonials'],['Gallery','/gallery'],['Journal','/blog']];
+export function SiteHeader(){
+ const [open,setOpen]=useState(false);const path=usePathname();
+ return <><a className="skip-link" href="#main">Skip to content</a><header className="nav-shell"><nav className="nav wrap" aria-label="Main navigation"><Link href="/" className="brand" onClick={()=>setOpen(false)}><img src="/images/logo.png" alt=""/><span>NumericcVaastu<small>KNOW YOUR NUMBERS. FIND YOUR WAY.</small></span></Link><div className={open?'nav-links open':'nav-links'}>{nav.map(([label,href])=><Link key={href} href={href} aria-current={path===href?'page':undefined} onClick={()=>setOpen(false)}>{label}</Link>)}</div><Link href="/book-consultation" className="button small">Book a session <ArrowUpRight size={16}/></Link><button className="menu-toggle icon-button" onClick={()=>setOpen(!open)} aria-label={open?'Close navigation':'Open navigation'} aria-expanded={open}>{open?<X/>:<Menu/>}</button></nav></header><OfferAnnouncement/><HeritageBand kind="small" className="heritage-site-header"/></>;
+}
+export function SiteFooter(){return <><HeritageBand kind="temple" className="heritage-footer-band"/><footer className="footer wrap"><div className="footer-top"><div><Link href="/" className="brand"><img src="/images/logo.png" alt=""/><span>NumericcVaastu<small>KNOW YOUR NUMBERS. FIND YOUR WAY.</small></span></Link><p>Indian knowledge, a modern perspective.<br/>Consultations and learning with Adarshh Pandey.</p></div><div><span>EXPLORE</span>{[['About','/about'],['Consultations','/consultations'],['Courses','/courses'],['Testimonials','/testimonials'],['Gallery','/gallery'],['Blog','/blog']].map(([label,href])=><Link key={href} href={href}>{label}</Link>)}</div><div><span>HELP & INFORMATION</span>{[['Book a consultation','/book-consultation'],['Contact','/contact'],['FAQ','/faq'],['Site map','/sitemap'],['Privacy','/privacy-policy'],['Terms','/terms-and-conditions'],['Refunds','/refund-policy'],['Disclaimer','/disclaimer']].map(([label,href])=><Link key={href} href={href}>{label}</Link>)}</div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} NumericcVaastu.</span><Link href="/">Back to home ↑</Link></div></footer></>}

@@ -1,0 +1,37 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {offerCatalog,courses,consultations,formatPrice,getPricePaise,getActivePromotion,getCurrentCoursePromotion,assertOfferCatalog} from '../src/data/offers.ts';
+assertOfferCatalog();
+assert.equal(courses.length,3);assert.equal(consultations.length,11);
+assert(offerCatalog.offers.every(offer=>!offer.checkoutEnabled && !offer.priceVerified));
+for(const offer of offerCatalog.offers){
+ const detail=`.next/server/app/${offer.kind==='course'?'courses':'consultations'}/${offer.slug}.html`;
+ assert(fs.existsSync(detail),`missing detail page ${detail}`);
+ const detailHtml=fs.readFileSync(detail,'utf8');
+ assert(detailHtml.includes(formatPrice(offer)),`detail price mismatch ${offer.id}`);
+ const listingHtml=fs.readFileSync(`.next/server/app/${offer.kind==='course'?'courses':'consultations'}.html`,'utf8');
+ assert(listingHtml.includes(formatPrice(offer)),`listing price mismatch ${offer.id}`);
+ assert(listingHtml.includes(offer.name.replaceAll('&','&amp;')),`listing name missing ${offer.id}`);
+}
+assert(!fs.existsSync('.next/server/app/pricing.html'),'pricing page should be retired');
+const homepage=fs.readFileSync('.next/server/app/index.html','utf8');
+const featured=offerCatalog.offers.find(offer=>offer.id===offerCatalog.featuredOfferId);
+assert(featured&&homepage.includes(featured.name)&&homepage.includes(formatPrice(featured)));
+assert(homepage.includes('Learn to read numbers.')&&homepage.includes('Compare all courses'));
+assert(!homepage.includes('15,000+')&&!homepage.includes('500+'));
+const sitemap=fs.readFileSync('.next/server/app/sitemap.xml.body','utf8');
+assert(offerCatalog.offers.every(offer=>sitemap.includes(`/${offer.kind==='course'?'courses':'consultations'}/${offer.slug}`)));
+assert(!sitemap.includes('/loader-preview')&&!sitemap.includes('/privacy-policy')&&!sitemap.includes('/pricing'));
+const offer=offerCatalog.offers[0];
+const future=new Date('2030-02-01T00:00:00Z');
+assert.equal(getPricePaise(offer,future),offer.pricePaise);
+assert.equal(getActivePromotion(offer.id,future),undefined);
+const testPromotion={id:'test-catalogue-promo',label:'Test offer',offerIds:[offer.id],discountPaise:10000,startsAt:'2030-01-01T00:00:00Z',endsAt:'2030-03-01T00:00:00Z',enabled:true};
+offerCatalog.promotions.push(testPromotion);
+assert.equal(getPricePaise(offer,future),offer.pricePaise-10000);
+assert.equal(getPricePaise(offer,new Date('2030-03-01T00:00:00Z')),offer.pricePaise);
+assert.equal(getActivePromotion(offer.id,new Date('2029-12-31T23:59:59Z')),undefined);
+assert.equal(getCurrentCoursePromotion(future)?.offer.id,offer.id);
+assertOfferCatalog();
+offerCatalog.promotions.pop();
+console.log(`Catalog parity verified: ${offerCatalog.offers.length} offers, listings, detail pages, XML sitemap, checkout disabled.`);
