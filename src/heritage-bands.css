@@ -20,7 +20,7 @@
   display: block;
   flex: none;
   height: 100%;
-  background-image: url('/images/heritage-border-sheet.png');
+  background-image: url('/images/heritage-border-sheet-gold.webp');
   background-color: var(--heritage-paper);
   background-blend-mode: multiply;
   background-repeat: no-repeat;

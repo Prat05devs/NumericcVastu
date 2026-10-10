@@ -1,22 +1,22 @@
 /* Courses page: the three-step learning journey. */
 .path-list{list-style:none;padding:0;margin:36px 0 70px;position:relative;display:grid;gap:28px}
-.path-list:before{content:'';position:absolute;left:27px;top:30px;bottom:30px;border-left:1px dashed #a8400e66}
+.path-list:before{content:'';position:absolute;left:27px;top:30px;bottom:30px;border-left:1px dashed #6b3fa066}
 .path-step{position:relative;display:grid;grid-template-columns:56px minmax(0,.85fr) minmax(0,1.15fr);gap:0 34px;align-items:stretch}
-.path-node{position:relative;z-index:1;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:var(--wine);color:var(--ivory);font-size:15px;font-weight:700;letter-spacing:.5px;margin-top:22px;box-shadow:0 0 0 8px var(--ivory)}
+.path-node{position:relative;z-index:1;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:var(--wine);color:var(--ivory);font-size:16.5px;font-weight:700;letter-spacing:.5px;margin-top:22px;box-shadow:0 0 0 8px var(--ivory)}
 .path-image{position:relative;min-height:300px;border-radius:18px;overflow:hidden;background:var(--sand)}
 .path-image img{object-fit:cover}
 .path-body{background:var(--sand);border-radius:18px;padding:32px 34px;display:flex;flex-direction:column}
-.path-meta{font-size:10px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:var(--terra)}
+.path-meta{font-size:13px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:var(--terra)}
 .path-body h3{font:600 36px/1.05 'NV Digits','Cormorant Garamond',serif;color:var(--wine);margin:12px 0 12px;letter-spacing:-.5px}
 .path-body h3 a:hover{color:var(--terra)}
-.path-body>p{font-size:13px}
+.path-body>p{font-size:15px}
 .path-for{margin-top:10px}
 .path-for strong{color:var(--ink);font-weight:700}
 .path-body ul{list-style:none;padding:0;margin:16px 0 22px;display:grid;gap:9px}
-.path-body li{display:flex;gap:10px;font-size:12.5px;line-height:1.55}
+.path-body li{display:flex;gap:10px;font-size:15px;line-height:1.55}
 .path-body li svg{color:var(--terra);flex-shrink:0;margin-top:2px}
-.path-actions{margin-top:auto;display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;padding-top:18px;border-top:1px solid #d7c8b8}
-.path-actions>span{font-size:12px;color:var(--muted)}
+.path-actions{margin-top:auto;display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;padding-top:18px;border-top:1px solid #c6b7d8}
+.path-actions>span{font-size:14.5px;color:var(--muted)}
 .path-actions b{color:var(--ink)}
 .path-actions span a{color:var(--wine);border-bottom:1px solid currentColor}
 
@@ -28,7 +28,7 @@
 @media(max-width:600px){
   .path-list:before{left:19px}
  .path-step{grid-template-columns:40px minmax(0,1fr);gap:14px 14px}
- .path-node{width:40px;height:40px;font-size:12px;margin-top:14px}
+ .path-node{width:40px;height:40px;font-size:14.5px;margin-top:14px}
  .path-image{min-height:200px}
  .path-body{padding:24px 20px}
  .path-body h3{font-size:30px}

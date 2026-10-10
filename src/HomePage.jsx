@@ -1,50 +1,224 @@
-'use client';
 import Image from 'next/image';
-import {courses, consultations, offerCatalog} from './data/offers';
+import Link from 'next/link';
+import {ArrowRight, ArrowUpRight, Baby, BookOpen, Briefcase, Building2, Check, Compass, HeartHandshake, Home, Plus, Sparkles} from 'lucide-react';
+import {SiteFooter} from './components/SiteChrome';
 import HeritageBand from './components/HeritageBands';
-import PhotoStrip from './components/PhotoStrip';
-import { OfferAnnouncement, SalesHero, SalesValueStrip, FeaturedCourses } from './components/SalesConversion';
-import React, { useEffect, useRef, useState } from 'react';
-import { ArrowUpRight, ArrowRight, ArrowLeft, Menu, X, Plus, Minus, Compass, BookOpen, Sparkles, Check, Download } from 'lucide-react';
+import HeroSlideshow from './components/home/HeroSlideshow';
+import WorkMarquee from './components/home/WorkMarquee';
+import MediaWall from './components/home/MediaWall';
+import LoShuCalculator from './components/home/LoShuCalculator';
+import AwardsCarousel from './components/home/AwardsCarousel';
+import ReviewCards from './components/ReviewCards';
+import {courses, consultations, formatPrice} from './data/offers';
+import {awards, book, heroSlides, instagramProfile, marqueeRows, social, stats, videos} from './data/media';
+import {googleReviews} from './data/content';
+import {contact} from './data/contact';
+import {formatTotal} from './lib/formatCount';
 
-// Add approved business details here. Empty values deliberately avoid invented contacts or endorsements.
-const brand = { founder: 'Adarshh Pandey', bookingUrl: process.env.NEXT_PUBLIC_BOOKING_URL || '', contactEmail: process.env.NEXT_PUBLIC_CONTACT_EMAIL || '', testimonials: [] };
-const featuredCourse = courses.find((offer) => offer.id === offerCatalog.featuredOfferId) || courses[0];
-const featuredConsultation = consultations.find((offer) => offer.id === 'consult-blueprint') || consultations[0];
-const programs = courses.map((offer,index)=>({title:offer.name,slug:offer.slug,level:`0${index+1} / ${offer.category.toUpperCase()}`,tag:offer.audience,visual:['numbers','space','practice'][index],description:offer.summary,modules:offer.inclusions}));
-const methods = [ ['Understand your numbers', 'Start with your date of birth and name. Build a clear picture of the numbers that form your personal chart.'], ['Interpret the pattern', 'Connect the individual elements, explore recurring themes, and put each observation in context.'], ['Map your space', 'Bring Numeric Vaastu into the conversation by looking at directions and the layout of your environment.'], ['Apply the insight', 'Translate your reading into practical questions and considered next steps that fit your life.'], ['Make it your own', 'Leave with a clearer perspective—or deepen your understanding through a structured learning path.'] ];
-const faqs = [ ['I’m completely new to numerology. Where should I start?', 'Start with the foundational learning path. It introduces the core concepts before progressing into chart interpretation. For a personal question, explore the consultation options instead.'], ['How is Numeric Vaastu different from numerology?', 'Numerology explores symbolic patterns associated with names and birth dates. Numeric Vaastu brings numbers into the study of directions and spaces. The two are offered as complementary traditional frameworks.'], ['Can I learn while working full-time?', 'The academy is designed for people at different stages of learning. Enquire about the next cohort to confirm the teaching format, timetable, and practice requirements before enrolling.'], ['Will I receive a certification?', 'A professional certification pathway is part of the academy offering. Request the current program details for eligibility, assessment requirements, and the issuing body before enrolling.'], ['What should I prepare for a consultation?', 'Prepare your questions, full name, and date of birth. For a Numeric Vaastu session, a floor plan may also be useful. The team will confirm the requirements when your session is arranged.'], ['Does a consultation guarantee a particular outcome?', 'No. Numerology and Numeric Vaastu are traditional interpretive practices, not scientifically established prediction methods. Consultations offer a perspective for reflection and do not replace medical, legal, or financial advice.'] ];
-function Flower({className=''}) { return <svg className={className} viewBox="0 0 100 100" fill="none" aria-hidden="true"><circle cx="50" cy="50" r="44"/><circle cx="50" cy="50" r="36"/>{Array.from({length:12},(_,i)=><ellipse key={i} cx="50" cy="32" rx="6" ry="17" transform={`rotate(${i*30} 50 50)`}/>)}<circle cx="50" cy="50" r="9"/><circle cx="50" cy="50" r="3"/></svg> }
-function HeritageDivider({variant='small'}){return <HeritageBand kind={variant}/>;}
-function TempleRail(){return <HeritageBand kind="temple"/>;}
-function Logo(){return <a className="brand" href="#top" aria-label="NumericcVaastu home"><img src="/images/logo.png" alt=""/><span>NumericcVaastu<small>KNOW YOUR NUMBERS. FIND YOUR WAY.</small></span></a>}
-export default function HomePage(){
- const [menu,setMenu]=useState(false),[hidden,setHidden]=useState(false),[modal,setModal]=useState(null),[active,setActive]=useState(0),[faq,setFaq]=useState(0),[saved,setSaved]=useState(false);
- const dialog=useRef(null),carousel=useRef(null),lastFocus=useRef(null);
- useEffect(()=>{let previous=window.scrollY; const scroll=()=>{const y=window.scrollY;setHidden(y>160&&y>previous&&!menu);previous=y;};window.addEventListener('scroll',scroll,{passive:true});return()=>window.removeEventListener('scroll',scroll)},[menu]);
- useEffect(()=>{const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)setActive(Number(e.target.dataset.step))}),{rootMargin:'-20% 0px -45% 0px'});document.querySelectorAll('[data-step]').forEach(el=>observer.observe(el));return()=>observer.disconnect()},[]);
- useEffect(()=>{if(modal){lastFocus.current=document.activeElement;dialog.current.showModal();document.body.style.overflow='hidden';setSaved(false);}else{dialog.current?.close();document.body.style.overflow='';lastFocus.current?.focus()}return()=>{document.body.style.overflow=''}},[modal]);
- function openBooking(service='Personal consultation'){const consultation=consultations.find(item=>item.name===service);const course=courses.find(item=>item.name===service);window.location.href=course?`/courses/${course.slug}`:consultation?`/book-consultation?offer=${consultation.id}`:'/book-consultation';}
- function saveEnquiry(e){e.preventDefault();const data=new FormData(e.currentTarget);const text=`NumericcVaastu enquiry\nService: ${data.get('service')}\nName: ${data.get('name')}\nEmail: ${data.get('email')}\nMessage: ${data.get('message')}\n`;if(brand.contactEmail){window.location.href=`mailto:${brand.contactEmail}?subject=${encodeURIComponent('NumericcVaastu enquiry')}&body=${encodeURIComponent(text)}`;}else{const url=URL.createObjectURL(new Blob([text],{type:'text/plain'}));const a=document.createElement('a');a.href=url;a.download='numericcvaastu-enquiry.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}setSaved(true);}
- return <><a className="skip-link" href="#main">Skip to content</a>
- <header id="top" className={hidden?'nav-shell nav-hidden':'nav-shell'}><nav className="nav wrap" aria-label="Main navigation"><Logo/><div className={menu?'nav-links open':'nav-links'}>{[['About','/about'],['Consultations','/consultations'],['Courses','/courses'],['Stories','/testimonials'],['Gallery','/gallery']].map(([label,href])=><a key={href} href={href} onClick={()=>setMenu(false)}>{label}</a>)}</div><a className="button small" href="/courses">Explore courses <ArrowUpRight size={16}/></a><button className="menu-toggle icon-button" onClick={()=>setMenu(!menu)} aria-label={menu?'Close navigation':'Open navigation'} aria-expanded={menu}>{menu?<X/>:<Menu/>}</button></nav></header>
- <OfferAnnouncement/>
- <main id="main"><SalesHero/>
- <SalesValueStrip/>
- <FeaturedCourses/>
- <HeritageDivider variant="floral"/>
- <section className="section wrap about" id="about"><div className="brand-image ornamental-frame"><Image src="/images/gallery/portrait-at-work.webp" fill sizes="(max-width: 560px) 370px, 550px" quality={85} alt="Adarshh Pandey writing in a notebook while holding a pendulum"/><span className="image-note">INDIAN ROOTS. AN OPEN MIND.</span></div><div className="about-copy"><span className="eyebrow">THE HEART OF NUMERICCVAASTU</span><h2>Wisdom that’s old.<br/>A perspective<br/>that’s <em>new.</em></h2><p>We believe ancient knowledge deserves a modern conversation. One that’s clear, personal, and connected to the way you actually live.</p><p>NumericcVaastu brings numerology, Numeric Vaastu, and practical education together—helping curious minds explore themselves, their spaces, and what comes next.</p><div className="founder-signature"><img src="/images/logo.png" alt=""/><div><strong>{brand.founder||'The NumericcVaastu philosophy'}</strong><span>Founder, NumericcVaastu</span></div></div><a href="/about" className="text-link">Get to know our approach <ArrowUpRight size={18}/></a></div></section><PhotoStrip className="wrap" eyebrow="BEYOND THE CONSULTATION ROOM" title="On stage, on air," accent="in the studio." text="Talks, interviews and recognition from Adarshh’s work sharing numerology with wider audiences." pick={['award-book-of-the-year','talk-ntt-talk-show','media-studio-interview','award-efi-conclave','talk-mahakumbh-podium']}/>
- <section className="consultations section" id="consultations"><div className="wrap"><div className="section-heading"><div><span className="eyebrow">A LITTLE CLARITY GOES A LONG WAY</span><h2>Your questions.<br/><em>A personal perspective.</em></h2></div><p>Space to pause, ask, and explore.<br/>Guidance that starts with you.</p></div><div className="consult-grid">{consultations.slice(0,3).map((offer,i)=><article className="consult-card" key={offer.id}><div className="consult-card-top">{[<Sparkles size={24}/>,<Compass size={24}/>,<BookOpen size={24}/>][i]}<span>{offer.category.toUpperCase()}</span></div><div className="consult-symbol" aria-hidden="true">{['09','⌑','Aa'][i]}</div><h3>{offer.name}</h3><p>{offer.summary}</p><a className="text-link" href={`/consultations/${offer.slug}`}>Explore your consultation <ArrowUpRight size={18}/></a></article>)}</div></div></section>
- <HeritageDivider variant="small"/>
- <section className="section academy" id="academy"><div className="wrap"><div className="section-heading"><div><span className="eyebrow">THE NUMERICCVAASTU ACADEMY</span><h2>From “I’m curious”<br/>to <em>“this is my calling.”</em></h2></div><p>Learn the foundations. Connect the dots.<br/>Build a practice with purpose.</p></div><div className="programs" ref={carousel}>{programs.map((p,i)=><button key={p.title} className={`program-card ${p.visual}`} onClick={()=>setModal({type:'program',...p})}><div className="program-visual"><span className="program-tag">{p.tag}</span>{i===0?<div className="floating-numbers"><i>3</i><b>9</b><i>6</i><span>1  ·  2  ·  3  ·  4  ·  5</span></div>:i===1?<div className="floor-plan"><Compass/><div/><div/><div/><span>N</span></div>:<div className="certificate"><img src="/images/logo.png" alt=""/><span>THE NUMERICCVAASTU ACADEMY</span><strong>A practice<br/>with purpose.</strong><Flower/></div>}</div><div className="program-info"><small>{p.level}</small><h3>{p.title}</h3><span>Discover the program <span className="circle-arrow"><ArrowUpRight size={20}/></span></span></div></button>)}</div><div className="carousel-footer"><span>YOUR JOURNEY DOESN’T HAVE TO BE LINEAR. JUST YOURS.</span><div><button className="icon-button" aria-label="Previous programs" onClick={()=>carousel.current.scrollBy({left:-360,behavior:'smooth'})}><ArrowLeft size={19}/></button><button className="icon-button" aria-label="Next programs" onClick={()=>carousel.current.scrollBy({left:360,behavior:'smooth'})}><ArrowRight size={19}/></button></div></div></div><TempleRail/></section>
- <section className="section wrap methodology" id="approach"><div className="method-sticky"><span className="eyebrow">LESS MYSTERY. MORE UNDERSTANDING.</span><h2>Connect the dots.<br/><em>See the bigger picture.</em></h2><div className="method-art"><Flower className="method-flower"/><span className="method-count">0{active+1}</span><p>{methods[active][0]}</p><div className="step-dots">{methods.map((_,i)=><a key={i} href={`#step-${i}`} aria-label={`Go to step ${i+1}`} className={active===i?'active':''}/>)}</div></div></div><div className="method-steps">{methods.map(([title,description],i)=><article key={title} data-step={i} id={`step-${i}`} className={active===i?'method-step active':'method-step'}><span>0{i+1}</span><div><h3>{title}</h3><p>{description}</p></div></article>)}</div></section>
- <section className="sales-consult-cta"><div className="wrap sales-consult-cta__inner"><div><span className="eyebrow">PERSONAL GUIDANCE</span><h2>Have a question about your own path?</h2><p>Explore a one-to-one reading with Adarshh, or compare the consultation options before making an enquiry.</p></div><div className="sales-consult-cta__actions"><a className="button light" href={`/consultations/${featuredConsultation.slug}`}>View the personal reading <ArrowUpRight size={18}/></a><a href="/consultations">See all consultations <ArrowRight size={18}/></a></div></div></section>
- <section className="section wrap perspectives"><div><span className="eyebrow">THE PERSPECTIVE WE BELIEVE IN</span><h2>Insight begins with<br/><em>a better question.</em></h2></div><blockquote><span className="quote-mark">“</span>Not just ‘what comes next?’<br/>But ‘how can I understand<br/>myself better, today?’<footer>THE NUMERICCVAASTU PHILOSOPHY</footer></blockquote></section>
- <section className="section outcomes"><div className="wrap"><span className="eyebrow">BEYOND THE CLASSROOM</span><h2>Knowledge you can <em>grow with.</em></h2><div className="outcome-grid">{[['01','A deeper understanding','Read charts with context, ask better questions, and connect ideas with everyday situations.'],['02','A thoughtful practice','Develop the communication and interpretation skills that support a responsible consultation.'],['03','A direction of your own','Bring your learning into personal exploration or take the next step toward professional practice.']].map(([n,title,text])=><div key={n}><span>{n} /</span><h3>{title}</h3><p>{text}</p></div>)}</div></div></section>
- <section className="section wrap journey"><div><span className="eyebrow">ROOTS & POSSIBILITIES</span><h2>A tradition.<br/>A conversation.<br/><em>A new chapter.</em></h2></div><div className="timeline">{[['Our roots','A respect for Indian knowledge systems and the questions they invite us to explore.'],['Our practice','A personal, considered approach to numerology and Numeric Vaastu consultations.'],['Our next chapter','Sharing that knowledge through practical education and a professional learning pathway.']].map(([title,text])=><article key={title}><span/><h3>{title}</h3><p>{text}</p></article>)}</div></section>
- <HeritageDivider/>
- <section className="section wrap faq" id="faq"><div><span className="eyebrow">A FEW THINGS YOU MIGHT BE WONDERING</span><h2>Curiosity<br/><em>looks good on you.</em></h2><p>Let’s make your next step a little clearer.</p><button className="text-link" onClick={()=>openBooking('General enquiry')}>Ask us something else <ArrowUpRight size={17}/></button></div><div className="faq-list">{faqs.map(([q,a],i)=><div className="faq-item" key={q}><h3><button onClick={()=>setFaq(faq===i?null:i)} aria-expanded={faq===i} aria-controls={`faq-${i}`}>{q}{faq===i?<Minus size={18}/>:<Plus size={18}/>}</button></h3><div id={`faq-${i}`} hidden={faq!==i}><p>{a}</p></div></div>)}</div></section>
- <section className="final-cta"><div className="wrap"><span className="eyebrow">YOUR NEXT STEP IS CLEARER FROM HERE.</span><h2>Ready to begin<br/><em>learning with purpose?</em></h2><p>Explore the foundation course, compare all learning paths, or choose personal guidance.</p><div className="hero-actions"><a href={`/courses/${featuredCourse.slug}`} className="button light">Explore the foundation course <ArrowUpRight size={18}/></a><a href="/courses" className="text-link">Compare the learning paths <ArrowUpRight size={18}/></a></div><span className="hindi">एक नई शुरुआत</span></div><TempleRail/></section>
- </main><footer className="footer wrap"><div className="footer-top"><div><Logo/><p>Ancient wisdom. Modern perspective.<br/>A more intentional way forward.</p></div><div><span>EXPLORE</span><a href="/about">Our story</a><a href="/consultations">Consultations</a><a href="/courses">The academy</a><a href="/testimonials">Testimonials</a><a href="/gallery">Gallery</a><a href="/blog">Journal</a></div><div><span>LET’S CONNECT</span><button onClick={()=>openBooking()}>Start a conversation <ArrowUpRight size={15}/></button><a href="/faq">Questions & answers</a><a href="/contact">Contact</a><a href="/sitemap">Site map</a><span className="made-in">ROOTED IN INDIA. OPEN TO THE WORLD.</span></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} NumericcVaastu. All rights reserved.</span><div><a href="/privacy-policy">Privacy</a><a href="/terms-and-conditions">Terms</a><a href="/refund-policy">Refunds</a><a href="#top">Back to top ↑</a></div></div></footer>
- <dialog ref={dialog} onCancel={()=>setModal(null)} onClick={e=>{if(e.target===dialog.current)setModal(null)}} aria-labelledby="dialog-title"><button className="dialog-close icon-button" onClick={()=>setModal(null)} aria-label="Close dialog"><X/></button>{modal&&<div className="dialog-content"><span className="eyebrow">NUMERICCVAASTU</span><h2 id="dialog-title">{modal.title}</h2>{modal.type==='program'?<><p>{modal.description}</p><h3>What you’ll explore</h3><ul className="module-list">{modal.modules.map(m=><li key={m}><Check size={17}/>{m}</li>)}</ul><p className="dialog-note">Request the current syllabus, fees, cohort schedule, and certification requirements before enrolling.</p><a className="button" href={`/courses/${modal.slug}`}>View full course details <ArrowUpRight size={18}/></a></>:modal.type==='enquiry'?<><p>Tell us what you’d like to explore.</p>{!brand.contactEmail&&<p className="form-notice">Online booking is being prepared. You can save your enquiry as a file; it will not be sent or stored on a server.</p>}<form onSubmit={saveEnquiry}><label>Your name<input name="name" required autoComplete="name" maxLength={100}/></label><label>Email address<input name="email" type="email" required autoComplete="email" maxLength={200}/></label><label>I’m interested in<select name="service" defaultValue={modal.title}>{[...new Set([modal.title,'Personal consultation',...offerCatalog.offers.map(offer=>offer.name),'General enquiry'])].map(s=><option key={s}>{s}</option>)}</select></label><label>What’s on your mind?<textarea name="message" rows={3} maxLength={2000}/></label><button className="button" type="submit">{brand.contactEmail?'Prepare email enquiry':'Save enquiry'}<Download size={17}/></button>{saved&&<p className="success" role="status"><Check size={18}/>{brand.contactEmail?'Your email application has been opened. Please send your enquiry there.':'Your enquiry file is ready. Nothing has been submitted.'}</p>}</form></>:<p>{modal.title==='Privacy notice'?'This website does not use analytics or marketing cookies. Enquiry details are processed in your browser to create a downloadable file and are not submitted to a server. Google Fonts may receive standard connection information when fonts load. If an email address is configured, the enquiry opens in your email application for you to send.':'Website content is provided for general information. Numerology and Numeric Vaastu are traditional interpretive practices and do not guarantee outcomes. Program availability, fees, schedules, assessment, and certification details must be confirmed before purchase. No payments or enrolments are processed on this website.'}</p>}</div>}</dialog></>;
+const featuredConsultations = [
+  ['consult-blueprint', Sparkles], ['consult-career', Briefcase], ['consult-relationship', HeartHandshake],
+  ['consult-business', Building2], ['consult-baby-name', Baby], ['consult-home-vastu', Home],
+].map(([id, Icon]) => ({offer: consultations.find((item) => item.id === id), Icon})).filter(({offer}) => offer);
+/** Course photographs chosen for the homepage so no picture repeats between sections. */
+const courseImages = {
+  'course-launchpad': ['/images/gallery/talk-audience-session.webp', '55% 40%'],
+  'course-accelerator': ['/images/adarshh/adarshh-pandey-certificate-event-03.webp', '50% 20%'],
+  'course-mastery': ['/images/adarshh/adarshh-pandey-certificate-event-05.webp', '50% 40%'],
+};
+/** The stats band leads with total views on the reels listed in media.js, so it updates when reels change. */
+const reelViews = videos.reels.reduce((sum, reel) => sum + (reel.views || 0), 0);
+const proof = reelViews > 0 ? [{value: formatTotal(reelViews), label: 'Views on his top Instagram reels'}, ...stats] : stats;
+const blueprint = consultations.find((item) => item.id === 'consult-blueprint') || consultations[0];
+
+const steps = [
+  ['Choose a session', 'Pick the consultation that fits your question, or send a general enquiry if you are unsure.'],
+  ['Share your details', 'Your full name and date of birth. For a Vaastu session, a floor plan and the main door direction.'],
+  ['Meet Adarshh', 'A one-to-one conversation about your question and the patterns in your numbers.'],
+];
+
+const faqs = [
+  ['I’m completely new to numerology. Where should I start?', 'Start with the foundation course. It introduces the core calculations before moving into chart interpretation. For a question about your own life, a personal consultation is the better first step.'],
+  ['How is Numeric Vaastu different from numerology?', 'Numerology looks at the symbolic patterns in names and birth dates. Numeric Vaastu brings numbers into the study of directions and spaces. The two are offered as complementary traditional frameworks.'],
+  ['What should I prepare for a consultation?', 'Your questions, your full name as you use it, and your date of birth. For a Numeric Vaastu session, a floor plan helps. The team confirms anything else when your session is arranged.'],
+  ['Are consultations online or in person?', 'Both are possible. The format, duration and fee are confirmed with you before the session is booked.'],
+  ['Will I receive a certificate from a course?', 'Each course has a certification pathway. Ask for the current assessment requirements and issuing details before enrolling.'],
+  ['Does a consultation guarantee an outcome?', 'No. Numerology and Numeric Vaastu are traditional interpretive practices, not scientifically established prediction methods. A consultation offers a perspective for reflection and does not replace medical, legal or financial advice.'],
+];
+
+function SectionHead({eyebrow, title, accent, text, id, children, center = false}) {
+  return <div className={center ? 'hv-head is-center' : 'hv-head'}>
+    <div><span className="hv-eyebrow">{eyebrow}</span><h2 id={id}>{title} {accent && <em>{accent}</em>}</h2></div>
+    {(text || children) && <div className="hv-head__aside">{text && <p>{text}</p>}{children}</div>}
+  </div>;
+}
+
+export default function HomePage() {
+  return <>
+    <main id="main" className="hv">
+      <section className="hv-hero" aria-labelledby="hv-hero-title">
+        <div className="hv-hero__copy">
+          <span className="hv-eyebrow">Numerology · Numeric Vaastu · Learning</span>
+          <h1 id="hv-hero-title">Know your numbers. <em>Find your way.</em></h1>
+          <p className="hv-hero__lede">Personal numerology and Numeric Vaastu consultations with Adarshh Pandey, author of <cite>{book.title}</cite>. And structured courses for people who want to learn the practice themselves.</p>
+          <div className="hv-actions">
+            <Link className="hv-button hv-button--gold" href="/book-consultation">Book a consultation <ArrowUpRight size={18}/></Link>
+            <Link className="hv-button hv-button--ghost" href="/courses">Explore courses <ArrowRight size={18}/></Link>
+          </div>
+        </div>
+        <HeroSlideshow slides={heroSlides}/>
+      </section>
+
+      <section className="hv-stats" aria-label="NumericcVaastu in numbers">
+        <div className="hv-wrap hv-stats__grid">
+          {proof.map((item) => <div key={item.label}><strong>{item.value}</strong><span>{item.label}</span></div>)}
+        </div>
+      </section>
+
+      <section className="hv-section hv-work" aria-labelledby="hv-work-title">
+        <div className="hv-wrap">
+          <SectionHead id="hv-work-title" eyebrow="The work, in pictures" title="On stage, on air," accent="on record." text="Awards, live talks, studio interviews and podcasts from Adarshh’s work bringing numerology to wider audiences.">
+            <Link href="/gallery" className="hv-link">See the full gallery <ArrowUpRight size={17}/></Link>
+          </SectionHead>
+        </div>
+        <WorkMarquee rows={marqueeRows}/>
+      </section>
+
+      <section className="hv-section hv-wrap" aria-labelledby="hv-paths-title">
+        <SectionHead id="hv-paths-title" eyebrow="Two ways to begin" title="Where would you" accent="like to start?" center/>
+        <div className="hv-paths">
+          <Link href="/consultations" className="hv-path">
+            <div className="hv-path__image"><Image src="/images/gallery/portrait-at-work.webp" alt="" fill sizes="(max-width: 800px) 92vw, 600px" style={{objectPosition: '50% 18%'}}/></div>
+            <div className="hv-path__body"><Compass size={26}/><h3>I want personal guidance</h3><p>One-to-one readings on your name, birth date, career, relationships, business or home.</p><span className="hv-link">See consultations <ArrowRight size={17}/></span></div>
+          </Link>
+          <Link href="/courses" className="hv-path">
+            <div className="hv-path__image"><Image src="/images/gallery/talk-mahakumbh-stage.webp" alt="" fill sizes="(max-width: 800px) 92vw, 600px" style={{objectPosition: '50% 45%'}}/></div>
+            <div className="hv-path__body"><BookOpen size={26}/><h3>I want to learn numerology</h3><p>Three courses that take you from your first calculation to running your own practice.</p><span className="hv-link">See courses <ArrowRight size={17}/></span></div>
+          </Link>
+        </div>
+      </section>
+
+      <HeritageBand kind="floral" className="hv-band"/>
+
+      <section className="hv-section hv-tint" aria-labelledby="hv-consult-title">
+        <div className="hv-wrap">
+          <SectionHead id="hv-consult-title" eyebrow="Consultations" title="A clear answer starts with" accent="the right question." text="Every session is with Adarshh personally. Fees shown are from the current price list and are confirmed when you book.">
+            <Link href="/consultations" className="hv-link">All {consultations.length} consultations <ArrowUpRight size={17}/></Link>
+          </SectionHead>
+          <div className="hv-services">
+            {featuredConsultations.map(({offer, Icon}) => <article key={offer.id} className="hv-service">
+              <span className="hv-service__icon"><Icon size={24}/></span>
+              <small>{offer.category}</small>
+              <h3>{offer.name}</h3>
+              <p>{offer.summary}</p>
+              <div className="hv-service__foot">
+                <strong>{formatPrice(offer)}</strong>
+                <Link href={`/consultations/${offer.slug}`} aria-label={`View ${offer.name}`}>View session <ArrowRight size={16}/></Link>
+              </div>
+            </article>)}
+          </div>
+        </div>
+      </section>
+
+      <section className="hv-section hv-wrap hv-founder" aria-labelledby="hv-founder-title">
+        <div className="hv-founder__media">
+          <div className="hv-founder__photo"><Image src="/images/gallery/media-podcast-chair.webp" alt="Adarshh Pandey seated in a studio" fill sizes="(max-width: 900px) 92vw, 480px"/></div>
+          <figure className="hv-founder__book">
+            <div><Image src="/images/gallery/media-magazine-book-feature.webp" alt={`Magazine feature on ${book.title}`} fill sizes="200px" style={{objectPosition: '100% 72%'}}/></div>
+            <figcaption><b>{book.title}</b>{book.feature}</figcaption>
+          </figure>
+        </div>
+        <div className="hv-founder__copy">
+          <span className="hv-eyebrow">Meet Adarshh Pandey</span>
+          <h2 id="hv-founder-title">From a career in pharma <em>to a life in numbers.</em></h2>
+          <p>Adarshh began his career in the pharmaceutical industry. His curiosity about numbers grew into a consulting practice, and then into an academy for people who want a structured way into the subject.</p>
+          <p>Today he consults one-to-one, teaches three numerology programmes, speaks on stages and podcasts, and is the author of <cite>{book.title}</cite>.</p>
+          <ul className="hv-checks">
+            {['Personal numerology and Numeric Vaastu consultations', 'Courses from foundation to mastery', 'Talks, podcasts and published writing'].map((item) => <li key={item}><Check size={18}/>{item}</li>)}
+          </ul>
+          <Link className="hv-button" href="/about">Read his story <ArrowUpRight size={18}/></Link>
+        </div>
+      </section>
+
+      <MediaWall videos={videos} social={social} instagram={instagramProfile}>
+        <SectionHead id="hv-watch-title" eyebrow="Watch" title="Watched" accent="millions of times." text="Adarshh’s most-watched Instagram reels on numerology. Press play to watch them here, or open them on Instagram."/>
+      </MediaWall>
+
+      <section className="hv-section hv-cream" aria-labelledby="hv-loshu-title">
+        <div className="hv-wrap">
+          <SectionHead id="hv-loshu-title" eyebrow="Free tool" title="Find your numbers" accent="in ten seconds." text="Enter your date of birth to see your driver and conductor numbers and your Lo Shu grid, the three-by-three square every row of which adds up to 15."/>
+          <LoShuCalculator readingHref={`/consultations/${blueprint.slug}`}/>
+        </div>
+      </section>
+
+      <section className="hv-section hv-wrap" aria-labelledby="hv-courses-title">
+        <SectionHead id="hv-courses-title" eyebrow="The NumericcVaastu Academy" title="Learn it properly," accent="step by step." text="Three programmes, each building on the last. Start where your knowledge is today.">
+          <Link href="/courses" className="hv-link">Compare all courses <ArrowUpRight size={17}/></Link>
+        </SectionHead>
+        <ol className="hv-courses">
+          {courses.map((offer, i) => <li key={offer.id} className="hv-course">
+            <div className="hv-course__image">{(courseImages[offer.id]?.[0] || offer.image) && <Image src={courseImages[offer.id]?.[0] || offer.image} alt="" fill sizes="(max-width: 900px) 92vw, 400px" style={{objectPosition: courseImages[offer.id]?.[1]}}/>}<span>Level {i + 1} · {offer.category}</span></div>
+            <div className="hv-course__body">
+              <h3>{offer.name}</h3>
+              <p>{offer.summary}</p>
+              <ul>{offer.inclusions.slice(0, 3).map((item) => <li key={item}><Check size={16}/>{item}</li>)}</ul>
+              <div className="hv-course__foot"><strong>{formatPrice(offer)}</strong><Link href={`/courses/${offer.slug}`} className="hv-link">View course <ArrowRight size={16}/></Link></div>
+            </div>
+          </li>)}
+        </ol>
+      </section>
+
+      <section className="hv-section hv-tint" aria-labelledby="hv-awards-title">
+        <div className="hv-wrap">
+          <SectionHead id="hv-awards-title" eyebrow="Recognition" title="Honoured on" accent="many stages." text="Awards and felicitations for Adarshh’s work in numerology and education."/>
+          <AwardsCarousel items={awards}/>
+        </div>
+      </section>
+
+      <section className="hv-section hv-wrap" aria-labelledby="hv-steps-title">
+        <SectionHead id="hv-steps-title" eyebrow="How a consultation works" title="Three simple steps." accent="No surprises." center/>
+        <ol className="hv-steps">
+          {steps.map(([title, text], i) => <li key={title}><span className="hv-steps__n">{i + 1}</span><h3>{title}</h3><p>{text}</p></li>)}
+        </ol>
+        <div className="hv-actions is-center"><Link className="hv-button hv-button--gold" href="/book-consultation">Book a consultation <ArrowUpRight size={18}/></Link></div>
+      </section>
+
+      {googleReviews.length > 0 && <section className="hv-section hv-tint" aria-labelledby="hv-reviews-title">
+        <div className="hv-wrap">
+          <SectionHead id="hv-reviews-title" eyebrow="Client stories" title="In their" accent="own words." text="Reviews clients have left for Adarshh on Google, shown exactly as they wrote them.">
+            <Link href="/testimonials" className="hv-link">More client experiences <ArrowUpRight size={17}/></Link>
+          </SectionHead>
+          <ReviewCards reviews={googleReviews}/>
+        </div>
+      </section>}
+
+      <section className="hv-section hv-wrap hv-faq" aria-labelledby="hv-faq-title">
+        <div>
+          <span className="hv-eyebrow">Questions</span>
+          <h2 id="hv-faq-title">Before you <em>begin.</em></h2>
+          <p>Something else on your mind? The team is happy to help.</p>
+          <Link href="/faq" className="hv-link">All questions <ArrowUpRight size={17}/></Link>
+        </div>
+        <div className="hv-faq__list">
+          {faqs.map(([q, a], i) => <details key={q} open={i === 0}><summary>{q}<Plus size={20} aria-hidden="true"/></summary><p>{a}</p></details>)}
+        </div>
+      </section>
+
+      <section className="hv-final" aria-labelledby="hv-final-title">
+        <HeritageBand kind="small" className="hv-final__band"/>
+        <div className="hv-wrap hv-final__inner">
+          <Image src="/images/logo-nv.png" alt="" width={84} height={76} className="hv-final__logo"/>
+          <h2 id="hv-final-title">Your numbers have something to say. <em>Let’s listen together.</em></h2>
+          <p>Book a one-to-one consultation with Adarshh, or start learning with the foundation course.</p>
+          <div className="hv-actions is-center">
+            <Link className="hv-button hv-button--gold" href="/book-consultation">Book a consultation <ArrowUpRight size={18}/></Link>
+            {social.whatsapp
+              ? <a className="hv-button hv-button--light" href={social.whatsapp} target="_blank" rel="noopener noreferrer">Message on WhatsApp <ArrowUpRight size={18}/></a>
+              : <Link className="hv-button hv-button--light" href={`/courses/${courses[0].slug}`}>Start the foundation course <ArrowRight size={18}/></Link>}
+          </div>
+          <p className="hv-final__contact">Or call <a href={contact.phoneHref}>{contact.phone}</a> · email <a href={`mailto:${contact.email}`}>{contact.email}</a></p>
+        </div>
+      </section>
+    </main>
+    <SiteFooter/>
+  </>;
 }
