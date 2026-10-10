@@ -10,9 +10,10 @@ import LoShuCalculator from './components/home/LoShuCalculator';
 import AwardsCarousel from './components/home/AwardsCarousel';
 import ReviewCards from './components/ReviewCards';
 import {courses, consultations, formatPrice} from './data/offers';
-import {awards, book, heroSlides, marqueeRows, social, stats, videos} from './data/media';
+import {awards, book, heroSlides, instagramProfile, marqueeRows, social, stats, videos} from './data/media';
 import {googleReviews} from './data/content';
 import {contact} from './data/contact';
+import {formatTotal} from './lib/formatCount';
 
 const featuredConsultations = [
   ['consult-blueprint', Sparkles], ['consult-career', Briefcase], ['consult-relationship', HeartHandshake],
@@ -24,6 +25,9 @@ const courseImages = {
   'course-accelerator': ['/images/adarshh/adarshh-pandey-certificate-event-03.webp', '50% 20%'],
   'course-mastery': ['/images/adarshh/adarshh-pandey-certificate-event-05.webp', '50% 40%'],
 };
+/** The stats band leads with total views on the reels listed in media.js, so it updates when reels change. */
+const reelViews = videos.reels.reduce((sum, reel) => sum + (reel.views || 0), 0);
+const proof = reelViews > 0 ? [{value: formatTotal(reelViews), label: 'Views on his top Instagram reels'}, ...stats] : stats;
 const blueprint = consultations.find((item) => item.id === 'consult-blueprint') || consultations[0];
 
 const steps = [
@@ -66,7 +70,7 @@ export default function HomePage() {
 
       <section className="hv-stats" aria-label="NumericcVaastu in numbers">
         <div className="hv-wrap hv-stats__grid">
-          {stats.map((item) => <div key={item.label}><strong>{item.value}</strong><span>{item.label}</span></div>)}
+          {proof.map((item) => <div key={item.label}><strong>{item.value}</strong><span>{item.label}</span></div>)}
         </div>
       </section>
 
@@ -135,8 +139,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      <MediaWall videos={videos} social={social}>
-        <SectionHead id="hv-watch-title" eyebrow="Watch" title="Podcasts, shorts" accent="and reels." text="Conversations and short lessons from Adarshh’s podcasts, YouTube and Instagram. Press play to watch here."/>
+      <MediaWall videos={videos} social={social} instagram={instagramProfile}>
+        <SectionHead id="hv-watch-title" eyebrow="Watch" title="Watched" accent="millions of times." text="Adarshh’s most-watched Instagram reels on numerology. Press play to watch them here, or open them on Instagram."/>
       </MediaWall>
 
       <section className="hv-section hv-cream" aria-labelledby="hv-loshu-title">
