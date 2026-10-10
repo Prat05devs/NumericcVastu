@@ -1,15 +1,18 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import {ArrowRight, ArrowUpRight, Baby, BookOpen, Briefcase, Building2, Check, Compass, HeartHandshake, Home, Plus, Sparkles} from 'lucide-react';
-import {SiteHeader, SiteFooter} from './components/SiteChrome';
+import {SiteFooter} from './components/SiteChrome';
 import HeritageBand from './components/HeritageBands';
 import HeroSlideshow from './components/home/HeroSlideshow';
 import WorkMarquee from './components/home/WorkMarquee';
 import MediaWall from './components/home/MediaWall';
 import LoShuCalculator from './components/home/LoShuCalculator';
 import AwardsCarousel from './components/home/AwardsCarousel';
+import ReviewCards from './components/ReviewCards';
 import {courses, consultations, formatPrice} from './data/offers';
 import {awards, book, heroSlides, marqueeRows, social, stats, videos} from './data/media';
+import {googleReviews} from './data/content';
+import {contact} from './data/contact';
 
 const featuredConsultations = [
   ['consult-blueprint', Sparkles], ['consult-career', Briefcase], ['consult-relationship', HeartHandshake],
@@ -47,7 +50,6 @@ function SectionHead({eyebrow, title, accent, text, id, children, center = false
 
 export default function HomePage() {
   return <>
-    <SiteHeader/>
     <main id="main" className="hv">
       <section className="hv-hero" aria-labelledby="hv-hero-title">
         <div className="hv-hero__copy">
@@ -176,6 +178,15 @@ export default function HomePage() {
         <div className="hv-actions is-center"><Link className="hv-button hv-button--gold" href="/book-consultation">Book a consultation <ArrowUpRight size={18}/></Link></div>
       </section>
 
+      {googleReviews.length > 0 && <section className="hv-section hv-tint" aria-labelledby="hv-reviews-title">
+        <div className="hv-wrap">
+          <SectionHead id="hv-reviews-title" eyebrow="Client stories" title="In their" accent="own words." text="Reviews clients have left for Adarshh on Google, shown exactly as they wrote them.">
+            <Link href="/testimonials" className="hv-link">More client experiences <ArrowUpRight size={17}/></Link>
+          </SectionHead>
+          <ReviewCards reviews={googleReviews}/>
+        </div>
+      </section>}
+
       <section className="hv-section hv-wrap hv-faq" aria-labelledby="hv-faq-title">
         <div>
           <span className="hv-eyebrow">Questions</span>
@@ -200,6 +211,7 @@ export default function HomePage() {
               ? <a className="hv-button hv-button--light" href={social.whatsapp} target="_blank" rel="noopener noreferrer">Message on WhatsApp <ArrowUpRight size={18}/></a>
               : <Link className="hv-button hv-button--light" href={`/courses/${courses[0].slug}`}>Start the foundation course <ArrowRight size={18}/></Link>}
           </div>
+          <p className="hv-final__contact">Or call <a href={contact.phoneHref}>{contact.phone}</a> · email <a href={`mailto:${contact.email}`}>{contact.email}</a></p>
         </div>
       </section>
     </main>

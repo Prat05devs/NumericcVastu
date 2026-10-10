@@ -8,6 +8,8 @@ import '../gallery.css';
 import '../catalogue.css';
 import '../glass-cards.css';
 import '../home.css';
+import { SiteHeader } from '../components/SiteChrome';
+import { contact } from '../data/contact';
 export const metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://numericcvaastu.com'),
   alternates: { canonical: '/' },
@@ -18,5 +20,5 @@ export const metadata = {
 };
 export const viewport = { themeColor: '#4A1F7A' };
 export default function RootLayout({ children }) {
-  return <html lang="en"><head><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous"/><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Manrope:wght@400;500;600;700;800&family=Noto+Serif+Devanagari:wght@400;500&display=swap" rel="stylesheet"/></head><body>{children}<script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify({'@context':'https://schema.org','@graph':[{'@type':'Organization',name:'NumericcVaastu',url:process.env.NEXT_PUBLIC_SITE_URL||'https://numericcvaastu.com',logo:(process.env.NEXT_PUBLIC_SITE_URL||'https://numericcvaastu.com')+'/images/logo-nv.png',founder:{'@type':'Person',name:'Adarshh Pandey'}},{'@type':'WebSite',name:'NumericcVaastu',url:process.env.NEXT_PUBLIC_SITE_URL||'https://numericcvaastu.com'}]}).replace(/</g,'\\u003c')}}/></body></html>;
+  return <html lang="en" data-scroll-behavior="smooth"><head><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous"/><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Manrope:wght@400;500;600;700;800&family=Noto+Serif+Devanagari:wght@400;500&display=swap" rel="stylesheet"/></head><body><SiteHeader/>{children}<script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify({'@context':'https://schema.org','@graph':[{'@type':'Organization',name:'NumericcVaastu',url:process.env.NEXT_PUBLIC_SITE_URL||'https://numericcvaastu.com',logo:(process.env.NEXT_PUBLIC_SITE_URL||'https://numericcvaastu.com')+'/images/logo-nv.png',founder:{'@type':'Person',name:'Adarshh Pandey'},email:contact.email,telephone:contact.phoneHref.replace('tel:',''),address:{'@type':'PostalAddress',streetAddress:`${contact.address.street}, ${contact.address.locality}`,addressLocality:contact.address.city,addressRegion:contact.address.region,postalCode:contact.address.postalCode,addressCountry:contact.address.country}},{'@type':'WebSite',name:'NumericcVaastu',url:process.env.NEXT_PUBLIC_SITE_URL||'https://numericcvaastu.com'}]}).replace(/</g,'\\u003c')}}/></body></html>;
 }

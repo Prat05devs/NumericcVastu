@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import {ArrowUpRight,Check,Award,Layers,UserRound,Info} from 'lucide-react';
-import {SiteHeader,SiteFooter} from './SiteChrome';
+import {SiteFooter} from './SiteChrome';
 import CourseCurriculum from './CourseCurriculum';
 import {courses,formatPrice,getActivePromotion,offerCatalog} from '../data/offers';
 import {getCourseDetail} from '../data/courseDetails';
@@ -14,7 +14,7 @@ function PurchaseCard({offer,detail,enquire}){
 }
 export default function CourseDetail({offer}){
  const detail=getCourseDetail(offer.id);const enquire=`/contact?interest=${offer.id}`;const url=`${origin}/courses/${offer.slug}`;
- return <><SiteHeader/><main id="main" className="course-main"><div className="course-layout wrap">
+ return <><main id="main" className="course-main"><div className="course-layout wrap">
   <header className="course-hero">
    <nav className="breadcrumbs" aria-label="Breadcrumb"><Link href="/">Home</Link><span>/ <Link href="/courses">Courses</Link></span><span>/ <span aria-current="page">{offer.name}</span></span></nav>
    <span className="eyebrow">{offer.category.toUpperCase()} · {detail.path.toUpperCase()}</span>

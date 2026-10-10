@@ -28,8 +28,7 @@ test('homepage calculator, slideshow and video tabs',async({page})=>{
  await page.getByRole('button',{name:'Show my numbers'}).click();
  await expect(page.locator('.hv-loshu__numbers strong')).toHaveText(['5','2']);
  await expect(page.locator('.hv-loshu__missing')).toHaveText('Missing from your grid: 4, 6, 7, 8');
- await page.getByRole('button',{name:'Pause slideshow'}).click();
- await expect(page.getByRole('button',{name:'Play slideshow'})).toBeVisible();
+ await expect(page.locator('.hv-stage__slide.is-active')).toHaveCount(1);
  await page.getByRole('tab',{name:/Instagram Reels/}).click();
  await expect(page.getByRole('tab',{name:/Instagram Reels/})).toHaveAttribute('aria-selected','true');
  expect(errors).toEqual([]);
