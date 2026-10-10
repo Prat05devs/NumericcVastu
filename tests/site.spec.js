@@ -20,6 +20,21 @@ test('catalogue routes, price parity, and enquiry draft',async({page})=>{
  expect(errors).toEqual([]);
 });
 
+test('homepage calculator, slideshow and video tabs',async({page})=>{
+ const errors=[];page.on('pageerror',error=>errors.push(error.message));
+ await page.goto('/');
+ await expect(page.getByRole('heading',{level:1})).toContainText('Know your numbers');
+ await page.getByLabel('Your date of birth').fill('1990-05-23');
+ await page.getByRole('button',{name:'Show my numbers'}).click();
+ await expect(page.locator('.hv-loshu__numbers strong')).toHaveText(['5','2']);
+ await expect(page.locator('.hv-loshu__missing')).toHaveText('Missing from your grid: 4, 6, 7, 8');
+ await page.getByRole('button',{name:'Pause slideshow'}).click();
+ await expect(page.getByRole('button',{name:'Play slideshow'})).toBeVisible();
+ await page.getByRole('tab',{name:/Instagram Reels/}).click();
+ await expect(page.getByRole('tab',{name:/Instagram Reels/})).toHaveAttribute('aria-selected','true');
+ expect(errors).toEqual([]);
+});
+
 test('pricing redirects to courses',async({page})=>{
  await page.goto('/pricing');
  await expect(page).toHaveURL(/\/courses$/);

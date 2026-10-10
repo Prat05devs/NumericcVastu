@@ -4,7 +4,7 @@ Status: implementation in progress, updated 1 October 2026. The multipage Next.j
 
 ## 1. Direction and scope
 
-Keep the approved Next.js site, warm ivory, terracotta, wine, Manrope/Cormorant typography, floral dividers, and restrained temple linework. Make Adarshh the visible human connection across the site. Separate two clear journeys: personal consultation and professional learning.
+Client feedback (October 2026) replaced the warm ivory, terracotta and wine palette: pages are now mostly white, with royal purple for text and primary actions, temple gold for ornament and the booking button, and pale lavender or gold tints between sections. The original NV logo from numericcvaastu.in (`public/images/logo-nv.png`) is used unaltered; request a vector or 1000px+ source. Cormorant Garamond (display) and Manrope (body) remain, with body text at 17px. The heritage border artwork is recoloured to gold. Make Adarshh the visible human connection across the site. Separate two clear journeys: personal consultation and professional learning. Homepage proof (slideshow, photo marquee, awards, podcasts/shorts/reels) is driven by `src/data/media.js`.
 
 Primary navigation: **About · Consultations · Courses · Stories · Gallery · Journal** with **Book a consultation** as the persistent CTA. Stories opens Testimonials, Gallery, and Media. Legal and utility links belong in the footer. On mobile, show a compact header and accessible menu; show a contextual bottom CTA on course and service detail pages when it does not obscure content.
 
