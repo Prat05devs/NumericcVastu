@@ -11,7 +11,9 @@ import AwardsCarousel from './components/home/AwardsCarousel';
 import ReviewCards from './components/ReviewCards';
 import {courses, consultations, formatPrice} from './data/offers';
 import {awards, book, heroSlides, instagramProfile, marqueeRows, social, stats, videos} from './data/media';
-import {googleReviews} from './data/content';
+import {googleReviews, posts} from './data/content';
+import BlogCards from './components/BlogCards';
+import WhatsAppIcon from './components/WhatsAppIcon';
 import {contact} from './data/contact';
 import {formatTotal} from './lib/formatCount';
 
@@ -140,7 +142,7 @@ export default function HomePage() {
       </section>
 
       <MediaWall videos={videos} social={social} instagram={instagramProfile}>
-        <SectionHead id="hv-watch-title" eyebrow="Watch" title="Watched" accent="millions of times." text="Adarshh’s most-watched Instagram reels on numerology. Press play to watch them here, or open them on Instagram."/>
+        <SectionHead id="hv-watch-title" eyebrow="Watch" title="Watched" accent="millions of times." text="Adarshh’s most-watched Instagram reels, his podcast conversations and YouTube Shorts. Press play to watch them here."/>
       </MediaWall>
 
       <section className="hv-section hv-cream" aria-labelledby="hv-loshu-title">
@@ -191,6 +193,13 @@ export default function HomePage() {
         </div>
       </section>}
 
+      {posts.length > 0 && <section className="hv-section hv-wrap" aria-labelledby="hv-blog-title">
+        <SectionHead id="hv-blog-title" eyebrow="The journal" title="Read, learn," accent="go deeper." text="Clear explanations of numerology, the Lo Shu grid and Numeric Vaastu, written for curious beginners.">
+          <Link href="/blog" className="hv-link">All articles <ArrowUpRight size={17}/></Link>
+        </SectionHead>
+        <BlogCards posts={posts} carousel/>
+      </section>}
+
       <section className="hv-section hv-wrap hv-faq" aria-labelledby="hv-faq-title">
         <div>
           <span className="hv-eyebrow">Questions</span>
@@ -212,7 +221,7 @@ export default function HomePage() {
           <div className="hv-actions is-center">
             <Link className="hv-button hv-button--gold" href="/book-consultation">Book a consultation <ArrowUpRight size={18}/></Link>
             {social.whatsapp
-              ? <a className="hv-button hv-button--light" href={social.whatsapp} target="_blank" rel="noopener noreferrer">Message on WhatsApp <ArrowUpRight size={18}/></a>
+              ? <Link className="hv-button hv-button--whatsapp" href="/book-consultation"><WhatsAppIcon size={20}/> Book on WhatsApp</Link>
               : <Link className="hv-button hv-button--light" href={`/courses/${courses[0].slug}`}>Start the foundation course <ArrowRight size={18}/></Link>}
           </div>
           <p className="hv-final__contact">Or call <a href={contact.phoneHref}>{contact.phone}</a> · email <a href={`mailto:${contact.email}`}>{contact.email}</a></p>

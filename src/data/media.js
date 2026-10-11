@@ -7,8 +7,8 @@
 
 export const social = {
   instagram: process.env.NEXT_PUBLIC_INSTAGRAM_URL || 'https://www.instagram.com/numerologybyaadarshh/',
-  youtube: process.env.NEXT_PUBLIC_YOUTUBE_URL || '',
-  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_URL || '',
+  youtube: process.env.NEXT_PUBLIC_YOUTUBE_URL || 'https://www.youtube.com/@Numerologistadarshpandey',
+  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_URL || 'https://wa.me/919870197315?text=' + encodeURIComponent('Namaste Adarshh ji 🙏 I found you on numericcvaastu.com and would like to know more.'),
 };
 
 /** Public Instagram profile snapshot, copied from instagram.com/numerologybyaadarshh on 10 October 2026.
@@ -77,18 +77,27 @@ export const awards = [
  * poster: optional; YouTube entries fall back to the video's own thumbnail.
  */
 export const videos = {
+  /** From youtube.com/@Numerologistadarshpandey (October 2026): his podcast playlist plus his most-viewed
+   *  podcast-style video, most viewed first. Thumbnails are saved locally so nothing loads from YouTube until play. */
   podcasts: [
-    {title: 'Podcast conversation', youtubeId: '', poster: '/images/gallery/media-podcast-studio.webp'},
-    {title: 'Studio interview', youtubeId: '', poster: '/images/gallery/media-studio-interview.webp'},
-    {title: 'Podcast conversation', youtubeId: '', poster: '/images/gallery/media-interview-host.webp'},
-    {title: 'Studio interview', youtubeId: '', poster: '/images/gallery/media-studio-2025.webp'},
+    {title: 'Mobile number’s last 6 digits can change your luck', youtubeId: 'kCPtD7mMC-Q', poster: '/images/youtube/kCPtD7mMC-Q.webp'},
+    {title: 'How to manifest love, career and money', youtubeId: 'm9IGTcZQWRY', poster: '/images/youtube/m9IGTcZQWRY.webp'},
+    {title: 'Loans, stress and pain: healing over manifestation', youtubeId: 'xozPx9IbpvQ', poster: '/images/youtube/xozPx9IbpvQ.webp'},
+    {title: 'Mulank 2, 4 and 8: know your lucky and enemy numbers', youtubeId: 'OZqY4L99khg', poster: '/images/youtube/OZqY4L99khg.webp'},
+    {title: 'Lal Kitab vs astrology: predictions and career secrets', youtubeId: 'SdrSfaJAEc0', poster: '/images/youtube/SdrSfaJAEc0.webp'},
+    {title: 'How missing numbers block your success', youtubeId: 'vjBBaqjPT_I', poster: '/images/youtube/vjBBaqjPT_I.webp', with: 'Mushtaq Khan'},
+    {title: 'Lucky numbers for love, business and life', youtubeId: '8bk-2Yqg9So', poster: '/images/youtube/8bk-2Yqg9So.webp'},
   ],
+  /** Most-viewed YouTube Shorts in which Adarshh appears on screen (October 2026). */
   shorts: [
-    {title: 'YouTube Short', youtubeId: '', poster: '/images/gallery/media-podcast-portrait.webp'},
-    {title: 'YouTube Short', youtubeId: '', poster: '/images/gallery/media-podcast-chair.webp'},
-    {title: 'YouTube Short', youtubeId: '', poster: '/images/gallery/portrait-seated.webp'},
-    {title: 'YouTube Short', youtubeId: '', poster: '/images/gallery/media-interview-namaste.webp'},
-    {title: 'YouTube Short', youtubeId: '', poster: '/images/gallery/portrait-standing.webp'},
+    {title: 'Keeping deities at home: faith and respect', youtubeId: 'TEpksbK16sE', poster: '/images/youtube/TEpksbK16sE.webp'},
+    {title: 'Where to keep photos of departed loved ones', youtubeId: 'mbilJsEki-c', poster: '/images/youtube/mbilJsEki-c.webp'},
+    {title: 'Your money mindset and your numbers', youtubeId: '-7S0Jn3vg-4', poster: '/images/youtube/-7S0Jn3vg-4.webp'},
+    {title: 'Lord Ganesha at the entrance: what Vastu says', youtubeId: 'GtMRrOeAJdg', poster: '/images/youtube/GtMRrOeAJdg.webp'},
+    {title: 'Is your home’s energy working for you?', youtubeId: 'ZUOdveRJzxA', poster: '/images/youtube/ZUOdveRJzxA.webp'},
+    {title: 'Your numbers may reveal more than you think', youtubeId: 'J6HHjH6HS6o', poster: '/images/youtube/J6HHjH6HS6o.webp'},
+    {title: 'Money decisions shouldn’t be guesswork', youtubeId: 'I39ymqvo88w', poster: '/images/youtube/I39ymqvo88w.webp'},
+    {title: 'Turn numerology into a career', youtubeId: 'iCe965z5nuk', poster: '/images/youtube/iCe965z5nuk.webp'},
   ],
   /** Top reels chosen by the client with view counts from Instagram (October 2026), most viewed first.
    *  `views` is a plain number; the site formats it (1600000 → 1.6M) and adds the total to the section.
