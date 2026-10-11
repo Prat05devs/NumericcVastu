@@ -11,6 +11,8 @@ export const contact = {
   email: offerCatalog.contactEmail,
   phone: '+91 98701 97315',
   phoneHref: 'tel:+919870197315',
+  /** WhatsApp number in international format without + or spaces (shown with the WhatsApp logo on his YouTube banner). */
+  whatsapp: '919870197315',
   address: {street, locality, city, region, postalCode, country: 'IN'},
   addressLines: [street, locality, `${city}, ${region} ${postalCode}`],
   mapUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${street}, ${locality}, ${city}, ${region} ${postalCode}`)}`,
