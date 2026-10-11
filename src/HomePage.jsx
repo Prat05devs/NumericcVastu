@@ -145,7 +145,7 @@ export default function HomePage() {
 
       <section className="hv-section hv-cream" aria-labelledby="hv-loshu-title">
         <div className="hv-wrap">
-          <SectionHead id="hv-loshu-title" eyebrow="Free tool" title="Find your numbers" accent="in ten seconds." text="Enter your date of birth to see your driver and conductor numbers and your Lo Shu grid, the three-by-three square every row of which adds up to 15."/>
+          <SectionHead id="hv-loshu-title" eyebrow="Free tool" title="Find your numbers" accent="the Indian way." text="Your Mulank, Bhagyank, Kua and Lo Shu grid from your date of birth, with the planes, yogs and missing numbers that numerologists read. Open the full report for the complete reading."/>
           <LoShuCalculator readingHref={`/consultations/${blueprint.slug}`}/>
         </div>
       </section>

@@ -41,7 +41,6 @@ export const book = {
 
 /** Hero photos: real event, studio and portrait photographs first, the two edited studio portraits last. `position` keeps the face in frame. */
 export const heroSlides = [
-  {src: '/images/gallery/portrait-arms-crossed.webp', alt: 'Adarshh Pandey standing with arms crossed in a studio', position: '50% 22%'},
   {src: '/images/gallery/media-podcast-portrait.webp', alt: 'Adarshh Pandey seated at a podcast microphone', position: '50% 30%'},
   {src: '/images/gallery/award-book-of-the-year.webp', alt: 'Adarshh Pandey receiving the Book of the Year award on stage', position: '30% 40%'},
   {src: '/images/gallery/talk-ntt-talk-show.webp', alt: 'Adarshh Pandey speaking on the NTT Talk Show stage', position: '50% 25%'},
@@ -51,6 +50,7 @@ export const heroSlides = [
   // Edited studio portraits go last, after the real photographs.
   {src: '/images/adarshh/adarshh-pandey-studio-portrait.webp', alt: 'Adarshh Pandey in a studio portrait against a purple background', position: '50% 30%'},
   {src: '/images/adarshh/adarshh-pandey-with-book.webp', alt: 'Adarshh Pandey holding his book Numerology: Numbers That Speak', position: '45% 40%'},
+  {src: '/images/gallery/portrait-arms-crossed.webp', alt: 'Adarshh Pandey standing with arms crossed in a studio', position: '50% 22%'},
 ];
 
 export const marqueeRows = [
