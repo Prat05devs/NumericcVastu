@@ -1,6 +1,6 @@
 # NumericcVaastu
 
-A responsive Next.js site for Adarshh Pandey’s consultation and education brand. The homepage, multipage routes, founder image library, journal, structured metadata, XML sitemap, robots policy, and booking enquiry are in the project.
+A responsive Next.js site for Adarshh Panndey’s consultation and education brand. The homepage, multipage routes, founder image library, journal, structured metadata, XML sitemap, robots policy, and booking enquiry are in the project.
 
 ## Run
 

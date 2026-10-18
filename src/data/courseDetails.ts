@@ -26,7 +26,7 @@ export type CourseDetail = {
 
 const unconfirmed: CourseFacts = {format: null, duration: null, language: null, nextCohort: null, access: null};
 const sharedFaqs: [string, string][] = [
-  ['Is the listed fee final?', 'The fee shown comes from the existing NumericcVaastu website and is being reconfirmed. Ask the team for the current fee, taxes and payment terms before enrolling. No payment is taken on this website.'],
+  ['How do I pay?', 'Enrol online and pay securely through Razorpay with UPI, a card or net banking. If you’d like to talk about payment options first, ask the team on WhatsApp.'],
   ['When does the next batch start?', 'Batch dates, session timings and the teaching format are confirmed directly with the team. Send an enquiry and they will share the current schedule.'],
   ['Does the course guarantee clients or income?', 'No. The course teaches methods and consultation practice. Numerology is a traditional interpretive framework, and professional results depend on your own effort, context and decisions.'],
 ];

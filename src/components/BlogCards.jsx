@@ -3,6 +3,7 @@ import {useEffect, useRef, useState} from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {ArrowLeft, ArrowRight} from 'lucide-react';
+import {crop} from '../lib/crop';
 
 const formatDate = (iso) => new Date(`${iso}T00:00:00`).toLocaleDateString('en-IN', {day: 'numeric', month: 'short', year: 'numeric'});
 
@@ -10,7 +11,7 @@ const formatDate = (iso) => new Date(`${iso}T00:00:00`).toLocaleDateString('en-I
 function Cover({post}) {
   const cover = post.cover || {title: post.title};
   return <div className="nv-blog__cover" aria-hidden="true">
-    {cover.image && <div className="nv-blog__photo"><Image src={cover.image} alt="" fill sizes="(max-width: 700px) 50vw, 260px" style={{objectPosition: cover.position}}/></div>}
+    {cover.image && <div className="nv-blog__photo"><Image src={cover.image} alt="" fill sizes="(max-width: 700px) 50vw, 260px" style={crop(cover.image, 0.83)}/></div>}
     <div className="nv-blog__brand"><img src="/images/logo-nv.png" alt="" width="312" height="283"/><span/><img className="nv-blog__avatar" src="/images/reels/profile-numerologybyaadarshh.webp" alt="" width="150" height="150"/></div>
     <div className="nv-blog__cover-text">
       <strong>{cover.title}</strong>

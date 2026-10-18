@@ -2,6 +2,7 @@
 import {useRef} from 'react';
 import Image from 'next/image';
 import {ArrowLeft, ArrowRight} from 'lucide-react';
+import {crop} from '../../lib/crop';
 
 /** Swipeable, scroll-snapped row of award photographs with arrow controls for pointer users. */
 export default function AwardsCarousel({items}) {
@@ -10,7 +11,7 @@ export default function AwardsCarousel({items}) {
   return <div className="hv-awards">
     <div className="hv-awards__rail" ref={rail} tabIndex={0} aria-label="Awards and recognition, scroll for more">
       {items.map((item) => <figure key={item.slug} className="hv-award">
-        <div className="hv-award__image"><Image src={`/images/gallery/${item.slug}.webp`} alt={`Adarshh Pandey at the ${item.title}`} fill sizes="(max-width: 700px) 80vw, 380px"/></div>
+        <div className="hv-award__image"><Image src={`/images/gallery/${item.slug}.webp`} alt={`Adarshh Panndey at the ${item.title}`} fill sizes="(max-width: 700px) 80vw, 380px" style={crop(`/images/gallery/${item.slug}.webp`, 4 / 3)}/></div>
         <figcaption>{item.title}</figcaption>
       </figure>)}
     </div>

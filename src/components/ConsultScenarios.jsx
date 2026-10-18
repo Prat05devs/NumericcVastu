@@ -88,7 +88,7 @@ export default function ConsultScenarios({slides}) {
         <p>{slide.summary}</p>
         <div className="cs__price"><strong>{slide.price}</strong><span>listed fee</span></div>
         <div className="cs__actions">
-          <Link className="hv-button hv-button--gold" href={`/book-consultation?offer=${slide.id}`}>Book this session <ArrowUpRight size={17}/></Link>
+          <Link className="hv-button hv-button--gold" href={`/checkout?offer=${slide.id}`}>Book this session <ArrowUpRight size={17}/></Link>
           <Link className="hv-link" href={`/consultations/${slide.slug}`}>Details <ArrowRight size={16}/></Link>
         </div>
       </div>

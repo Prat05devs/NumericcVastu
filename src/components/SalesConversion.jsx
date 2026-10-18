@@ -77,8 +77,8 @@ export function SalesHero() {
       <span className="sales-hero__stage-top">THE PERSON BEHIND THE PRACTICE <span>01 / 09</span></span>
       <div className="sales-hero__portrait-stage">
         <div className="sales-hero__orbit" aria-hidden="true"><span>1</span><span>4</span><span>7</span></div>
-        <Image src="/images/adarshh/adarshh-pandey-portrait.webp" alt="Adarshh Pandey" fill priority sizes="(max-width: 760px) 100vw, 46vw" quality={82} className="sales-hero__portrait"/>
-        <span className="sales-hero__founder">Learn with <strong>Adarshh Pandey</strong></span>
+        <Image src="/images/adarshh/adarshh-pandey-portrait.webp" alt="Adarshh Panndey" fill priority sizes="(max-width: 760px) 100vw, 46vw" quality={82} className="sales-hero__portrait"/>
+        <span className="sales-hero__founder">Learn with <strong>Adarshh Panndey</strong></span>
       </div>
       <a className="sales-hero__offer-card" href={courseUrl(featured)} ref={cardRef}>
         <span className="sales-hero__offer-kicker"><Sparkles size={16}/>{promotion ? promotion.label : `${featured.category} pathway`}</span>
