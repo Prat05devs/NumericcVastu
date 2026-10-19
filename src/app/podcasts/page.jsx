@@ -4,6 +4,7 @@ import {SiteFooter} from '../../components/SiteChrome';
 import PodcastList from '../../components/PodcastList';
 import YouTubeInline from '../../components/YouTubeInline';
 import WhatsAppIcon from '../../components/WhatsAppIcon';
+import FloatingNumbers from '../../components/FloatingNumbers';
 import {appearances, ownShow, TOPICS} from '../../data/podcasts';
 import {contact} from '../../data/contact';
 import {formatCount, formatTotal} from '../../lib/formatCount';
@@ -32,9 +33,9 @@ export default function Page() {
             <h1>Adarshh Panndey, <em>on India’s podcasts.</em></h1>
             <p>Conversations on numerology, mobile numbers, names, remedies and the predictions people keep coming back to, with hosts across India.</p>
             <ul className="pc-stats">
-              <li><strong>{appearances.length + ownShow.length}+</strong>podcast conversations</li>
-              <li><strong>{formatTotal(totalViews)}</strong>views on guest episodes</li>
-              <li><strong>{hours}+</strong>hours on record</li>
+              <li><strong data-count>{appearances.length + ownShow.length}+</strong>podcast conversations</li>
+              <li><strong data-count>{formatTotal(totalViews)}</strong>views on guest episodes</li>
+              <li><strong data-count>{hours}+</strong>hours on record</li>
             </ul>
           </div>
           <figure className="pc-featured">
@@ -67,6 +68,7 @@ export default function Page() {
       </section>
 
       <section className="pc-invite">
+        <FloatingNumbers/>
         <div className="hv-wrap pc-invite__inner">
           <div>
             <span className="hv-eyebrow">For hosts</span>

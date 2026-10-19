@@ -5,8 +5,10 @@ import {SiteFooter} from './SiteChrome';
 import StickyBuy from './StickyBuy';
 import ReviewCards from './ReviewCards';
 import WhatsAppIcon from './WhatsAppIcon';
+import FloatingNumbers from './FloatingNumbers';
 import {courses, formatPrice, getActivePromotion, offerCatalog} from '../data/offers';
 import {getCourseDetail} from '../data/courseDetails';
+import {book} from '../data/media';
 import {googleReviews, photos} from '../data/content';
 import {appearances, ownShow} from '../data/podcasts';
 import {crop} from '../lib/crop';
@@ -37,6 +39,7 @@ export default function CourseDetail({offer}) {
   return <>
     <main id="main" className="hv cd">
       <section className="cd-hero">
+        <FloatingNumbers/>
         <div className="hv-wrap cd-hero__grid">
           <div className="cd-hero__copy">
             <nav className="cd-crumbs" aria-label="Breadcrumb"><Link href="/">Home</Link> / <Link href="/courses">Courses</Link> / <span aria-current="page">{offer.name}</span></nav>
@@ -91,17 +94,18 @@ export default function CourseDetail({offer}) {
       </section>
 
       <section className="cd-mentor" aria-labelledby="cd-mentor">
+        <FloatingNumbers/>
         <div className="hv-wrap cd-mentor__grid">
           <div className="cd-mentor__photo"><Image src="/images/students/teaching-what-is-numerology.webp" alt="Adarshh Panndey teaching a numerology class" fill sizes="(max-width: 900px) 92vw, 460px" style={crop('/images/students/teaching-what-is-numerology.webp', 0.85)}/></div>
           <div>
             <span className="hv-eyebrow">Your teacher</span>
             <h2 id="cd-mentor">Learn from <em>Adarshh Panndey.</em></h2>
-            <p>Adarshh teaches the way he practises: calculation first, then the pattern, then how to talk to a real client about it. He is the author of <cite>Numerology: Numbers That Speak</cite> and a regular guest on India’s podcasts.</p>
+            <p>Adarshh teaches the way he practises: calculation first, then the pattern, then how to talk to a real client about it. He is the author of <a className="hv-link" href={book.amazon} target="_blank" rel="noopener noreferrer"><cite>{book.title}</cite></a> and a regular guest on India’s podcasts.</p>
             <ul className="cd-mentor__stats">
-              <li><b>1,500+</b>students trained</li>
-              <li><b>20,000+</b>consultations</li>
-              <li><b>{appearances.length + ownShow.length}+</b>podcast conversations</li>
-              <li><b>7+</b>years of practice</li>
+              <li><b data-count>1,500+</b>students trained</li>
+              <li><b data-count>20,000+</b>consultations</li>
+              <li><b data-count>{appearances.length + ownShow.length}+</b>podcast conversations</li>
+              <li><b data-count>7+</b>years of practice</li>
             </ul>
             <div className="hv-actions"><Link className="hv-link" href="/about">His story <ArrowUpRight size={16}/></Link><Link className="hv-link" href="/podcasts"><Mic size={16}/> Hear him on podcasts</Link></div>
           </div>

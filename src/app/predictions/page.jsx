@@ -2,6 +2,7 @@ import Link from 'next/link';
 import {ArrowUpRight, ShieldCheck} from 'lucide-react';
 import {SiteFooter} from '../../components/SiteChrome';
 import PredictionList from '../../components/PredictionList';
+import FloatingNumbers from '../../components/FloatingNumbers';
 import {predictions, predictionStats} from '../../data/predictions';
 
 export const metadata = {
@@ -21,9 +22,9 @@ export default function Page() {
           <h1>He said it first. <em>Then it happened.</em></h1>
           <p className="pr-hero__lede">Adarshh Panndey makes his predictions in public: on his channel, on podcasts and on Instagram. These are the ones you can check, each with the date he said it and what happened next.</p>
           <ul className="pr-hero__stats">
-            <li><strong>{stats.cameTrue}</strong>came true</li>
+            <li><strong data-count>{stats.cameTrue}</strong>came true</li>
             <li><strong>100%</strong>said on video before the result</li>
-            <li><strong>{stats.awaiting}</strong>awaiting their date</li>
+            <li><strong data-count>{stats.awaiting}</strong>awaiting their date</li>
           </ul>
           <ul className="pr-hero__proof" aria-label="Predictions that came true">
             {proven.map((p) => <li key={p.id}><a href={`#${p.id}`}><span>{p.area}</span>{p.title}</a></li>)}
@@ -35,6 +36,7 @@ export default function Page() {
         <PredictionList items={predictions}/>
       </section>
       <section className="pc-invite">
+        <FloatingNumbers/>
         <div className="hv-wrap pc-invite__inner">
           <div><span className="hv-eyebrow">Your turn</span><h2>What do your numbers <em>say about your year?</em></h2><p>Get a personal reading from Adarshh, or try the free calculator for your Mulank, Bhagyank and Lo Shu grid.</p></div>
           <div className="hv-actions"><Link className="hv-button hv-button--gold" href="/book-consultation">Book a consultation <ArrowUpRight size={18}/></Link><Link className="hv-button hv-button--light" href="/numerology-calculator">Free calculator <ArrowUpRight size={18}/></Link></div>

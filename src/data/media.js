@@ -38,7 +38,10 @@ export const stats = [
 export const book = {
   title: 'Numerology: Numbers That Speak',
   subtitle: 'What Your Numbers Reveal',
+  fullTitle: 'Numerology – Numbers That Speak: What Your Numbers Reveal',
   feature: 'Featured in Inkspire, June 2025',
+  isbn: '9348518496',
+  amazon: 'https://www.amazon.in/dp/9348518496',
 };
 
 /** Hero photos: real event, studio and portrait photographs first, the two edited studio portraits last. `position` keeps the face in frame. */

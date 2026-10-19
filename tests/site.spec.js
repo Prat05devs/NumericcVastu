@@ -99,3 +99,13 @@ for(const width of [375,768,1024,1440]){
   if(width===375){await page.getByRole('button',{name:'Open navigation'}).click();await expect(page.getByRole('navigation').getByRole('link',{name:'Gallery'})).toBeVisible()}
  });
 }
+
+test('friend and enemy numbers follow the compatibility chart',async({page})=>{
+ // The chart's own worked example: personality (Mulank) 6 with destiny (Bhagyank) 1.
+ await page.goto('/numerology-calculator?dob=1983-01-06');
+ const result=page.locator('.nv-compat__result');
+ await expect(result.locator('.is-friend')).toHaveText(['1','2','5','6','7','9']);
+ await expect(result.locator('.is-enemy')).toHaveText(['3','8']);
+ await expect(page.locator('.nv-swatches').last()).toHaveText(/Yellow.*Black/);
+ await expect(page.locator('#full-report')).toContainText('Six years ahead');
+});

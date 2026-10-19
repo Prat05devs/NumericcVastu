@@ -1,0 +1,150 @@
+/* ==========================================================================
+   Micro-interactions and ambient motion (October 2026)
+   Principles: small distances (2–20px), short UI timing (150–350ms), springy releases,
+   slow ambient loops (6–30s), nothing that blocks reading. Everything here is
+   wrapped in prefers-reduced-motion: no-preference, so reduced-motion visitors
+   get the static site. Scroll-driven effects sit inside @supports, so browsers
+   without them simply show content normally.
+   ========================================================================== */
+
+:root{
+  --ease-out:cubic-bezier(.22,1,.36,1);
+  --ease-in-out:cubic-bezier(.65,0,.35,1);
+  /* Gentle spring: about 5% overshoot, then settles. */
+  --spring:linear(0, .14 4%, .44 10%, .78 18%, .98 26%, 1.04 32%, 1.05 36%, 1.03 44%, 1.005 56%, .998 70%, 1);
+}
+
+@media (prefers-reduced-motion: no-preference){
+
+  /* ---------- Buttons: lift, press, spring release, arrow nudge ---------- */
+  .hv-button,.button,.cs__chips button,.hv-tabs button,.eq-kinds button,.eq-chips button,.pc-filters button,.pr-filters button,.hv-round,.co-steps button{
+    transition:background-color .25s var(--ease-out),color .25s var(--ease-out),border-color .25s var(--ease-out),box-shadow .35s var(--ease-out),transform .45s var(--spring),translate .5s var(--spring),opacity .2s;
+  }
+  .hv-button,.button{position:relative;overflow:hidden;isolation:isolate;translate:var(--mgx,0) var(--mgy,0)}
+  .hv-button:hover,.button:hover{box-shadow:0 12px 26px -14px rgb(42 16 70 / .55)}
+  .hv-button--gold:hover,.button-gold:hover{box-shadow:0 14px 30px -14px rgb(140 106 18 / .6)}
+  .hv-button--whatsapp:hover{box-shadow:0 14px 30px -14px rgb(23 143 71 / .55)}
+  .hv-button:active,.button:active,.hv-round:active,.cs__chips button:active,.hv-tabs button:active,.eq-chips button:active,.eq-kinds button:active,.pc-filters button:active,.pr-filters button:active{transform:translateY(0) scale(.965);transition-duration:.12s}
+  .hv-button svg,.button svg,.hv-link svg,.text-link svg,.nv-blog__read svg,.csd-related span svg,.pc-card__yt svg{transition:translate .35s var(--spring)}
+  .hv-button:hover .lucide-arrow-up-right,.button:hover .lucide-arrow-up-right,.hv-link:hover .lucide-arrow-up-right,.text-link:hover .lucide-arrow-up-right,.csd-related a:hover .lucide-arrow-up-right,.pc-card__yt:hover .lucide-arrow-up-right{translate:2px -2px}
+  .hv-button:hover .lucide-arrow-right,.button:hover .lucide-arrow-right,.hv-link:hover .lucide-arrow-right,.nv-blog__card:hover .nv-blog__read .lucide-arrow-right{translate:4px 0}
+  .hv-button:hover .lucide-arrow-left,.hv-link:hover .lucide-arrow-left{translate:-4px 0}
+
+  /* Gold buttons: a soft sheen passes every ~7s, and immediately on hover. */
+  .hv-button--gold::after,.button-gold::after{content:'';position:absolute;inset:-2px;z-index:-1;pointer-events:none;
+    background:linear-gradient(105deg,transparent 35%,rgb(255 255 255 / .55) 50%,transparent 65%);
+    translate:-120% 0;animation:nv-sheen 7s var(--ease-in-out) 2.5s infinite}
+  .hv-button--gold:hover::after,.button-gold:hover::after{animation:nv-sheen-once .9s var(--ease-out)}
+  @keyframes nv-sheen{0%{translate:-120% 0}14%,100%{translate:120% 0}}
+  @keyframes nv-sheen-once{from{translate:-120% 0}to{translate:120% 0}}
+
+  /* Round icon buttons and chips: tiny lift. */
+  .hv-round:hover{transform:translateY(-2px)}
+  .cs__chips button:hover,.pc-filters button:hover,.pr-filters button:hover,.eq-chips button:hover{transform:translateY(-1px)}
+
+  /* ---------- Links: gold underline draws in from the left ---------- */
+  .hv-link{border-bottom-color:transparent !important;background:linear-gradient(var(--gold),var(--gold)) left bottom / 100% 2px no-repeat;transition:background-size .45s var(--ease-out),color .2s,gap .3s var(--ease-out)}
+  .hv-link:hover{background-size:0% 2px;animation:nv-underline .55s var(--ease-out) forwards}
+  @keyframes nv-underline{0%{background-position:right bottom;background-size:100% 2px}45%{background-position:right bottom;background-size:0% 2px}46%{background-position:left bottom;background-size:0% 2px}100%{background-position:left bottom;background-size:100% 2px}}
+  .footer-shell .footer-top a{transition:color .2s,translate .3s var(--ease-out)}
+  .footer-shell .footer-top>div>a:hover{translate:3px 0}
+  .nav-links a{transition:color .2s}
+  .nav-links a:after{transition:scale .35s var(--ease-out)}
+  .nav-links a:not([aria-current=page]):after{content:'';position:absolute;left:0;right:0;bottom:-2px;height:2px;border-radius:2px;background:var(--gold);scale:0 1;transform-origin:left}
+  .nav-links a:hover:after{scale:1 1}
+
+  /* ---------- Cards: pointer-following glow (position set by Ambient.jsx) and a gentle lift ---------- */
+  :is(.hv-service,.hv-course,.hv-path,.nv-blog__card,.nv-review,.pc-card,.pr-card,.csd-scenarios a,.csd-related a,.cd-outcomes li,.cd-for__list li,.hv-preds__list a,.hv-ig,.cd-buy__card){position:relative;isolation:isolate}
+  :is(.hv-service,.hv-course,.hv-path,.nv-blog__card,.nv-review,.pc-card,.pr-card,.csd-scenarios a,.csd-related a,.cd-outcomes li,.cd-for__list li,.hv-preds__list a,.hv-ig,.cd-buy__card)::before{
+    content:'';position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .45s var(--ease-out);
+    background:radial-gradient(380px circle at var(--mx,50%) var(--my,30%),rgb(212 165 44 / .13),rgb(107 63 160 / .06) 40%,transparent 70%)}
+  :is(.hv-service,.hv-course,.hv-path,.nv-blog__card,.nv-review,.pc-card,.pr-card,.csd-scenarios a,.csd-related a,.cd-outcomes li,.cd-for__list li,.hv-preds__list a,.hv-ig,.cd-buy__card):hover::before{opacity:1}
+  .hv-service,.nv-review,.pc-card,.cd-outcomes li,.cd-for__list li,.pr-card{transition:transform .5s var(--spring),box-shadow .4s var(--ease-out),border-color .3s}
+  .hv-service:hover,.nv-review:hover,.pc-card:hover,.cd-outcomes li:hover,.cd-for__list li:hover{transform:translateY(-3px);box-shadow:0 26px 50px -36px rgb(42 16 70 / .5)}
+  .hv-course,.pc-card,.hv-path,.nv-blog__card{overflow:hidden}
+  :is(.hv-course__image,.hv-path__image,.nv-blog__photo,.cd-mosaic li,.hv-award__image) img{transition:scale 1.2s var(--ease-out)}
+  :is(.hv-course,.hv-path,.nv-blog__card,.hv-award):hover :is(.hv-course__image,.hv-path__image,.nv-blog__photo,.hv-award__image) img,.cd-mosaic li:hover img{scale:1.045}
+  .hv-service__icon{transition:transform .5s var(--spring),background-color .3s}
+  .hv-service:hover .hv-service__icon{transform:rotate(-6deg) scale(1.06);background:var(--gold-soft)}
+  .hv-steps__n,.csd-steps__n,.cd-modules__n{transition:transform .5s var(--spring),box-shadow .4s}
+  .hv-steps li:hover .hv-steps__n,.csd-steps li:hover .csd-steps__n,.cd-modules>li:hover .cd-modules__n{transform:scale(1.08)}
+
+  /* ---------- Inputs: focus ring grows in ---------- */
+  :is(.eq-input,.co-field input,.co-field select,.co-field textarea,.hv-loshu__input input,.hv-loshu__input select){transition:border-color .2s,box-shadow .35s var(--ease-out),background-color .2s}
+  :is(.co-agree,.eq-chips) input:checked{animation:nv-pop .4s var(--spring)}
+  @keyframes nv-pop{0%{scale:.8}100%{scale:1}}
+
+  /* ---------- FAQ: smooth open where supported ---------- */
+  .hv-faq details,.hv-faq__list details{interpolate-size:allow-keywords}
+  .hv-faq details::details-content{block-size:0;overflow:clip;transition:block-size .4s var(--ease-out),content-visibility .4s allow-discrete}
+  .hv-faq details[open]::details-content{block-size:auto}
+  .hv-faq summary{transition:color .2s}
+  .hv-faq summary:hover{color:var(--purple)}
+  .hv-faq summary svg{transition:rotate .4s var(--spring)}
+
+  /* ---------- Page entrance: hero copy settles in ---------- */
+  :is(.hv-hero__copy,.cd-hero__copy,.csd-hero__grid>div:first-child,.pc-hero__copy,.pr-hero .hv-wrap,.consult-hero__head,.eq-intro,.co-layout>div:first-child)>*{animation:nv-rise .8s var(--ease-out) both}
+  :is(.hv-hero__copy,.cd-hero__copy,.csd-hero__grid>div:first-child,.pc-hero__copy,.pr-hero .hv-wrap,.consult-hero__head,.eq-intro,.co-layout>div:first-child)>*:nth-child(2){animation-delay:.07s}
+  :is(.hv-hero__copy,.cd-hero__copy,.csd-hero__grid>div:first-child,.pc-hero__copy,.pr-hero .hv-wrap,.consult-hero__head,.eq-intro,.co-layout>div:first-child)>*:nth-child(3){animation-delay:.14s}
+  :is(.hv-hero__copy,.cd-hero__copy,.csd-hero__grid>div:first-child,.pc-hero__copy,.pr-hero .hv-wrap,.consult-hero__head,.eq-intro,.co-layout>div:first-child)>*:nth-child(n+4){animation-delay:.21s}
+  @keyframes nv-rise{from{opacity:0;translate:0 14px}to{opacity:1;translate:0 0}}
+
+  /* ---------- Lo Shu grid: filled cells pop in one after another ---------- */
+  .hv-loshu__grid .is-filled b,.hv-loshu__grid .is-missing b{animation:nv-cell .55s var(--spring) both;animation-delay:calc(var(--i,0) * 55ms)}
+  @keyframes nv-cell{from{opacity:0;scale:.6}to{opacity:1;scale:1}}
+  .hv-loshu__built span{animation:nv-cell .45s var(--spring) both;animation-delay:calc(var(--i,0) * 35ms + .2s)}
+
+  /* ---------- Ambient: floating numerals in dark bands ---------- */
+  .nv-float{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+  .nv-float span{position:absolute;bottom:-15%;font-family:'NV Digits','Cormorant Garamond',serif;font-weight:600;line-height:1;color:#fff;opacity:0;animation:nv-drift linear infinite}
+  @keyframes nv-drift{0%{translate:0 0;rotate:-6deg;opacity:0}12%{opacity:.07}50%{translate:14px -60vh;rotate:4deg}88%{opacity:.06}100%{translate:-8px -120vh;rotate:-2deg;opacity:0}}
+  :is(.hv-final,.cd-hero,.pc-invite,.cd-mentor){position:relative;overflow:hidden}
+  :is(.hv-final,.cd-hero,.pc-invite,.cd-mentor)>:not(.nv-float){position:relative;z-index:1}
+
+  /* Home hero: a slow, faint glow drifting behind the headline. */
+  .hv-hero{position:relative;isolation:isolate}
+  .hv-hero::before{content:'';position:absolute;z-index:-1;width:46vw;height:46vw;max-width:680px;max-height:680px;left:-8vw;top:-12vw;border-radius:50%;
+    background:radial-gradient(circle,rgb(212 165 44 / .14),rgb(107 63 160 / .08) 45%,transparent 70%);filter:blur(10px);animation:nv-glow 22s var(--ease-in-out) infinite alternate;pointer-events:none}
+  @keyframes nv-glow{to{translate:8vw 6vw;scale:1.15}}
+  .pc-hero,.pr-hero,.csd-hero{position:relative;isolation:isolate}
+  .pc-hero::after,.pr-hero::after,.csd-hero::after{content:'';position:absolute;z-index:-1;right:-10%;top:-30%;width:50%;aspect-ratio:1;border-radius:50%;pointer-events:none;
+    background:radial-gradient(circle,rgb(212 165 44 / .12),transparent 65%);animation:nv-glow 26s var(--ease-in-out) infinite alternate-reverse}
+
+  /* WhatsApp button breathes: a faint ring every few seconds. */
+  .wa-float::after{content:'';position:absolute;inset:0;border-radius:inherit;border:2px solid #1fa855;opacity:0;animation:nv-breathe 4.5s var(--ease-out) 3s infinite;pointer-events:none}
+  @keyframes nv-breathe{0%{opacity:.55;scale:1}60%,100%{opacity:0;scale:1.35}}
+
+  /* Offer bar dot already pulses; section eyebrow dash glints occasionally. */
+  .hv-eyebrow:before{background:linear-gradient(90deg,var(--gold) 0 40%,#f6dc8f 50%,var(--gold) 60% 100%) 0 0 / 300% 100%;animation:nv-glint 6s linear infinite}
+  @keyframes nv-glint{0%,70%{background-position:100% 0}100%{background-position:0 0}}
+
+  /* Sticky buy bar slides with a spring. */
+  .sticky-buy{transition:transform .55s var(--spring)}
+
+  /* ---------- Page transitions (React <ViewTransition> in layout.jsx) ---------- */
+  ::view-transition-old(.nv-page){animation:nv-page-out .22s var(--ease-in-out) both}
+  ::view-transition-new(.nv-page){animation:nv-page-in .42s var(--ease-out) .08s both}
+  @keyframes nv-page-out{to{opacity:0;translate:0 -6px}}
+  @keyframes nv-page-in{from{opacity:0;translate:0 10px}}
+  ::view-transition-group(site-header){animation:none;z-index:100}
+  ::view-transition-old(site-header){display:none}
+  ::view-transition-new(site-header){animation:none}
+
+  /* ---------- Scroll-driven: section reveals, header shadow, reading progress ---------- */
+  @supports (animation-timeline: view()){
+    :is(.hv-head,.hv-services>*,.hv-courses>*,.hv-paths>*,.nv-reviews>*,.hv-steps>li,.hv-preds__list>li,.cd-for__list>li,.cd-outcomes>li,.cd-modules>li,.csd-steps>li,.csd-get li,.csd-scenarios>li,.csd-related>li,.pc-list>li,.pr-list>li,.pc-own>li,.hv-faq__list details,.hv-ig,.hv-loshu,.cd-buy__card,.cd-cert__visual,.csd-ask__list,.hv-stats__grid>div,.nv-blog--grid>*,.gallery-tile){
+      animation:nv-reveal linear both;animation-timeline:view();animation-range:entry 0% entry 70%}
+    @keyframes nv-reveal{from{opacity:.001;translate:0 22px;scale:.985}to{opacity:1;translate:0 0;scale:1}}
+  }
+  @supports (animation-timeline: scroll()){
+    .nav-shell{animation:nv-header linear both;animation-timeline:scroll(root);animation-range:0 140px}
+    @keyframes nv-header{to{box-shadow:0 10px 30px -18px rgb(42 16 70 / .35);background:rgb(255 255 255 / .985)}}
+    .nav-shell::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:2px;background:linear-gradient(90deg,var(--gold),#f0cf6e);transform-origin:left;scale:0 1;animation:nv-progress linear both;animation-timeline:scroll(root)}
+    @keyframes nv-progress{to{scale:1 1}}
+  }
+}
+
+/* Reduced motion: keep hover colour changes, drop movement. */
+@media (prefers-reduced-motion: reduce){
+  .hv-button:hover,.button:hover,.hv-path:hover,.hv-preds__list a:hover{transform:none}
+}

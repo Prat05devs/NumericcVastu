@@ -14,6 +14,7 @@ import {awards, book, heroSlides, instagramProfile, marqueeRows, social, stats, 
 import {googleReviews, posts} from './data/content';
 import BlogCards from './components/BlogCards';
 import WhatsAppIcon from './components/WhatsAppIcon';
+import FloatingNumbers from './components/FloatingNumbers';
 import {contact} from './data/contact';
 import {predictions} from './data/predictions';
 import {formatTotal} from './lib/formatCount';
@@ -76,7 +77,7 @@ export default function HomePage() {
 
       <section className="hv-stats" aria-label="NumericcVaastu in numbers">
         <div className="hv-wrap hv-stats__grid">
-          {proof.map((item) => <div key={item.label}><strong>{item.value}</strong><span>{item.label}</span></div>)}
+          {proof.map((item) => <div key={item.label}><strong data-count>{item.value}</strong><span>{item.label}</span></div>)}
         </div>
       </section>
 
@@ -128,10 +129,10 @@ export default function HomePage() {
       <section className="hv-section hv-wrap hv-founder" aria-labelledby="hv-founder-title">
         <div className="hv-founder__media">
           <div className="hv-founder__photo"><Image src="/images/gallery/media-podcast-chair.webp" alt="Adarshh Panndey seated in a studio" fill sizes="(max-width: 900px) 92vw, 480px" style={crop('/images/gallery/media-podcast-chair.webp', 4 / 5)}/></div>
-          <figure className="hv-founder__book">
-            <div><Image src="/images/gallery/media-magazine-book-feature.webp" alt={`Magazine feature on ${book.title}`} fill sizes="200px" style={{objectPosition: '100% 72%'}}/></div>
-            <figcaption><b>{book.title}</b>{book.feature}</figcaption>
-          </figure>
+          <a className="hv-founder__book" href={book.amazon} target="_blank" rel="noopener noreferrer" aria-label={`Buy ${book.title} on Amazon (opens in a new tab)`}>
+            <div><Image src="/images/gallery/media-magazine-book-feature.webp" alt="" fill sizes="240px"/></div>
+            <span><b>{book.title}</b>{book.feature}<em>Buy on Amazon <ArrowUpRight size={14}/></em></span>
+          </a>
         </div>
         <div className="hv-founder__copy">
           <span className="hv-eyebrow">Meet Adarshh Panndey</span>
@@ -141,7 +142,10 @@ export default function HomePage() {
           <ul className="hv-checks">
             {['Personal numerology and Numeric Vaastu consultations', 'Courses from foundation to mastery', 'Talks, podcasts and published writing'].map((item) => <li key={item}><Check size={18}/>{item}</li>)}
           </ul>
-          <Link className="hv-button" href="/about">Read his story <ArrowUpRight size={18}/></Link>
+          <div className="hv-actions">
+            <Link className="hv-button" href="/about">Read his story <ArrowUpRight size={18}/></Link>
+            <a className="hv-link" href={book.amazon} target="_blank" rel="noopener noreferrer">Buy his book on Amazon <ArrowUpRight size={16}/></a>
+          </div>
         </div>
       </section>
 
@@ -168,7 +172,7 @@ export default function HomePage() {
 
       <section className="hv-section hv-cream" aria-labelledby="hv-loshu-title">
         <div className="hv-wrap">
-          <SectionHead id="hv-loshu-title" eyebrow="Free tool" title="Find your numbers" accent="the Indian way." text="Your Mulank, Bhagyank, Kua and Lo Shu grid from your date of birth, with the planes, yogs and missing numbers that numerologists read. Open the full report for the complete reading."/>
+          <SectionHead id="hv-loshu-title" eyebrow="Free tool" title="Find your numbers" accent="the Indian way." text="Your Mulank, Bhagyank, Kua and Lo Shu grid from your date of birth, with the planes, yogs and missing numbers that numerologists read. Open your free report for remedies, your gemstone and your current life period."/>
           <LoShuCalculator readingHref={`/consultations/${blueprint.slug}`}/>
         </div>
       </section>
@@ -234,6 +238,7 @@ export default function HomePage() {
       </section>
 
       <section className="hv-final" aria-labelledby="hv-final-title">
+        <FloatingNumbers/>
         <HeritageBand kind="small" className="hv-final__band"/>
         <div className="hv-wrap hv-final__inner">
           <Image src="/images/logo-nv.png" alt="" width={84} height={76} className="hv-final__logo"/>
