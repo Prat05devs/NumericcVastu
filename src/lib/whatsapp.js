@@ -4,7 +4,7 @@
  * WhatsApp formatting: *bold*, line breaks with \n.
  */
 
-const formatDob = (iso) => {
+export const formatDob = (iso) => {
   if (!iso) return '';
   const [y, m, d] = iso.split('-').map(Number);
   return new Date(y, m - 1, d).toLocaleDateString('en-IN', {day: 'numeric', month: 'long', year: 'numeric'});

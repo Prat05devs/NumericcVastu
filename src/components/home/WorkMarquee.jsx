@@ -10,7 +10,7 @@ export default function WorkMarquee({rows}) {
     {rows.map((row, r) => {
       const list = row.map(find).filter(Boolean);
       const tiles = (copy) => list.map((photo) => <figure key={`${copy}-${photo.src}`} className="hv-marquee__tile" style={{width: Math.round(HEIGHT * photo.w / photo.h)}}>
-        <Image src={photo.src} alt={copy ? '' : `${photo.category} photograph of Adarshh Pandey`} width={Math.round(HEIGHT * photo.w / photo.h)} height={HEIGHT} sizes={`${Math.round(HEIGHT * photo.w / photo.h)}px`}/>
+        <Image src={photo.src} alt={copy ? '' : `${photo.category} photograph of Adarshh Panndey`} width={Math.round(HEIGHT * photo.w / photo.h)} height={HEIGHT} sizes={`${Math.round(HEIGHT * photo.w / photo.h)}px`}/>
         <figcaption>{photo.category}</figcaption>
       </figure>);
       return <div key={r} className={r % 2 ? 'hv-marquee__row is-reverse' : 'hv-marquee__row'}>

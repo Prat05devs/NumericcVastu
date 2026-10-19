@@ -8,7 +8,7 @@ Client feedback (October 2026) replaced the warm ivory, terracotta and wine pale
 
 Primary navigation: **About · Consultations · Courses · Stories · Gallery · Journal** with **Book a consultation** as the persistent CTA. Stories opens Testimonials, Gallery, and Media. Legal and utility links belong in the footer. On mobile, show a compact header and accessible menu; show a contextual bottom CTA on course and service detail pages when it does not obscure content.
 
-Use **Adarshh Pandey**, as supplied by the owner. The old site uses “Adarshh Panndey”; resolve this spelling before metadata, author pages, social profiles, and structured data are finalized. NumericcVaastu remains the consistent brand spelling.
+His name is spelt **Adarshh Panndey** everywhere (confirmed by the client, October 2026), matching his Instagram, podcasts and book cover. Image file names keep the older `adarshh-pandey-` slug; only visible text changed. NumericcVaastu remains the consistent brand spelling.
 
 ## 2. Page map and conversion purpose
 

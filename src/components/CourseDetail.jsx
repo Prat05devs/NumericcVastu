@@ -1,41 +1,166 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import {ArrowUpRight,Check,Award,Layers,UserRound,Info} from 'lucide-react';
+import {ArrowUpRight, Award, Check, CreditCard, GraduationCap, Mic, Plus, Users} from 'lucide-react';
 import {SiteFooter} from './SiteChrome';
-import CourseCurriculum from './CourseCurriculum';
-import {courses,formatPrice,getActivePromotion,offerCatalog} from '../data/offers';
+import StickyBuy from './StickyBuy';
+import ReviewCards from './ReviewCards';
+import WhatsAppIcon from './WhatsAppIcon';
+import FloatingNumbers from './FloatingNumbers';
+import {courses, formatPrice, getActivePromotion, offerCatalog} from '../data/offers';
 import {getCourseDetail} from '../data/courseDetails';
-const origin=process.env.NEXT_PUBLIC_SITE_URL||'https://numericcvaastu.com';
-const factLabels=[['format','Format'],['duration','Duration'],['language','Language'],['nextCohort','Next batch'],['access','Access']];
-const jsonLd=(object)=><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(object).replace(/</g,'\\u003c')}}/>;
-function PurchaseCard({offer,detail,enquire}){
- const promo=getActivePromotion(offer.id);const facts=factLabels.filter(([key])=>detail.facts[key]);
- return <aside className="course-card" aria-label={`${offer.name} enrolment summary`}><div className="course-card-visual"><Image src={offer.image||'/images/adarshh/adarshh-pandey-portrait.webp'} fill priority sizes="(max-width:900px) 90vw, 360px" alt="Adarshh Pandey, course instructor"/></div><div className="course-card-body"><div className="course-card-price"><strong>{formatPrice(offer)}</strong><span>{promo?promo.label:'Listed fee · INR'}</span></div>{!offer.priceVerified&&<p className="course-card-note"><Info size={14} aria-hidden="true"/>{offerCatalog.priceNote}</p>}<Link className="button" href={enquire}>{detail.ctaLabel} <ArrowUpRight size={18}/></Link><Link className="course-card-secondary" href="#compare">Compare all three paths</Link><h2>This course includes</h2><ul>{offer.inclusions.map(text=><li key={text}><Check size={16} aria-hidden="true"/>{text}</li>)}</ul>{facts.length>0&&<dl>{facts.map(([key,label])=><div key={key}><dt>{label}</dt><dd>{detail.facts[key]}</dd></div>)}</dl>}<p className="course-card-foot">No payment is taken on this website. An enquiry does not reserve a place.</p></div></aside>;
-}
-export default function CourseDetail({offer}){
- const detail=getCourseDetail(offer.id);const enquire=`/book-consultation?offer=${offer.id}`;const url=`${origin}/courses/${offer.slug}`;
- return <><main id="main" className="course-main"><div className="course-layout wrap">
-  <header className="course-hero">
-   <nav className="breadcrumbs" aria-label="Breadcrumb"><Link href="/">Home</Link><span>/ <Link href="/courses">Courses</Link></span><span>/ <span aria-current="page">{offer.name}</span></span></nav>
-   <span className="eyebrow">{offer.category.toUpperCase()} · {detail.path.toUpperCase()}</span>
-   <h1>{offer.name}</h1>
-   <p className="course-headline">{detail.headline}</p>
-   <ul className="course-meta"><li><Layers size={15} aria-hidden="true"/>Level: {detail.level}</li><li><Award size={15} aria-hidden="true"/>{offer.inclusions.find(text=>/certification/i.test(text))||'Certification details on request'}</li><li><UserRound size={15} aria-hidden="true"/>For {offer.audience.toLowerCase()}</li></ul>
-   <div className="course-byline"><Image src="/images/adarshh/adarshh-pandey-portrait.webp" width={36} height={36} alt=""/><span>Created by <Link href="/about">Adarshh Pandey</Link></span></div>
-  </header>
-  <PurchaseCard offer={offer} detail={detail} enquire={enquire}/>
-  <div className="course-content">
-   <section className="course-learn" aria-labelledby="learn-heading"><h2 id="learn-heading">What you’ll learn</h2><ul>{detail.learn.map(text=><li key={text}><Check size={17} aria-hidden="true"/>{text}</li>)}</ul></section>
-   <section className="course-section" aria-labelledby="content-heading"><h2 id="content-heading">Course content</h2>{!detail.syllabusConfirmed&&<p className="course-pending">This outline groups the components listed for the course. A lesson-by-lesson syllabus is being finalised. Ask the team for the current version.</p>}<CourseCurriculum modules={detail.modules}/></section>
-   <section className="course-section" aria-labelledby="req-heading"><h2 id="req-heading">Requirements</h2><ul className="course-bullets">{detail.requirements.map(text=><li key={text}>{text}</li>)}</ul></section>
-   <section className="course-section course-description" aria-labelledby="desc-heading"><h2 id="desc-heading">Description</h2>{detail.description.map(text=><p key={text}>{text}</p>)}<h3>Who this course is for</h3><ul className="course-bullets">{detail.whoFor.map(text=><li key={text}>{text}</li>)}</ul><h3>Certification</h3><p>{detail.certificate}</p></section>
-   <section className="course-section course-instructor" aria-labelledby="instructor-heading"><h2 id="instructor-heading">Instructor</h2><Link href="/about" className="course-instructor-name">Adarshh Pandey</Link><span>Founder, NumericcVaastu</span><div><Image src="/images/adarshh/adarshh-pandey-with-book.webp" width={120} height={120} alt="Adarshh Pandey holding a numerology book"/><p>Adarshh began his career in the pharmaceutical industry before turning to numerology. What started as curiosity became a consulting practice, and later an academy for people who want a structured path into the subject. His teaching puts the emphasis on method, practice and an honest account of what traditional interpretation can and cannot tell us.</p></div><Link href="/about" className="text-link">Read Adarshh’s story <ArrowUpRight size={17}/></Link></section>
-   <section className="course-section" id="compare" aria-labelledby="compare-heading"><h2 id="compare-heading">Compare the learning paths</h2><div className="course-compare" role="region" aria-labelledby="compare-heading" tabIndex={0}><table><thead><tr><th scope="col">Course</th><th scope="col">Level</th><th scope="col">Best for</th><th scope="col">Listed fee</th></tr></thead><tbody>{courses.map(course=>{const info=getCourseDetail(course.id);const current=course.id===offer.id;return <tr key={course.id} className={current?'current':undefined}><th scope="row">{current?<strong>{course.name} <small>You’re viewing this</small></strong>:<Link href={`/courses/${course.slug}`}>{course.name}</Link>}</th><td data-label="Level">{info.level}</td><td data-label="Best for">{course.audience}</td><td data-label="Listed fee">{formatPrice(course)}</td></tr>})}</tbody></table></div></section>
-   <section className="course-section" aria-labelledby="faq-heading"><h2 id="faq-heading">Frequently asked questions</h2><div className="course-faq">{detail.faqs.map(([q,a])=><details key={q}><summary>{q}</summary><p>{a}</p></details>)}</div></section>
-  </div>
- </div>
- <div className="wrap"><div className="inner-cta"><h2>Ready to take the <em>next step?</em></h2><p>Ask about batch dates, format and confirmed payment terms for {offer.name}.</p><Link href={enquire} className="button">{detail.ctaLabel} <ArrowUpRight size={18}/></Link></div></div>
- <div className="course-mobile-cta"><div><strong>{formatPrice(offer)}</strong><span>{offer.name}</span></div><Link className="button small" href={enquire}>{detail.ctaLabel.split(' ')[0]}</Link></div>
- {jsonLd({'@context':'https://schema.org','@graph':[{'@type':'Course',name:offer.name,description:detail.headline,url,educationalLevel:detail.level,teaches:detail.learn,coursePrerequisites:detail.requirements,provider:{'@type':'Organization',name:'NumericcVaastu',url:origin},instructor:{'@type':'Person',name:'Adarshh Pandey',url:`${origin}/about`}},{'@type':'BreadcrumbList',itemListElement:[['Home',origin],['Courses',`${origin}/courses`],[offer.name,url]].map(([name,item],index)=>({'@type':'ListItem',position:index+1,name,item}))}]})}
- </main><SiteFooter/></>;
+import {book} from '../data/media';
+import {googleReviews, photos} from '../data/content';
+import {appearances, ownShow} from '../data/podcasts';
+import {crop} from '../lib/crop';
+
+const origin = process.env.NEXT_PUBLIC_SITE_URL || 'https://numericcvaastu.com';
+const jsonLd = (object) => <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(object).replace(/</g, '\\u003c')}}/>;
+const studentPhotos = photos.filter((p) => p.category === 'With students' && !p.src.includes('teaching'));
+/** Three different student photos per course for the hero collage. */
+const collageFor = (i) => [studentPhotos[(i * 5) % studentPhotos.length], studentPhotos[(i * 5 + 2) % studentPhotos.length], studentPhotos[(i * 5 + 4) % studentPhotos.length]];
+const factLabels = [['format', 'Format'], ['duration', 'Duration'], ['language', 'Language'], ['nextCohort', 'Next batch'], ['access', 'Access']];
+
+/** Course program page: story first (who it is for, what you will be able to do, the journey, the mentor, real students), then the offer. */
+export default function CourseDetail({offer}) {
+  const detail = getCourseDetail(offer.id);
+  const level = courses.findIndex((c) => c.id === offer.id);
+  const checkout = `/checkout?offer=${offer.id}`;
+  const ask = `/book-consultation?offer=${offer.id}`;
+  const promo = getActivePromotion(offer.id);
+  const facts = factLabels.filter(([key]) => detail.facts[key]);
+  const collage = collageFor(level);
+  const certificate = offer.inclusions.find((t) => /certif/i.test(t));
+  const highlights = [
+    offer.inclusions.find((t) => /module|resources/i.test(t)),
+    offer.inclusions.find((t) => /live|mentorship|mastermind/i.test(t)),
+    certificate,
+  ].filter(Boolean);
+
+  return <>
+    <main id="main" className="hv cd">
+      <section className="cd-hero">
+        <FloatingNumbers/>
+        <div className="hv-wrap cd-hero__grid">
+          <div className="cd-hero__copy">
+            <nav className="cd-crumbs" aria-label="Breadcrumb"><Link href="/">Home</Link> / <Link href="/courses">Courses</Link> / <span aria-current="page">{offer.name}</span></nav>
+            <span className="cd-level">Level {level + 1} of {courses.length} · {offer.category}</span>
+            <h1>{offer.name}</h1>
+            <p className="cd-hero__lede">{detail.headline}</p>
+            <ul className="cd-hero__facts">
+              {highlights.map((h) => <li key={h}><Check size={16}/>{h}</li>)}
+              <li><GraduationCap size={16}/>Taught by Adarshh Panndey</li>
+            </ul>
+            <div className="cd-hero__buy" id="buy-anchor">
+              <div className="cd-price"><strong>{formatPrice(offer)}</strong><span>{promo ? promo.label : 'Course fee'}</span></div>
+              <Link className="hv-button hv-button--gold" href={checkout}>Enrol now <ArrowUpRight size={18}/></Link>
+              <Link className="hv-button hv-button--light" href={ask}><WhatsAppIcon size={18}/> Ask a question</Link>
+            </div>
+          </div>
+          <div className="cd-collage" aria-hidden="true">
+            {collage.map((p, i) => <div key={p.src} className={`cd-collage__img cd-collage__img--${i}`}><Image src={p.src} alt="" fill sizes="(max-width: 900px) 45vw, 300px" style={crop(p.src, [0.78, 1, 0.9][i], [p.w, p.h])}/></div>)}
+            <div className="cd-collage__badge"><Users size={20}/><b>1,500+</b><span>students trained</span></div>
+          </div>
+        </div>
+      </section>
+
+      <nav className="cd-ladder" aria-label="Learning path">
+        <ol className="hv-wrap">
+          {courses.map((c, i) => <li key={c.id} className={c.id === offer.id ? 'is-current' : ''}>
+            <Link href={`/courses/${c.slug}`} aria-current={c.id === offer.id ? 'page' : undefined}><span>Level {i + 1}</span><b>{c.name}</b><small>{c.category} · {formatPrice(c)}</small></Link>
+          </li>)}
+        </ol>
+      </nav>
+
+      <section className="hv-section hv-wrap cd-for" aria-labelledby="cd-for">
+        <div className="hv-head"><div><span className="hv-eyebrow">Is this for you?</span><h2 id="cd-for">Made for people <em>who…</em></h2></div><div className="hv-head__aside"><p>{offer.audience}.</p></div></div>
+        <ul className="cd-for__list">{detail.whoFor.map((w) => <li key={w}><Check size={20}/>{w}</li>)}</ul>
+        {detail.requirements.length > 0 && <p className="cd-for__req"><b>Before you join:</b> {detail.requirements.join(' ')}</p>}
+      </section>
+
+      <section className="hv-section hv-tint" aria-labelledby="cd-learn">
+        <div className="hv-wrap">
+          <div className="hv-head"><div><span className="hv-eyebrow">After the course</span><h2 id="cd-learn">What you’ll be <em>able to do.</em></h2></div><div className="hv-head__aside"><p>{offer.outcome}</p></div></div>
+          <ol className="cd-outcomes">{detail.learn.map((l, i) => <li key={l}><span>{String(i + 1).padStart(2, '0')}</span><p>{l}</p></li>)}</ol>
+        </div>
+      </section>
+
+      <section className="hv-section hv-wrap cd-journey" aria-labelledby="cd-journey">
+        <div className="hv-head"><div><span className="hv-eyebrow">The journey</span><h2 id="cd-journey">How the course <em>unfolds.</em></h2></div><div className="hv-head__aside">{detail.description.slice(0, 2).map((d) => <p key={d}>{d}</p>)}</div></div>
+        <ol className="cd-modules">{detail.modules.map((m, i) => <li key={m.title}>
+          <span className="cd-modules__n">{i + 1}</span>
+          <div><h3>{m.title}</h3><p>{m.summary}</p>{m.topics.length > 0 && <ul>{m.topics.map((t) => <li key={t}>{t}</li>)}</ul>}</div>
+        </li>)}</ol>
+        {!detail.syllabusConfirmed && <p className="cd-note">The lesson-by-lesson syllabus is shared with enrolled students. Ask on WhatsApp if you’d like it before joining.</p>}
+      </section>
+
+      <section className="cd-mentor" aria-labelledby="cd-mentor">
+        <FloatingNumbers/>
+        <div className="hv-wrap cd-mentor__grid">
+          <div className="cd-mentor__photo"><Image src="/images/students/teaching-what-is-numerology.webp" alt="Adarshh Panndey teaching a numerology class" fill sizes="(max-width: 900px) 92vw, 460px" style={crop('/images/students/teaching-what-is-numerology.webp', 0.85)}/></div>
+          <div>
+            <span className="hv-eyebrow">Your teacher</span>
+            <h2 id="cd-mentor">Learn from <em>Adarshh Panndey.</em></h2>
+            <p>Adarshh teaches the way he practises: calculation first, then the pattern, then how to talk to a real client about it. He is the author of <a className="hv-link" href={book.amazon} target="_blank" rel="noopener noreferrer"><cite>{book.title}</cite></a> and a regular guest on India’s podcasts.</p>
+            <ul className="cd-mentor__stats">
+              <li><b data-count>1,500+</b>students trained</li>
+              <li><b data-count>20,000+</b>consultations</li>
+              <li><b data-count>{appearances.length + ownShow.length}+</b>podcast conversations</li>
+              <li><b data-count>7+</b>years of practice</li>
+            </ul>
+            <div className="hv-actions"><Link className="hv-link" href="/about">His story <ArrowUpRight size={16}/></Link><Link className="hv-link" href="/podcasts"><Mic size={16}/> Hear him on podcasts</Link></div>
+          </div>
+        </div>
+      </section>
+
+      <section className="hv-section hv-wrap" aria-labelledby="cd-students">
+        <div className="hv-head"><div><span className="hv-eyebrow">His students</span><h2 id="cd-students">Real classes, <em>real certificates.</em></h2></div><div className="hv-head__aside"><p>Moments from Adarshh’s certification ceremonies and workshops.</p><Link className="hv-link" href="/gallery">See the gallery <ArrowUpRight size={16}/></Link></div></div>
+        <ul className="cd-mosaic">{studentPhotos.slice(0, 8).map((p) => <li key={p.src}><Image src={p.src} alt="Adarshh Panndey with his numerology students" fill sizes="(max-width: 700px) 46vw, 280px" style={crop(p.src, 0.8, [p.w, p.h])}/></li>)}</ul>
+        <ReviewCards reviews={googleReviews.slice(0, 2)} className="cd-reviews"/>
+      </section>
+
+      <section className="hv-section hv-cream" aria-labelledby="cd-cert">
+        <div className="hv-wrap cd-cert">
+          <div className="cd-cert__visual" aria-hidden="true">
+            <img src="/images/logo-nv.png" alt=""/>
+            <small>NumericcVaastu Academy</small>
+            <strong>Certificate of Completion</strong>
+            <span>{offer.name}</span>
+            <i/>
+            <em>Adarshh Panndey</em>
+          </div>
+          <div>
+            <span className="hv-eyebrow">Certification</span>
+            <h2 id="cd-cert"><Award size={30} className="cd-cert__icon"/> Finish with <em>a certificate.</em></h2>
+            <p>{detail.certificate}</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="hv-section hv-wrap cd-buy" aria-labelledby="cd-buy">
+        <div className="cd-buy__card">
+          <div className="cd-buy__head">
+            <span className="hv-eyebrow">Enrol</span>
+            <h2 id="cd-buy">{offer.name}</h2>
+            <div className="cd-price"><strong>{formatPrice(offer)}</strong><span>{promo ? promo.label : 'Course fee'}</span></div>
+            {!offer.priceVerified && <p className="cd-buy__fine">{offerCatalog.priceNote}</p>}
+          </div>
+          <ul className="cd-buy__list">{offer.inclusions.map((i) => <li key={i}><Check size={18}/>{i}</li>)}</ul>
+          {facts.length > 0 && <dl className="cd-buy__facts">{facts.map(([k, label]) => <div key={k}><dt>{label}</dt><dd>{detail.facts[k]}</dd></div>)}</dl>}
+          <div className="cd-buy__actions">
+            <Link className="hv-button hv-button--gold" href={checkout}>Enrol now <ArrowUpRight size={18}/></Link>
+            <Link className="hv-button hv-button--ghost" href={ask}><WhatsAppIcon size={18}/> Ask on WhatsApp</Link>
+          </div>
+          <p className="cd-buy__pay"><CreditCard size={16}/> Secure payment by Razorpay: UPI, cards, net banking</p>
+        </div>
+      </section>
+
+      <section className="hv-section hv-wrap hv-faq" aria-labelledby="cd-faq">
+        <div><span className="hv-eyebrow">Questions</span><h2 id="cd-faq">Before you <em>enrol.</em></h2><p>Anything else? Ask Adarshh’s team on WhatsApp.</p><Link className="hv-link" href={ask}>Ask a question <ArrowUpRight size={16}/></Link></div>
+        <div className="hv-faq__list">{detail.faqs.map(([q, a], i) => <details key={q} open={i === 0}><summary>{q}<Plus size={20} aria-hidden="true"/></summary><p>{a}</p></details>)}</div>
+      </section>
+      <StickyBuy name={offer.name} price={formatPrice(offer)} href={checkout} label="Enrol now"/>
+      {jsonLd({'@context': 'https://schema.org', '@type': 'Course', name: offer.name, description: offer.summary, url: `${origin}/courses/${offer.slug}`, provider: {'@type': 'Organization', name: 'NumericcVaastu', sameAs: origin}, instructor: {'@type': 'Person', name: 'Adarshh Panndey'}, offers: {'@type': 'Offer', price: offer.pricePaise / 100, priceCurrency: 'INR', url: `${origin}/checkout?offer=${offer.id}`, category: 'Paid'}})}
+    </main>
+    <SiteFooter/>
+  </>;
 }

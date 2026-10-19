@@ -5,7 +5,7 @@ import LoShuCalculator from '../../components/home/LoShuCalculator';
 
 export const metadata = {
   title: 'Free Lo Shu Grid & Numerology Calculator | NumericcVaastu',
-  description: 'Find your Mulank, Bhagyank, Kua number and Lo Shu grid from your date of birth, with planes, yogs, missing and repeated numbers, lucky numbers and personal year.',
+  description: 'Your free Lo Shu report: Mulank, Bhagyank, Kua, Lo Shu and Vedic grids, friend and enemy numbers, lucky colours, remedies, your gemstone and your current life period.',
   alternates: {canonical: '/numerology-calculator'},
 };
 
@@ -15,8 +15,8 @@ export default function Page() {
       <section className="hv-section hv-cream">
         <div className="hv-wrap">
           <div className="hv-head">
-            <div><span className="hv-eyebrow">Free numerology report</span><h1 className="nv-calc-title">Your Lo Shu grid, <em>read in full.</em></h1></div>
-            <div className="hv-head__aside"><p>Enter your date of birth for your Mulank, Bhagyank, Kua number, the planes and yogs in your grid, what your missing and repeated numbers mean, and your personal year.</p></div>
+            <div><span className="hv-eyebrow">Free numerology report</span><h1 className="nv-calc-title">Your Lo Shu grid, <em>read for free.</em></h1></div>
+            <div className="hv-head__aside"><p>Enter your date of birth for your Mulank, Bhagyank and Kua, the planes and yogs in your grid, your friend and enemy numbers, lucky colours, first remedies, your gemstone and the life period you are in now.</p></div>
           </div>
           <LoShuCalculator full readingHref="/consultations/personal-numerology-blueprint"/>
         </div>

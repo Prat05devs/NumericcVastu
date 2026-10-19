@@ -36,10 +36,11 @@ export default function EnquiryFlow({consultations, courses, scenarios, number, 
   const [copied, setCopied] = useState(false);
   const today = new Date().toISOString().slice(0, 10);
   const root = useRef(null);
-  const moved = useRef(false);
+  const shownStep = useRef(step);
   // Move focus to the new step so keyboard and screen-reader users land on it (and focus is never lost to <body>).
   useEffect(() => {
-    if (!moved.current) { moved.current = true; return; }
+    if (shownStep.current === step) return;
+    shownStep.current = step;
     root.current?.querySelector('.eq-panel')?.focus({preventScroll: true});
   }, [step]);
 

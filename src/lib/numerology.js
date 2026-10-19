@@ -11,12 +11,20 @@
  *   Born before 2000: male 10 − n, female n + 5. Born 2000 or later: male 9 − n, female n + 6.
  *   Reduce again; male 0 counts as 9; Kua 5 becomes 2 for males and 8 for females.
  * - Planets: 1 Sun, 2 Moon, 3 Jupiter, 4 Rahu, 5 Mercury, 6 Venus, 7 Ketu, 8 Saturn, 9 Mars.
- * - Friendly numbers: classical Jyotish natural friendships between planets, with Rahu read like Saturn
- *   and Ketu like Mars ("Shanivat Rahu, Kujavat Ketu").
+ * - Friend, enemy and neutral numbers, colours and roles: the number compatibility chart NumericcVaastu
+ *   teaches (COMPAT below). It is a numerology chart, not the Jyotish planetary friendships, so it is
+ *   not symmetric (1 treats 4 as neutral while 4 treats 1 as a friend) and is used exactly as taught.
+ * - A person's result combines the Mulank and Bhagyank lists: an enemy of either stays an enemy, then a
+ *   friend of either is a friend, and what is left is neutral. Colours to use are the colours of the
+ *   friendly numbers; colours to avoid are those of the enemy numbers.
  * - Personal year: day + month + the year in question, reduced.
+ * - Life periods (numerology Maha Dasha): the first period belongs to the Mulank and lasts that many years,
+ *   then each next number in turn (…8, 9, 1, 2…) for as many years as the number itself.
  */
 
 export const GRID = [4, 9, 2, 3, 5, 7, 8, 1, 6];
+/** The Vedic numerology grid: the same numbers, placed by planet. */
+export const VEDIC_GRID = [3, 1, 9, 6, 7, 5, 2, 8, 4];
 
 export const reduce = (n) => {
   while (n > 9) n = String(n).split('').reduce((sum, d) => sum + Number(d), 0);
@@ -25,40 +33,54 @@ export const reduce = (n) => {
 const digitSum = (text) => text.split('').reduce((sum, d) => sum + Number(d), 0);
 
 export const NUMBERS = {
-  1: {planet: 'Sun', hindi: 'Surya', day: 'Sunday', colours: 'Gold, orange, copper', trait: 'leadership, independence and self-respect', strengths: 'Confident, original and decisive. Takes charge naturally.', watch: 'Can be proud or impatient with slower people.'},
-  2: {planet: 'Moon', hindi: 'Chandra', day: 'Monday', colours: 'White, cream, silver', trait: 'sensitivity, imagination and cooperation', strengths: 'Caring, intuitive and diplomatic. Works well in partnership.', watch: 'Mood swings and overthinking; needs emotional security.'},
-  3: {planet: 'Jupiter', hindi: 'Guru', day: 'Thursday', colours: 'Yellow, saffron', trait: 'wisdom, guidance and discipline', strengths: 'A natural teacher and adviser. Ethical, ambitious and well read.', watch: 'Can lecture others or become rigid about being right.'},
-  4: {planet: 'Rahu', hindi: 'Rahu', day: 'Saturday', colours: 'Grey, electric blue', trait: 'unconventional thinking and sudden change', strengths: 'Inventive, hard-working and good at research or technology.', watch: 'Life can bring sudden ups and downs; impulsive or rebellious streaks.'},
-  5: {planet: 'Mercury', hindi: 'Budh', day: 'Wednesday', colours: 'Green', trait: 'communication, business sense and quick learning', strengths: 'Witty, adaptable and good with money, trade and people.', watch: 'Restless; starts many things and can scatter energy.'},
-  6: {planet: 'Venus', hindi: 'Shukra', day: 'Friday', colours: 'White, pink, light blue', trait: 'love, beauty, comfort and family', strengths: 'Charming, artistic and responsible. Creates harmony at home.', watch: 'Can overindulge in comfort or depend on others’ approval.'},
-  7: {planet: 'Ketu', hindi: 'Ketu', day: 'Tuesday', colours: 'Grey, light green', trait: 'intuition, spirituality and deep research', strengths: 'Insightful, philosophical and drawn to the hidden side of things.', watch: 'Detachment and doubt; can feel misunderstood or alone.'},
-  8: {planet: 'Saturn', hindi: 'Shani', day: 'Saturday', colours: 'Dark blue, black', trait: 'hard work, justice and long-term results', strengths: 'Patient, serious and dependable. Success grows steadily with age.', watch: 'Delays and heavy responsibility early in life; can turn pessimistic.'},
-  9: {planet: 'Mars', hindi: 'Mangal', day: 'Tuesday', colours: 'Red, maroon', trait: 'courage, energy and protection', strengths: 'Brave, energetic and generous. Fights for people and causes.', watch: 'Quick temper and impatience; can rush into conflict.'},
+  1: {planet: 'Sun', hindi: 'Surya', day: 'Sunday', role: 'King, father', colour: 'Red', trait: 'leadership, independence and self-respect', strengths: 'Confident, original and decisive. Takes charge naturally.', watch: 'Can be proud or impatient with slower people.'},
+  2: {planet: 'Moon', hindi: 'Chandra', day: 'Monday', role: 'Queen, mother', colour: 'Milky white', trait: 'sensitivity, imagination and cooperation', strengths: 'Caring, intuitive and diplomatic. Works well in partnership.', watch: 'Mood swings and overthinking; needs emotional security.'},
+  3: {planet: 'Jupiter', hindi: 'Guru', day: 'Thursday', role: 'Teacher, Dev Guru, minister', colour: 'Yellow', trait: 'wisdom, guidance and discipline', strengths: 'A natural teacher and adviser. Ethical, ambitious and well read.', watch: 'Can lecture others or become rigid about being right.'},
+  4: {planet: 'Rahu', hindi: 'Rahu', day: 'Saturday', role: 'Rebel', colour: 'Black and dark grey', trait: 'unconventional thinking and sudden change', strengths: 'Inventive, hard-working and good at research or technology.', watch: 'Life can bring sudden ups and downs; impulsive or rebellious streaks.'},
+  5: {planet: 'Mercury', hindi: 'Budh', day: 'Wednesday', role: 'Son, prince', colour: 'Green', trait: 'communication, business sense and quick learning', strengths: 'Witty, adaptable and good with money, trade and people.', watch: 'Restless; starts many things and can scatter energy.'},
+  6: {planet: 'Venus', hindi: 'Shukra', day: 'Friday', role: 'Guru of the Asuras', colour: 'White', trait: 'love, beauty, comfort and family', strengths: 'Charming, artistic and responsible. Creates harmony at home.', watch: 'Can overindulge in comfort or depend on others’ approval.'},
+  7: {planet: 'Ketu', hindi: 'Ketu', day: 'Tuesday', role: 'Shadow', colour: 'Black and grey', trait: 'intuition, spirituality and deep research', strengths: 'Insightful, philosophical and drawn to the hidden side of things.', watch: 'Detachment and doubt; can feel misunderstood or alone.'},
+  8: {planet: 'Saturn', hindi: 'Shani', day: 'Saturday', role: 'Judge', colour: 'Black', trait: 'hard work, justice and long-term results', strengths: 'Patient, serious and dependable. Success grows steadily with age.', watch: 'Delays and heavy responsibility early in life; can turn pessimistic.'},
+  9: {planet: 'Mars', hindi: 'Mangal', day: 'Tuesday', role: 'Commander of the army', colour: 'Blood red', trait: 'courage, energy and protection', strengths: 'Brave, energetic and generous. Fights for people and causes.', watch: 'Quick temper and impatience; can rush into conflict.'},
 };
 
-/** Natural planetary friendships (Parashari). Rahu follows Saturn, Ketu follows Mars. */
-const PLANET_OF = {1: 'Sun', 2: 'Moon', 3: 'Jupiter', 4: 'Saturn', 5: 'Mercury', 6: 'Venus', 7: 'Mars', 8: 'Saturn', 9: 'Mars'};
-const FRIENDSHIP = {
-  Sun: {friend: ['Moon', 'Mars', 'Jupiter'], enemy: ['Venus', 'Saturn']},
-  Moon: {friend: ['Sun', 'Mercury'], enemy: []},
-  Mars: {friend: ['Sun', 'Moon', 'Jupiter'], enemy: ['Mercury']},
-  Mercury: {friend: ['Sun', 'Venus'], enemy: ['Moon']},
-  Jupiter: {friend: ['Sun', 'Moon', 'Mars'], enemy: ['Mercury', 'Venus']},
-  Venus: {friend: ['Mercury', 'Saturn'], enemy: ['Sun', 'Moon']},
-  Saturn: {friend: ['Mercury', 'Venus'], enemy: ['Sun', 'Moon', 'Mars']},
+/**
+ * Number compatibility chart. For 4 and 8, the numbers 4 and 8 are marked as both friend and enemy
+ * (shortTerm): fine for short-term relations, not good for long-term ones.
+ */
+export const COMPAT = {
+  1: {friend: [9, 2, 5, 3, 6, 1], enemy: [8], neutral: [4, 7]},
+  2: {friend: [1, 5, 3, 2], enemy: [8, 4, 9], neutral: [6, 7]},
+  3: {friend: [1, 5, 3, 2, 7], enemy: [6], neutral: [4, 8, 9]},
+  4: {friend: [1, 7, 5, 6], enemy: [2, 9], neutral: [3], shortTerm: [4, 8]},
+  5: {friend: [1, 2, 3, 6, 5], enemy: [], neutral: [7, 8, 9, 4]},
+  6: {friend: [1, 5, 7, 6], enemy: [3], neutral: [8, 9, 2, 4]},
+  7: {friend: [4, 6, 1, 3, 5], enemy: [], neutral: [8, 2, 9, 7]},
+  8: {friend: [5, 6, 3, 7], enemy: [1, 2], neutral: [9], shortTerm: [4, 8]},
+  9: {friend: [1, 5, 3], enemy: [4, 2], neutral: [7, 6, 8, 9]},
 };
+const KINDS = ['friend', 'enemy', 'neutral', 'shortTerm'];
+
+/** How number `of` treats number `other`: 'friend' | 'enemy' | 'neutral' | 'shortTerm'. */
 export function relation(of, other) {
-  if (of === other) return 'friend';
-  const a = PLANET_OF[of], b = PLANET_OF[other];
-  if (a === b) return 'friend';
-  if (FRIENDSHIP[a].friend.includes(b)) return 'friend';
-  if (FRIENDSHIP[a].enemy.includes(b)) return 'enemy';
-  return 'neutral';
+  return KINDS.find((kind) => COMPAT[of][kind]?.includes(other));
 }
-export function relationsFor(n) {
-  const out = {friend: [], neutral: [], enemy: []};
-  for (let m = 1; m <= 9; m++) out[relation(n, m)].push(m);
+
+/** Combined lists for a Mulank and Bhagyank, in the order 1–9. */
+export function combine(a, b) {
+  const out = {friend: [], enemy: [], neutral: [], shortTerm: []};
+  for (let n = 1; n <= 9; n++) {
+    const r = [relation(a, n), relation(b, n)];
+    out[r.includes('enemy') ? 'enemy' : r.includes('shortTerm') ? 'shortTerm' : r.includes('friend') ? 'friend' : 'neutral'].push(n);
+  }
   return out;
+}
+
+/** Mulank–Bhagyank pairing. 4-4 and 8-8 together are not good; 4 with 8 is fine short-term only. */
+export function pairing(a, b) {
+  if ([4, 8].includes(a) && [4, 8].includes(b)) return a === b ? 'double' : 'shortTerm';
+  const r = [relation(a, b), relation(b, a)];
+  return r.includes('enemy') ? 'enemy' : r.includes('friend') ? 'friend' : 'neutral';
 }
 
 /** Rows, columns and the two diagonals of the 4-9-2 / 3-5-7 / 8-1-6 square. */
@@ -129,6 +151,27 @@ export function kuaNumber(year, gender) {
   return k;
 }
 
+/** One-line themes for each life period, condensed from the full report's Maha Dasha chapter. */
+export const PERIOD_THEME = {
+  1: 'Name, recognition and authority, with support from seniors and government.',
+  2: 'Home, mother, comfort and imagination; property and vehicles can come.',
+  3: 'Knowledge, wealth, family happiness and auspicious events.',
+  4: 'Sudden gains and foreign travel, with success that comes through hard work.',
+  5: 'Learning, communication and business, with new opportunities knocking.',
+  6: 'Comfort, luxury, creativity and relationships; wealth in many forms.',
+  7: 'Spirituality, intuition and inner growth; a time to seek a guru.',
+  8: 'Discipline, power, income and long-term gains through effort.',
+  9: 'Energy, action, property and sharp ups and downs of fortune.',
+};
+
+/** Life periods from birth until about 25 years from now, and which one is running today. */
+export function lifePeriods(day, month, year, mulank, today = new Date()) {
+  const periods = [];
+  for (let n = mulank, from = year; from <= today.getFullYear() + 25; from += n, n = (n % 9) + 1) periods.push({n, from, to: from + n});
+  const started = (y) => today >= new Date(y, month - 1, day);
+  return {periods, current: periods.findIndex((p) => started(p.from) && !started(p.to))};
+}
+
 export const personalYear = (day, month, year) => reduce(reduce(day) + reduce(month) + reduce(digitSum(String(year))));
 
 /** Full reading for an ISO date (YYYY-MM-DD). gender: 'male' | 'female' | '' (no Kua). */
@@ -146,16 +189,21 @@ export function readChart(iso, gender = '', today = new Date()) {
   if (kua) sources.push({n: kua, from: 'kua'});
 
   const counts = Object.fromEntries(GRID.map((n) => [n, sources.filter((s) => s.n === n).length]));
+  const vedicCounts = Object.fromEntries(GRID.map((n) => [n, sources.filter((s) => s.n === n && s.from !== 'kua').length]));
   const planes = PLANES.map((plane) => {
     const have = plane.digits.filter((n) => counts[n]).length;
     return {...plane, status: have === 3 ? 'full' : have === 0 ? 'none' : 'partial', have};
   });
   const thisYear = today.getFullYear();
   return {
-    day: d, month: m, year: y, dateDigits, mulank, bhagyank, kua, sources, counts, planes,
+    day: d, month: m, year: y, dateDigits, mulank, bhagyank, kua, sources, counts, vedicCounts, planes,
     missing: GRID.filter((n) => !counts[n]).sort(),
     present: GRID.filter((n) => counts[n]).sort(),
-    pairing: relation(mulank, bhagyank),
+    monthNumber: reduce(m),
+    yearNumber: reduce(digitSum(String(y))),
+    life: lifePeriods(d, m, y, mulank, today),
+    pairing: pairing(mulank, bhagyank),
+    compat: combine(mulank, bhagyank),
     years: [thisYear, thisYear + 1].map((year) => ({year, number: personalYear(d, m, year)})),
   };
 }

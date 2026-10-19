@@ -1,3 +1,5 @@
+import {appearances, ownShow} from './podcasts';
+
 /**
  * Homepage proof, social and video content.
  * Leave a link empty until the client supplies it. Entries without a link are hidden on the
@@ -8,7 +10,7 @@
 export const social = {
   instagram: process.env.NEXT_PUBLIC_INSTAGRAM_URL || 'https://www.instagram.com/numerologybyaadarshh/',
   youtube: process.env.NEXT_PUBLIC_YOUTUBE_URL || 'https://www.youtube.com/@Numerologistadarshpandey',
-  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_URL || 'https://wa.me/919870197315?text=' + encodeURIComponent('Namaste Adarshh ji 🙏 I found you on numericcvaastu.com and would like to know more.'),
+  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_URL || 'https://wa.me/917042955904?text=' + encodeURIComponent('Namaste Adarshh ji 🙏 I found you on numericcvaastu.com and would like to know more.'),
 };
 
 /** Public Instagram profile snapshot, copied from instagram.com/numerologybyaadarshh on 10 October 2026.
@@ -28,7 +30,7 @@ export const instagramProfile = {
 /** Reconfirm each figure with the client before launch; `source` records where it came from. */
 export const stats = [
   {value: '20,000+', label: 'Consultations', source: 'Instagram bio, October 2026'},
-  {value: '20+', label: 'Podcasts and interviews', source: 'Client brief, October 2026'},
+  {value: `${appearances.length + ownShow.length}+`, label: 'Podcast conversations', source: 'data/podcasts.js'},
   {value: '7+', label: 'Years of practice', source: 'Instagram bio, October 2026'},
   {value: '24K+', label: 'Instagram followers', source: 'instagram.com/numerologybyaadarshh, 10 October 2026'},
 ];
@@ -36,21 +38,24 @@ export const stats = [
 export const book = {
   title: 'Numerology: Numbers That Speak',
   subtitle: 'What Your Numbers Reveal',
+  fullTitle: 'Numerology – Numbers That Speak: What Your Numbers Reveal',
   feature: 'Featured in Inkspire, June 2025',
+  isbn: '9348518496',
+  amazon: 'https://www.amazon.in/dp/9348518496',
 };
 
 /** Hero photos: real event, studio and portrait photographs first, the two edited studio portraits last. `position` keeps the face in frame. */
 export const heroSlides = [
-  {src: '/images/gallery/media-podcast-portrait.webp', alt: 'Adarshh Pandey seated at a podcast microphone', position: '50% 30%'},
-  {src: '/images/gallery/award-book-of-the-year.webp', alt: 'Adarshh Pandey receiving the Book of the Year award on stage', position: '30% 40%'},
-  {src: '/images/gallery/talk-ntt-talk-show.webp', alt: 'Adarshh Pandey speaking on the NTT Talk Show stage', position: '50% 25%'},
-  {src: '/images/gallery/portrait-standing.webp', alt: 'Adarshh Pandey standing with his hands together', position: '50% 22%'},
-  {src: '/images/gallery/talk-mahakumbh-podium.webp', alt: 'Adarshh Pandey speaking at a podium', position: '22% 45%'},
-  {src: '/images/gallery/media-podcast-red-set.webp', alt: 'Adarshh Pandey seated in a studio chair with a microphone', position: '50% 28%'},
+  {src: '/images/gallery/media-podcast-portrait.webp', alt: 'Adarshh Panndey seated at a podcast microphone'},
+  {src: '/images/gallery/award-book-of-the-year.webp', alt: 'Adarshh Panndey receiving the Book of the Year award on stage'},
+  {src: '/images/gallery/talk-ntt-talk-show.webp', alt: 'Adarshh Panndey speaking on the NTT Talk Show stage'},
+  {src: '/images/gallery/portrait-standing.webp', alt: 'Adarshh Panndey standing with his hands together'},
+  {src: '/images/gallery/talk-mahakumbh-podium.webp', alt: 'Adarshh Panndey speaking at a podium'},
+  {src: '/images/gallery/media-podcast-red-set.webp', alt: 'Adarshh Panndey seated in a studio chair with a microphone'},
   // Edited studio portraits go last, after the real photographs.
-  {src: '/images/adarshh/adarshh-pandey-studio-portrait.webp', alt: 'Adarshh Pandey in a studio portrait against a purple background', position: '50% 30%'},
-  {src: '/images/adarshh/adarshh-pandey-with-book.webp', alt: 'Adarshh Pandey holding his book Numerology: Numbers That Speak', position: '45% 40%'},
-  {src: '/images/gallery/portrait-arms-crossed.webp', alt: 'Adarshh Pandey standing with arms crossed in a studio', position: '50% 22%'},
+  {src: '/images/adarshh/adarshh-pandey-studio-portrait.webp', alt: 'Adarshh Panndey in a studio portrait against a purple background'},
+  {src: '/images/adarshh/adarshh-pandey-with-book.webp', alt: 'Adarshh Panndey holding his book Numerology: Numbers That Speak'},
+  {src: '/images/gallery/portrait-arms-crossed.webp', alt: 'Adarshh Panndey standing with arms crossed in a studio'},
 ];
 
 export const marqueeRows = [
