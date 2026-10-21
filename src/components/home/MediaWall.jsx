@@ -1,7 +1,7 @@
 'use client';
 import {useEffect, useRef, useState} from 'react';
 import {ArrowLeft, ArrowRight, ArrowUpRight, BadgeCheck, Play} from 'lucide-react';
-import {formatCount, formatTotal} from '../../lib/formatCount';
+import {countWord, formatCount, formatTotalWords} from '../../lib/formatCount';
 
 const showPlaceholders = process.env.NODE_ENV !== 'production' || process.env.NEXT_PUBLIC_SHOW_MEDIA_PLACEHOLDERS === '1';
 const instagramCode = (url = '') => url.match(/instagram\.com\/(?:[\w.]+\/)?(?:reel|reels|p)\/([\w-]+)/)?.[1] || '';
@@ -116,7 +116,7 @@ export default function MediaWall({videos, social, instagram, children}) {
           {item.label}<span>{lists[item.key].length}</span>
         </button>)}
       </div>
-      {totalViews > 0 && <p className="hv-watch__total"><b>{formatTotal(totalViews)}</b> views across these {lists[tab.key].length} {tab.key === 'reels' ? 'reels' : 'videos'}</p>}
+      {totalViews > 0 && <p className="hv-watch__total"><b>{formatTotalWords(totalViews)}</b> views in just <span>{countWord(lists[tab.key].length)} {tab.key === 'reels' ? 'reels' : 'videos'}</span></p>}
       <div className="hv-watch__arrows">
         <button type="button" className="hv-round" onClick={() => scroll(-1)} aria-label="Scroll videos left"><ArrowLeft size={18}/></button>
         <button type="button" className="hv-round" onClick={() => scroll(1)} aria-label="Scroll videos right"><ArrowRight size={18}/></button>

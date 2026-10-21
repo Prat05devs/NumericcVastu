@@ -4,6 +4,7 @@ import {ArrowUpRight, Award, Check, CreditCard, GraduationCap, Mic, Plus, Users}
 import {SiteFooter} from './SiteChrome';
 import StickyBuy from './StickyBuy';
 import ReviewCards from './ReviewCards';
+import StudentVideos from './StudentVideos';
 import WhatsAppIcon from './WhatsAppIcon';
 import FloatingNumbers from './FloatingNumbers';
 import {courses, formatPrice, getActivePromotion, offerCatalog} from '../data/offers';
@@ -115,6 +116,7 @@ export default function CourseDetail({offer}) {
       <section className="hv-section hv-wrap" aria-labelledby="cd-students">
         <div className="hv-head"><div><span className="hv-eyebrow">His students</span><h2 id="cd-students">Real classes, <em>real certificates.</em></h2></div><div className="hv-head__aside"><p>Moments from Adarshh’s certification ceremonies and workshops.</p><Link className="hv-link" href="/gallery">See the gallery <ArrowUpRight size={16}/></Link></div></div>
         <ul className="cd-mosaic">{studentPhotos.slice(0, 8).map((p) => <li key={p.src}><Image src={p.src} alt="Adarshh Panndey with his numerology students" fill sizes="(max-width: 700px) 46vw, 280px" style={crop(p.src, 0.8, [p.w, p.h])}/></li>)}</ul>
+        <StudentVideos title="What his students say"/>
         <ReviewCards reviews={googleReviews.slice(0, 2)} className="cd-reviews"/>
       </section>
 

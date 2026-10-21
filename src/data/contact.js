@@ -9,10 +9,10 @@ const postalCode = '110042';
 
 export const contact = {
   email: offerCatalog.contactEmail,
-  phone: '+91 70429 55904',
-  phoneHref: 'tel:+917042955904',
+  phone: '+91 98701 97315',
+  phoneHref: 'tel:+919870197315',
   /** WhatsApp number in international format without + or spaces. */
-  whatsapp: '917042955904',
+  whatsapp: '919870197315',
   address: {street, locality, city, region, postalCode, country: 'IN'},
   addressLines: [street, locality, `${city}, ${region} ${postalCode}`],
   mapUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${street}, ${locality}, ${city}, ${region} ${postalCode}`)}`,

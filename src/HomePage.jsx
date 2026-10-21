@@ -9,15 +9,16 @@ import MediaWall from './components/home/MediaWall';
 import LoShuCalculator from './components/home/LoShuCalculator';
 import AwardsCarousel from './components/home/AwardsCarousel';
 import ReviewCards from './components/ReviewCards';
+import StudentVideos from './components/StudentVideos';
 import {courses, consultations, formatPrice} from './data/offers';
 import {awards, book, heroSlides, instagramProfile, marqueeRows, social, stats, videos} from './data/media';
 import {googleReviews, posts} from './data/content';
 import BlogCards from './components/BlogCards';
 import WhatsAppIcon from './components/WhatsAppIcon';
 import FloatingNumbers from './components/FloatingNumbers';
+import LiveCount from './components/LiveCount';
 import {contact} from './data/contact';
 import {predictions} from './data/predictions';
-import {formatTotal} from './lib/formatCount';
 import {crop} from './lib/crop';
 
 const featuredConsultations = [
@@ -30,9 +31,6 @@ const courseImages = {
   'course-accelerator': '/images/students/students-03.webp',
   'course-mastery': '/images/students/students-17.webp',
 };
-/** The stats band leads with total views on the reels listed in media.js, so it updates when reels change. */
-const reelViews = videos.reels.reduce((sum, reel) => sum + (reel.views || 0), 0);
-const proof = reelViews > 0 ? [{value: formatTotal(reelViews), label: 'Views on his top Instagram reels'}, ...stats] : stats;
 const blueprint = consultations.find((item) => item.id === 'consult-blueprint') || consultations[0];
 
 const steps = [
@@ -77,7 +75,7 @@ export default function HomePage() {
 
       <section className="hv-stats" aria-label="NumericcVaastu in numbers">
         <div className="hv-wrap hv-stats__grid">
-          {proof.map((item) => <div key={item.label}><strong data-count>{item.value}</strong><span>{item.label}</span></div>)}
+          {stats.map((item) => <div key={item.label}>{item.live ? <LiveCount value={item.value} {...item.live}/> : <strong data-count>{item.value}</strong>}<span>{item.label}</span></div>)}
         </div>
       </section>
 
@@ -215,6 +213,7 @@ export default function HomePage() {
             <Link href="/testimonials" className="hv-link">More client experiences <ArrowUpRight size={17}/></Link>
           </SectionHead>
           <ReviewCards reviews={googleReviews}/>
+          <StudentVideos title="Students of his courses, on video"/>
         </div>
       </section>}
 

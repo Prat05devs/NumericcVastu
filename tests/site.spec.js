@@ -14,7 +14,7 @@ test('consultation page, WhatsApp enquiry and checkout',async({page})=>{
  await page.getByLabel('Your name').fill('Test Visitor');
  await page.getByRole('button',{name:/Preview message/}).click();
  const href=await page.locator('a.eq-send').getAttribute('href');
- expect(href).toContain('https://wa.me/917042955904?text=');
+ expect(href).toContain('https://wa.me/919870197315?text=');
  expect(decodeURIComponent(href.split('text=')[1])).toContain(price);
  await page.goto('/checkout?offer=consult-blueprint',{waitUntil:'networkidle'});
  await expect(page.locator('.co-summary__total strong')).toHaveText(price);
