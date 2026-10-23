@@ -2,6 +2,7 @@
  * Podcasts featuring Adarshh Panndey, researched October 2026 from YouTube (channel pages, episode
  * descriptions and Hindi auto-captions). Views are a snapshot from 18 October 2026; update them now and then.
  * `points` paraphrase what he says in the episode; keep them to his claims, never promises.
+ * `nI5IgA38s4s` and `ZyS4jDnk9Bg` were added on 21 October 2026 at the client's request, with views from that day.
  * Thumbnails are saved locally (public/images/podcasts) so nothing loads from YouTube until a visitor presses play.
  */
 
@@ -14,6 +15,15 @@ export const appearances = [
     'People born on the 1st, 10th, 19th or 28th (Mulank 1, the Sun) tend to want to lead and often feel more at home in business than in a job.',
     'Mulank 4 is a number of hard work; with discipline and organisation, he says, it does very well.',
     'Some compound numbers, such as 18, 26 and 28, are treated as harder combinations that ask for extra care.',
+  ]},
+  {id: 'nI5IgA38s4s', title: '2025 predictions for Mulank 1 to 9 from your date of birth', show: 'Let’s Grow With MishraJi', host: null, date: '2024-11-09', views: 152697, minutes: 49, topics: ['Predictions', 'Name & birth date'], points: [
+    'How to work out your Mulank (root number) from your date of birth.',
+    'Which numbers are friends, and which are enemies, of each birth number.',
+    'The energy of each Mulank from 1 to 9, and what 2025 was expected to bring for each.',
+  ]},
+  {id: 'ZyS4jDnk9Bg', title: 'Mulank 1 to 9: numerology predictions for 2025', show: 'Podcastpur', host: null, date: '2025-01-11', views: 45437, minutes: 36, topics: ['Predictions', 'Name & birth date'], points: [
+    'A numerology reading of 2025 and what it meant for luck and opportunities.',
+    'Your personal year number: how to find it from your date of birth and use it to plan the year ahead.',
   ]},
   {id: 'O7XfV273b9g', title: '2027 predictions and the last three months of 2026 for Mulank 1 to 9', show: 'Anuj Srivastava', host: 'Anuj Srivastava', date: '2026-09-27', views: 33149, minutes: 51, topics: ['Predictions'], points: [
     '2026 is a “Year 1”, the year to plant seeds: decisions made this year play out over the following nine-year cycle.',

@@ -1,4 +1,5 @@
 import {verifyWebhook, summariseEvent} from '../../../../lib/razorpay';
+import {notifyBooking} from '../../../../lib/notify';
 
 /**
  * Razorpay webhook: the server-to-server record of a payment, delivered even if the visitor closes the tab.
@@ -31,14 +32,6 @@ export async function POST(request) {
   const summary = summariseEvent(event);
   console.info('Razorpay webhook', summary.event, summary.paymentId || summary.orderId, summary.offer, summary.amount);
 
-  const url = process.env.BOOKING_NOTIFY_URL;
-  if (url) {
-    try {
-      await fetch(url, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({source: 'numericcvaastu.com', eventId, ...summary}), signal: AbortSignal.timeout(5000)});
-    } catch (error) {
-      // Still answer 200: Razorpay's copy is the source of truth, and a retry storm would not help.
-      console.error('Booking notification failed', error?.message);
-    }
-  }
+  await notifyBooking({eventId, ...summary});
   return Response.json({ok: true});
 }

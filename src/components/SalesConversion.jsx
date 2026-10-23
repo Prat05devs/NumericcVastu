@@ -2,7 +2,8 @@
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { ArrowRight, ArrowUpRight, BookOpen, Check, Compass, Sparkles } from 'lucide-react';
-import { courses, offerCatalog, formatPrice, getActivePromotion, getCurrentCoursePromotion } from '../data/offers';
+import { courses, offerCatalog, getActivePromotion, getCurrentCoursePromotion } from '../data/offers';
+import Price from './Price';
 import { springStep } from '../lib/motionSpring';
 
 const featured = courses.find((offer) => offer.id === offerCatalog.featuredOfferId) || courses[0];
@@ -83,7 +84,7 @@ export function SalesHero() {
       <a className="sales-hero__offer-card" href={courseUrl(featured)} ref={cardRef}>
         <span className="sales-hero__offer-kicker"><Sparkles size={16}/>{promotion ? promotion.label : `${featured.category} pathway`}</span>
         <strong>{featured.name}</strong>
-        <span className="sales-hero__offer-bottom"><span><small>{promotion ? 'Current offer' : 'Listed fee'}</small><b>{formatPrice(featured, now)}</b></span><span className="sales-hero__offer-arrow"><ArrowUpRight size={21}/></span></span>
+        <span className="sales-hero__offer-bottom"><span><small>{promotion ? 'Current offer' : 'Listed fee'}</small><b><Price offer={featured} now={now}/></b></span><span className="sales-hero__offer-arrow"><ArrowUpRight size={21}/></span></span>
         {!featured.priceVerified && <small className="sales-hero__fee-note">Confirm current fee and availability before enrolment.</small>}
       </a>
     </div>
@@ -110,7 +111,7 @@ export function FeaturedCourses() {
         <h3>{offer.name}</h3><p className="sales-course-card__audience">For {offer.audience.toLowerCase()}</p>
         <p className="sales-course-card__outcome">{offer.outcome}</p>
         <ul>{offer.inclusions.slice(0, 3).map((item) => <li key={item}><Check size={15}/>{item}</li>)}</ul>
-        <div className="sales-course-card__bottom"><span><small>{promotion ? promotion.label : 'Listed fee'}</small><strong>{formatPrice(offer, now)}</strong></span><a href={courseUrl(offer)} aria-label={`View ${offer.name}`}>View course <ArrowUpRight size={17}/></a></div>
+        <div className="sales-course-card__bottom"><span><small>{promotion ? promotion.label : 'Listed fee'}</small><strong><Price offer={offer} now={now}/></strong></span><a href={courseUrl(offer)} aria-label={`View ${offer.name}`}>View course <ArrowUpRight size={17}/></a></div>
       </article>;
     })}</div>
     <div className="sales-courses__footer"><span>Fees and course details are from the existing catalogue and must be confirmed before enrolment.</span><a href="/courses">Compare the three learning paths <ArrowRight size={17}/></a></div>

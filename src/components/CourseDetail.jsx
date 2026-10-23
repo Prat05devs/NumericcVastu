@@ -4,9 +4,11 @@ import {ArrowUpRight, Award, Check, CreditCard, GraduationCap, Mic, Plus, Users}
 import {SiteFooter} from './SiteChrome';
 import StickyBuy from './StickyBuy';
 import ReviewCards from './ReviewCards';
+import StudentVideos from './StudentVideos';
 import WhatsAppIcon from './WhatsAppIcon';
 import FloatingNumbers from './FloatingNumbers';
-import {courses, formatPrice, getActivePromotion, offerCatalog} from '../data/offers';
+import {courses, getActivePromotion, offerCatalog} from '../data/offers';
+import Price from './Price';
 import {getCourseDetail} from '../data/courseDetails';
 import {book} from '../data/media';
 import {googleReviews, photos} from '../data/content';
@@ -51,7 +53,7 @@ export default function CourseDetail({offer}) {
               <li><GraduationCap size={16}/>Taught by Adarshh Panndey</li>
             </ul>
             <div className="cd-hero__buy" id="buy-anchor">
-              <div className="cd-price"><strong>{formatPrice(offer)}</strong><span>{promo ? promo.label : 'Course fee'}</span></div>
+              <div className="cd-price"><strong><Price offer={offer}/></strong><span>{promo ? promo.label : 'Course fee'}</span></div>
               <Link className="hv-button hv-button--gold" href={checkout}>Enrol now <ArrowUpRight size={18}/></Link>
               <Link className="hv-button hv-button--light" href={ask}><WhatsAppIcon size={18}/> Ask a question</Link>
             </div>
@@ -66,7 +68,7 @@ export default function CourseDetail({offer}) {
       <nav className="cd-ladder" aria-label="Learning path">
         <ol className="hv-wrap">
           {courses.map((c, i) => <li key={c.id} className={c.id === offer.id ? 'is-current' : ''}>
-            <Link href={`/courses/${c.slug}`} aria-current={c.id === offer.id ? 'page' : undefined}><span>Level {i + 1}</span><b>{c.name}</b><small>{c.category} · {formatPrice(c)}</small></Link>
+            <Link href={`/courses/${c.slug}`} aria-current={c.id === offer.id ? 'page' : undefined}><span>Level {i + 1}</span><b>{c.name}</b><small>{c.category} · <Price offer={c}/></small></Link>
           </li>)}
         </ol>
       </nav>
@@ -115,6 +117,7 @@ export default function CourseDetail({offer}) {
       <section className="hv-section hv-wrap" aria-labelledby="cd-students">
         <div className="hv-head"><div><span className="hv-eyebrow">His students</span><h2 id="cd-students">Real classes, <em>real certificates.</em></h2></div><div className="hv-head__aside"><p>Moments from Adarshh’s certification ceremonies and workshops.</p><Link className="hv-link" href="/gallery">See the gallery <ArrowUpRight size={16}/></Link></div></div>
         <ul className="cd-mosaic">{studentPhotos.slice(0, 8).map((p) => <li key={p.src}><Image src={p.src} alt="Adarshh Panndey with his numerology students" fill sizes="(max-width: 700px) 46vw, 280px" style={crop(p.src, 0.8, [p.w, p.h])}/></li>)}</ul>
+        <StudentVideos title="What his students say"/>
         <ReviewCards reviews={googleReviews.slice(0, 2)} className="cd-reviews"/>
       </section>
 
@@ -141,7 +144,7 @@ export default function CourseDetail({offer}) {
           <div className="cd-buy__head">
             <span className="hv-eyebrow">Enrol</span>
             <h2 id="cd-buy">{offer.name}</h2>
-            <div className="cd-price"><strong>{formatPrice(offer)}</strong><span>{promo ? promo.label : 'Course fee'}</span></div>
+            <div className="cd-price"><strong><Price offer={offer}/></strong><span>{promo ? promo.label : 'Course fee'}</span></div>
             {!offer.priceVerified && <p className="cd-buy__fine">{offerCatalog.priceNote}</p>}
           </div>
           <ul className="cd-buy__list">{offer.inclusions.map((i) => <li key={i}><Check size={18}/>{i}</li>)}</ul>
@@ -158,7 +161,7 @@ export default function CourseDetail({offer}) {
         <div><span className="hv-eyebrow">Questions</span><h2 id="cd-faq">Before you <em>enrol.</em></h2><p>Anything else? Ask Adarshh’s team on WhatsApp.</p><Link className="hv-link" href={ask}>Ask a question <ArrowUpRight size={16}/></Link></div>
         <div className="hv-faq__list">{detail.faqs.map(([q, a], i) => <details key={q} open={i === 0}><summary>{q}<Plus size={20} aria-hidden="true"/></summary><p>{a}</p></details>)}</div>
       </section>
-      <StickyBuy name={offer.name} price={formatPrice(offer)} href={checkout} label="Enrol now"/>
+      <StickyBuy name={offer.name} price={<Price offer={offer}/>} href={checkout} label="Enrol now"/>
       {jsonLd({'@context': 'https://schema.org', '@type': 'Course', name: offer.name, description: offer.summary, url: `${origin}/courses/${offer.slug}`, provider: {'@type': 'Organization', name: 'NumericcVaastu', sameAs: origin}, instructor: {'@type': 'Person', name: 'Adarshh Panndey'}, offers: {'@type': 'Offer', price: offer.pricePaise / 100, priceCurrency: 'INR', url: `${origin}/checkout?offer=${offer.id}`, category: 'Paid'}})}
     </main>
     <SiteFooter/>

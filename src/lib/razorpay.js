@@ -1,12 +1,14 @@
 import 'server-only';
 import {createHmac, timingSafeEqual} from 'node:crypto';
-import {offerCatalog, getPricePaise, formatPrice} from '../data/offers';
+import {offerCatalog, getPrice, formatPrice} from '../data/offers';
 
 /**
  * Razorpay Standard Checkout, server side. Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in the Vercel
  * environment (never in code). With test keys (rzp_test_…) every offer can be paid in test mode so the whole
  * flow can be tried end to end; with live keys an offer is payable only when its price is confirmed
  * (priceVerified and checkoutEnabled in data/offers.ts).
+ * Visitors outside India pay in US dollars, which Razorpay accepts only once international payments are enabled
+ * on the account (Dashboard > Account & Settings > International payments); then set RAZORPAY_INTERNATIONAL=on.
  */
 const keyId = () => process.env.RAZORPAY_KEY_ID || '';
 const keySecret = () => process.env.RAZORPAY_KEY_SECRET || '';
@@ -16,11 +18,12 @@ export function paymentMode() {
   return keyId().startsWith('rzp_test_') ? 'test' : 'live';
 }
 
-/** Whether this offer can be paid online right now, and why not if it cannot. */
-export function onlinePayment(offer) {
+/** Whether this offer can be paid online right now in this currency, and why not if it cannot. */
+export function onlinePayment(offer, currency = 'INR') {
   const mode = paymentMode();
   if (!offer?.active) return {enabled: false, mode, reason: 'This offering is not currently available.'};
   if (mode === 'off') return {enabled: false, mode, reason: 'Online payment is being set up.'};
+  if (currency === 'USD' && process.env.RAZORPAY_INTERNATIONAL !== 'on') return {enabled: false, mode, reason: 'Card payment in US dollars is being set up.'};
   if (mode === 'live' && !(offer.priceVerified && offer.checkoutEnabled)) return {enabled: false, mode, reason: 'The fee for this offering is being confirmed.'};
   return {enabled: true, mode, reason: ''};
 }
@@ -39,16 +42,16 @@ function toNotes(offer, customer, details) {
   return notes;
 }
 
-export async function createOrder({offerId, customer, details}) {
+export async function createOrder({offerId, currency, customer, details}) {
   const offer = findOffer(offerId);
-  const state = onlinePayment(offer);
+  const state = onlinePayment(offer, currency);
   if (!state.enabled) throw Object.assign(new Error(state.reason), {status: 409});
-  const amount = getPricePaise(offer);
+  const amount = getPrice(offer, currency);
   const receipt = `nv_${offer.id}_${Date.now().toString(36)}`.slice(0, 40);
   const res = await fetch('https://api.razorpay.com/v1/orders', {
     method: 'POST',
     headers: {'Content-Type': 'application/json', Authorization: `Basic ${Buffer.from(`${keyId()}:${keySecret()}`).toString('base64')}`},
-    body: JSON.stringify({amount, currency: offerCatalog.currency, receipt, notes: toNotes(offer, customer, details)}),
+    body: JSON.stringify({amount, currency, receipt, notes: toNotes(offer, customer, details)}),
   });
   const data = await res.json();
   if (!res.ok) {
@@ -56,7 +59,7 @@ export async function createOrder({offerId, customer, details}) {
     console.error('Razorpay order failed', res.status, data?.error?.description);
     throw Object.assign(new Error('Online payment is temporarily unavailable. Please try again shortly, or send your booking on WhatsApp.'), {status: 502});
   }
-  return {orderId: data.id, amount, currency: offerCatalog.currency, keyId: keyId(), offerName: offer.name, priceLabel: formatPrice(offer), mode: state.mode};
+  return {orderId: data.id, amount, currency, keyId: keyId(), offerName: offer.name, priceLabel: formatPrice(offer, undefined, currency), mode: state.mode};
 }
 
 export function verifySignature({orderId, paymentId, signature}) {

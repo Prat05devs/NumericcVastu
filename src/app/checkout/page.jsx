@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import {headers} from 'next/headers';
 import {notFound} from 'next/navigation';
 import {Check, Clock, ShieldCheck} from 'lucide-react';
 import {SiteFooter} from '../../components/SiteChrome';
@@ -7,6 +8,8 @@ import {offerCatalog, formatPrice} from '../../data/offers';
 import {intakeFor, sessionFields} from '../../data/intake';
 import {contact} from '../../data/contact';
 import {onlinePayment} from '../../lib/razorpay';
+import {paypalPayment} from '../../lib/paypal';
+import {requestCurrency} from '../../lib/currency';
 
 export const metadata = {title: 'Checkout | NumericcVaastu', robots: {index: false, follow: false}};
 
@@ -14,8 +17,10 @@ export default async function Page({searchParams}) {
   const {offer: id} = await searchParams;
   const found = offerCatalog.offers.find((o) => o.id === id && o.active);
   if (!found) notFound();
-  const offer = {id: found.id, kind: found.kind, name: found.name, summary: found.summary, priceLabel: formatPrice(found), inclusions: found.inclusions, href: `/${found.kind === 'course' ? 'courses' : 'consultations'}/${found.slug}`};
-  const payment = onlinePayment(found);
+  // Rupees in India, dollars elsewhere; decided on the server so the amount shown is the amount charged.
+  const currency = requestCurrency(await headers());
+  const offer = {id: found.id, kind: found.kind, name: found.name, summary: found.summary, priceLabel: formatPrice(found, undefined, currency), inclusions: found.inclusions, href: `/${found.kind === 'course' ? 'courses' : 'consultations'}/${found.slug}`};
+  const payment = {currency, razorpay: onlinePayment(found, currency), paypal: currency === 'USD' ? paypalPayment(found) : null};
   return <>
     <main id="main" className="hv co-page">
       <div className="hv-wrap co-layout">

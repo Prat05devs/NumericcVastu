@@ -1,0 +1,60 @@
+/* Floating site guide (components/SiteGuide.jsx). The launcher stacks above the WhatsApp button (.wa-float, 56px tall at bottom 20px). */
+.sg-launch{position:fixed;right:20px;bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:30;display:inline-flex;align-items:center;gap:10px;height:56px;padding:0 20px 0 16px;border-radius:999px;background:var(--purple);color:#fff;font-size:15px;font-weight:800;box-shadow:0 14px 30px -10px #2a104680;border:2px solid var(--gold);transition:transform .2s,background .2s}
+.sg-launch:hover{background:var(--purple-deep);transform:translateY(-2px)}
+.sg-launch svg{color:var(--gold-soft)}
+body:not(:has(.wa-float)) .sg-launch{bottom:calc(20px + env(safe-area-inset-bottom,0px))}
+body:has(.sticky-buy.is-shown) .sg-launch{bottom:calc(154px + env(safe-area-inset-bottom,0px))}
+.sg-panel{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:40;width:min(400px,calc(100vw - 40px));height:min(620px,calc(100dvh - 120px));display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 30px 70px -20px #2a104666,0 4px 14px -6px #2a104633;overflow:hidden;outline:none}
+.sg-head{display:flex;align-items:center;gap:10px;padding:12px 10px 12px 16px;background:var(--purple);color:#fff;border-bottom:3px solid var(--gold)}
+.sg-head img{width:36px;height:36px;object-fit:contain;background:#fff;border-radius:50%;padding:3px}
+.sg-head div{flex:1;display:flex;flex-direction:column;line-height:1.25}
+.sg-head strong{font-size:15px}
+.sg-head small{font-size:12px;color:#d9c8ec}
+.sg-icon{width:40px;height:40px;display:grid;place-items:center;border-radius:50%;color:#fff;transition:background .2s}
+.sg-icon:hover{background:#ffffff1f}
+.sg-head .sg-icon:focus-visible{outline:2px solid var(--gold);outline-offset:0}
+.sg-log{position:relative;flex:1;overflow-y:auto;overscroll-behavior:contain;padding:16px;background:var(--lavender);display:flex;flex-direction:column}
+.sg-log>div[aria-live]{display:flex;flex-direction:column;gap:12px}
+.sg-msg{max-width:88%;padding:12px 14px;border-radius:14px;font-size:14.5px;line-height:1.55}
+.sg-msg p{font-size:inherit;line-height:inherit;color:inherit}
+.sg-msg p+p{margin-top:8px}
+.sg-bot{align-self:flex-start;background:#fff;border:1px solid var(--line);border-bottom-left-radius:4px;color:var(--ink)}
+.sg-user{align-self:flex-end;background:var(--purple);color:#fff;border-bottom-right-radius:4px}
+.sg-title{display:block;font-size:15px;color:var(--purple-deep);margin-bottom:6px}
+.sg-list-title{margin-top:10px;font-weight:700;color:var(--purple-deep)!important}
+.sg-bot ul{margin:6px 0 0;padding-left:18px;display:grid;gap:4px}
+.sg-bot li::marker{color:var(--gold-text)}
+.sg-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.sg-links a{display:inline-flex;align-items:center;gap:4px;min-height:36px;padding:6px 12px;border-radius:999px;background:var(--cream);border:1px solid var(--gold-soft);color:var(--purple-deep);font-size:13.5px;font-weight:700;transition:background .2s}
+.sg-links a:hover{background:var(--gold-soft)}
+.sg-links a:first-child{background:var(--purple);border-color:var(--purple);color:#fff}
+.sg-links a:first-child:hover{background:var(--purple-deep)}
+.sg-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.sg-chips button{min-height:36px;padding:6px 13px;border-radius:999px;border:1px solid var(--purple-mid);background:#fff;color:var(--purple);font-size:13.5px;font-weight:700;text-align:left;transition:background .2s,color .2s}
+.sg-chips button:hover{background:var(--purple);color:#fff}
+.sg-chips .sg-chip-home{border-style:dashed;color:var(--muted);border-color:#b9aec5}
+.sg-chips button:focus-visible,.sg-links a:focus-visible{outline-offset:2px}
+.sg-form{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line);background:#fff}
+.sg-form input{flex:1;min-width:0;border-radius:999px;padding:10px 16px;border-color:var(--line)}
+.sg-form input:focus-visible{outline-offset:1px}
+.sg-send{width:44px;height:44px;flex-shrink:0;display:grid;place-items:center;border-radius:50%;background:var(--purple);color:#fff;transition:background .2s,opacity .2s}
+.sg-send:hover{background:var(--purple-deep)}
+.sg-send:disabled{opacity:.4;cursor:default}
+@media(max-width:700px){.sg-launch{width:56px;padding:0;justify-content:center}.sg-launch span{display:none}}
+@media(max-width:560px){.sg-panel{right:8px;left:8px;bottom:calc(8px + env(safe-area-inset-bottom,0px));width:auto;height:calc(100dvh - 72px);border-radius:16px}}
+@media print{.sg-launch,.sg-panel{display:none}}
+@media(prefers-reduced-motion:no-preference){
+  .sg-panel{animation:sg-in .28s var(--ease-out)}
+  .sg-msg{animation:sg-msg .25s var(--ease-out) both}
+  @keyframes sg-in{from{opacity:0;transform:translateY(12px) scale(.98)}}
+  @keyframes sg-msg{from{opacity:0;transform:translateY(6px)}}
+}
+/* Footer invitation for visitors who missed the floating launcher. The button follows the text, clear of the floating buttons at bottom right. */
+.footer-guide{display:flex;align-items:center;gap:18px;margin-bottom:28px;padding:18px 22px;border:1px solid #ffffff26;border-radius:14px;background:#ffffff0d}
+.footer-guide>svg{flex-shrink:0;color:var(--gold)}
+.footer-guide p{max-width:620px;font-size:14.5px;line-height:1.6;color:inherit;opacity:.85}
+.footer-guide strong{color:#fff}
+.footer-guide .button{flex-shrink:0}
+@media(max-width:700px){.footer-guide{flex-direction:column;align-items:flex-start;gap:12px}}
+@media print{.footer-guide{display:none}}
+.currency-preview{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:35;margin:0;padding:8px 14px;border-radius:999px;background:var(--purple-deep);color:#fff;font-size:13px;font-weight:700;box-shadow:0 10px 24px -10px #2a104699}.currency-preview a{color:var(--gold-soft);text-decoration:underline}@media print{.currency-preview{display:none}}

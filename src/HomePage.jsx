@@ -9,15 +9,17 @@ import MediaWall from './components/home/MediaWall';
 import LoShuCalculator from './components/home/LoShuCalculator';
 import AwardsCarousel from './components/home/AwardsCarousel';
 import ReviewCards from './components/ReviewCards';
-import {courses, consultations, formatPrice} from './data/offers';
+import StudentVideos from './components/StudentVideos';
+import {courses, consultations} from './data/offers';
+import Price from './components/Price';
 import {awards, book, heroSlides, instagramProfile, marqueeRows, social, stats, videos} from './data/media';
-import {googleReviews, posts} from './data/content';
+import {faqs, googleReviews, posts} from './data/content';
 import BlogCards from './components/BlogCards';
 import WhatsAppIcon from './components/WhatsAppIcon';
 import FloatingNumbers from './components/FloatingNumbers';
+import LiveCount from './components/LiveCount';
 import {contact} from './data/contact';
 import {predictions} from './data/predictions';
-import {formatTotal} from './lib/formatCount';
 import {crop} from './lib/crop';
 
 const featuredConsultations = [
@@ -30,24 +32,12 @@ const courseImages = {
   'course-accelerator': '/images/students/students-03.webp',
   'course-mastery': '/images/students/students-17.webp',
 };
-/** The stats band leads with total views on the reels listed in media.js, so it updates when reels change. */
-const reelViews = videos.reels.reduce((sum, reel) => sum + (reel.views || 0), 0);
-const proof = reelViews > 0 ? [{value: formatTotal(reelViews), label: 'Views on his top Instagram reels'}, ...stats] : stats;
 const blueprint = consultations.find((item) => item.id === 'consult-blueprint') || consultations[0];
 
 const steps = [
   ['Choose a session', 'Pick the consultation that fits your question, or send a general enquiry if you are unsure.'],
   ['Share your details', 'Your full name and date of birth. For a Vaastu session, a floor plan and the main door direction.'],
   ['Meet Adarshh', 'A one-to-one conversation about your question and the patterns in your numbers.'],
-];
-
-const faqs = [
-  ['I’m completely new to numerology. Where should I start?', 'Start with the foundation course. It introduces the core calculations before moving into chart interpretation. For a question about your own life, a personal consultation is the better first step.'],
-  ['How is Numeric Vaastu different from numerology?', 'Numerology looks at the symbolic patterns in names and birth dates. Numeric Vaastu brings numbers into the study of directions and spaces. The two are offered as complementary traditional frameworks.'],
-  ['What should I prepare for a consultation?', 'Your questions, your full name as you use it, and your date of birth. For a Numeric Vaastu session, a floor plan helps. The team confirms anything else when your session is arranged.'],
-  ['Are consultations online or in person?', 'Both are possible. The format, duration and fee are confirmed with you before the session is booked.'],
-  ['Will I receive a certificate from a course?', 'Each course has a certification pathway. Ask for the current assessment requirements and issuing details before enrolling.'],
-  ['Does a consultation guarantee an outcome?', 'No. Numerology and Numeric Vaastu are traditional interpretive practices, not scientifically established prediction methods. A consultation offers a perspective for reflection and does not replace medical, legal or financial advice.'],
 ];
 
 const formatShortDate = (iso) => new Date(`${iso}T00:00:00`).toLocaleDateString('en-IN', {day: 'numeric', month: 'short', year: 'numeric'});
@@ -77,7 +67,7 @@ export default function HomePage() {
 
       <section className="hv-stats" aria-label="NumericcVaastu in numbers">
         <div className="hv-wrap hv-stats__grid">
-          {proof.map((item) => <div key={item.label}><strong data-count>{item.value}</strong><span>{item.label}</span></div>)}
+          {stats.map((item) => <div key={item.label}>{item.live ? <LiveCount value={item.value} {...item.live}/> : <strong data-count>{item.value}</strong>}<span>{item.label}</span></div>)}
         </div>
       </section>
 
@@ -118,7 +108,7 @@ export default function HomePage() {
               <h3>{offer.name}</h3>
               <p>{offer.summary}</p>
               <div className="hv-service__foot">
-                <strong>{formatPrice(offer)}</strong>
+                <strong><Price offer={offer}/></strong>
                 <Link href={`/consultations/${offer.slug}`} aria-label={`View ${offer.name}`}>View session <ArrowRight size={16}/></Link>
               </div>
             </article>)}
@@ -188,7 +178,7 @@ export default function HomePage() {
               <h3>{offer.name}</h3>
               <p>{offer.summary}</p>
               <ul>{offer.inclusions.slice(0, 3).map((item) => <li key={item}><Check size={16}/>{item}</li>)}</ul>
-              <div className="hv-course__foot"><strong>{formatPrice(offer)}</strong><Link href={`/courses/${offer.slug}`} className="hv-link">View course <ArrowRight size={16}/></Link></div>
+              <div className="hv-course__foot"><strong><Price offer={offer}/></strong><Link href={`/courses/${offer.slug}`} className="hv-link">View course <ArrowRight size={16}/></Link></div>
             </div>
           </li>)}
         </ol>
@@ -215,6 +205,7 @@ export default function HomePage() {
             <Link href="/testimonials" className="hv-link">More client experiences <ArrowUpRight size={17}/></Link>
           </SectionHead>
           <ReviewCards reviews={googleReviews}/>
+          <StudentVideos title="Students of his courses, on video"/>
         </div>
       </section>}
 

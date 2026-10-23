@@ -32,6 +32,8 @@ function Field({f, value, onChange}) {
  * Checkout: contact + session preferences, the reading details numerologists need, then review and payment.
  * Payment runs through Razorpay Standard Checkout: the server creates the order (price from the catalogue),
  * the visitor pays in Razorpay's window, and the server verifies the signature before confirming.
+ * Visitors outside India pay in US dollars with PayPal (and by card through Razorpay once it accepts USD);
+ * the PayPal order is created and captured on the server, which checks the amount before confirming.
  */
 export default function CheckoutFlow({offer, intake, sessionFields, payment, whatsapp, termsHref}) {
   const storeKey = `nv-checkout-${offer.id}`;
@@ -41,6 +43,11 @@ export default function CheckoutFlow({offer, intake, sessionFields, payment, wha
   const [status, setStatus] = useState({state: 'idle', message: ''});
   const panel = useRef(null);
   const [ready, setReady] = useState(false);
+  const {razorpay, paypal} = payment;
+  const usd = payment.currency === 'USD';
+  const paypalBox = useRef(null);
+  // PayPal's buttons are rendered once, so their callbacks read the latest form state from here.
+  const latest = useRef({});
 
   // Keep a draft in this browser tab so a refresh or a back-click loses nothing.
   useEffect(() => {
@@ -69,6 +76,8 @@ export default function CheckoutFlow({offer, intake, sessionFields, payment, wha
   const allFields = [...stepFields[0], ...stepFields[1]].filter((f) => f.type !== 'heading' && f.type !== 'note');
   const details = useMemo(() => Object.fromEntries(allFields.filter((f) => !contactFields.some((c) => c.name === f.name) && values[f.name]).map((f) => [f.name, show(f, values[f.name])])), [values]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  latest.current = {values, details, agreed};
+
   function next(event) {
     event.preventDefault();
     if (step === 0 && !/^\+?[0-9 ]{10,15}$/.test((values.phone || '').trim())) { setStatus({state: 'error', message: 'Please enter a valid mobile number, for example +91 98765 43210.'}); return; }
@@ -83,6 +92,47 @@ export default function CheckoutFlow({offer, intake, sessionFields, payment, wha
     lines.push('', '— Sent from numericcvaastu.com');
     return lines.join('\n');
   };
+
+  function done({paymentId, orderId, verified}) {
+    try { sessionStorage.setItem('nv-last-booking', JSON.stringify({offer: offer.name, kind: offer.kind, price: offer.priceLabel, paymentId, orderId, verified, message: summaryText(paymentId)})); sessionStorage.removeItem(storeKey); } catch {}
+    window.location.href = `/checkout/success?status=${verified ? 'paid' : 'check'}`;
+  }
+
+  // PayPal buttons for visitors paying in dollars, drawn when the review step opens.
+  useEffect(() => {
+    if (step !== 2 || !paypal?.enabled || !paypalBox.current) return;
+    let buttons, gone = false;
+    const src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(paypal.clientId)}&currency=USD&intent=capture&components=buttons`;
+    const load = window.paypal ? Promise.resolve() : new Promise((resolve, reject) => { const s = document.createElement('script'); s.src = src; s.onload = resolve; s.onerror = () => reject(new Error('Could not load PayPal. Check your connection and try again.')); document.body.appendChild(s); });
+    load.then(() => {
+      if (gone) return;
+      buttons = window.paypal.Buttons({
+        style: {layout: 'vertical', shape: 'pill', color: 'gold', label: 'pay'},
+        onClick: (_, actions) => {
+          if (latest.current.agreed) return actions.resolve();
+          setStatus({state: 'error', message: 'Please accept the terms to continue.'});
+          return actions.reject();
+        },
+        createOrder: async () => {
+          setStatus({state: 'idle', message: ''});
+          const res = await fetch('/api/paypal/order', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({offerId: offer.id})});
+          const order = await res.json();
+          if (!res.ok) { setStatus({state: 'error', message: order.error || 'Could not start the payment.'}); throw new Error(order.error); }
+          return order.orderId;
+        },
+        onApprove: async ({orderID}) => {
+          setStatus({state: 'busy', message: 'Confirming your payment…'});
+          const {values: v, details: d} = latest.current;
+          const r = await fetch('/api/paypal/capture', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({orderId: orderID, customer: {name: v.name, email: v.email, phone: v.phone, city: v.city}, details: d})}).then((x) => x.json()).catch(() => ({verified: false}));
+          done({paymentId: r.captureId || orderID, orderId: orderID, verified: r.verified});
+        },
+        onCancel: () => setStatus({state: 'idle', message: 'Payment window closed. Your details are saved; you can try again.'}),
+        onError: () => setStatus((s) => (s.state === 'error' ? s : {state: 'error', message: 'PayPal could not complete the payment. No money was taken; please try again or use another method.'})),
+      });
+      buttons.render(paypalBox.current);
+    }).catch((e) => setStatus({state: 'error', message: e.message}));
+    return () => { gone = true; buttons?.close?.(); };
+  }, [step, paypal?.enabled, paypal?.clientId, offer.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function pay() {
     if (!agreed) { setStatus({state: 'error', message: 'Please accept the terms to continue.'}); return; }
@@ -101,8 +151,7 @@ export default function CheckoutFlow({offer, intake, sessionFields, payment, wha
         handler: async (r) => {
           setStatus({state: 'busy', message: 'Confirming your payment…'});
           const v = await fetch('/api/checkout/verify', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(r)}).then((x) => x.json()).catch(() => ({verified: false}));
-          try { sessionStorage.setItem('nv-last-booking', JSON.stringify({offer: offer.name, kind: offer.kind, price: offer.priceLabel, paymentId: r.razorpay_payment_id, orderId: r.razorpay_order_id, verified: v.verified, message: summaryText(r.razorpay_payment_id)})); sessionStorage.removeItem(storeKey); } catch {}
-          window.location.href = `/checkout/success?status=${v.verified ? 'paid' : 'check'}`;
+          done({paymentId: r.razorpay_payment_id, orderId: r.razorpay_order_id, verified: v.verified});
         },
       });
       rzp.on('payment.failed', (e) => setStatus({state: 'error', message: `Payment failed: ${e.error?.description || 'please try again or use another method.'} No money was taken for a failed payment.`}));
@@ -141,16 +190,17 @@ export default function CheckoutFlow({offer, intake, sessionFields, payment, wha
       </div>
       <label className="co-agree"><input type="checkbox" checked={agreed} onChange={(e) => { setAgreed(e.target.checked); if (e.target.checked) setStatus({state: 'idle', message: ''}); }}/> <span>I agree to the <Link href={termsHref.terms} target="_blank">terms</Link>, <Link href={termsHref.refund} target="_blank">refund policy</Link> and <Link href={termsHref.disclaimer} target="_blank">disclaimer</Link>, and understand that numerology offers guidance, not guaranteed outcomes.</span></label>
       {status.message && <p className={status.state === 'error' ? 'co-msg is-error' : 'co-msg'} role="status">{status.message}</p>}
-      {payment.enabled
-        ? <button type="button" className="hv-button hv-button--gold co-pay" onClick={pay} disabled={status.state === 'busy'}><Lock size={18}/> {status.state === 'busy' ? 'Please wait…' : `Pay ${offer.priceLabel} securely`}</button>
-        : <div className="co-offline">
-          <p><b>{payment.reason}</b> Send this booking to Adarshh on WhatsApp and the team will confirm your slot and share a payment link.</p>
+      {paypal?.enabled && <div className="co-paypal" ref={paypalBox}/>}
+      {razorpay.enabled && <button type="button" className={paypal?.enabled ? 'hv-button co-pay' : 'hv-button hv-button--gold co-pay'} onClick={pay} disabled={status.state === 'busy'}><Lock size={18}/> {status.state === 'busy' ? 'Please wait…' : usd ? `Pay ${offer.priceLabel} by card` : `Pay ${offer.priceLabel} securely`}</button>}
+      {!razorpay.enabled && !paypal?.enabled && <div className="co-offline">
+          <p><b>{usd ? 'Online payment in US dollars is being set up.' : razorpay.reason}</b> Send this booking to Adarshh on WhatsApp and the team will confirm your slot and share a payment link.</p>
           <a className="hv-button hv-button--whatsapp co-pay" href={agreed ? whatsappUrl(whatsapp, summaryText()) : undefined} onClick={(e) => { if (!agreed) { e.preventDefault(); setStatus({state: 'error', message: 'Please accept the terms to continue.'}); } }} target="_blank" rel="noopener noreferrer"><WhatsAppIcon size={20}/> Confirm booking on WhatsApp</a>
         </div>}
-      {payment.mode === 'test' && payment.enabled && <p className="co-test">Test mode: use Razorpay test card 4111 1111 1111 1111 or UPI ID success@razorpay. No real money is charged.</p>}
+      {razorpay.mode === 'test' && razorpay.enabled && <p className="co-test">Test mode: use Razorpay test card 4111 1111 1111 1111{usd ? '' : ' or UPI ID success@razorpay'}. No real money is charged.</p>}
+      {paypal?.mode === 'test' && paypal.enabled && <p className="co-test">PayPal sandbox: sign in with a sandbox buyer account from developer.paypal.com. No real money is charged.</p>}
       <ul className="co-trust">
-        <li><ShieldCheck size={16}/> Payments processed by Razorpay</li>
-        <li><CreditCard size={16}/> UPI, cards, net banking and wallets</li>
+        <li><ShieldCheck size={16}/> {usd ? 'Payments processed by PayPal and Razorpay' : 'Payments processed by Razorpay'}</li>
+        <li><CreditCard size={16}/> {usd ? 'PayPal, debit and credit cards, in US dollars' : 'UPI, cards, net banking and wallets'}</li>
         <li><Lock size={16}/> We never see or store your card details</li>
       </ul>
       <div className="co-actions"><button type="button" className="hv-link" onClick={() => setStep(1)}><ArrowLeft size={16}/> Back</button></div>

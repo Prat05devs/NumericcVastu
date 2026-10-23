@@ -14,3 +14,4 @@
 @media(max-width:560px){.menu-toggle{width:44px;height:44px}.nav{gap:8px}.nav .button{min-height:44px}.footer-bottom button,.footer-bottom a{min-height:44px}}
 .art-paper{background:none;overflow:hidden}.art-paper img{object-fit:cover;object-position:right center;width:200%!important;max-width:none;left:auto!important;right:0!important}
 @media(max-width:560px){.hero h1{font-size:clamp(43px,13.6vw,58px);letter-spacing:-2.7px}}
+html:not([data-currency="USD"]) [data-cur="USD"],html[data-currency="USD"] [data-cur="INR"]{display:none}

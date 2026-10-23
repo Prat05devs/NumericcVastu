@@ -1,4 +1,5 @@
 import {appearances, ownShow} from './podcasts';
+import {contact} from './contact';
 
 /**
  * Homepage proof, social and video content.
@@ -10,7 +11,7 @@ import {appearances, ownShow} from './podcasts';
 export const social = {
   instagram: process.env.NEXT_PUBLIC_INSTAGRAM_URL || 'https://www.instagram.com/numerologybyaadarshh/',
   youtube: process.env.NEXT_PUBLIC_YOUTUBE_URL || 'https://www.youtube.com/@Numerologistadarshpandey',
-  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_URL || 'https://wa.me/917042955904?text=' + encodeURIComponent('Namaste Adarshh ji 🙏 I found you on numericcvaastu.com and would like to know more.'),
+  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_URL || `https://wa.me/${contact.whatsapp}?text=` + encodeURIComponent('Namaste Adarshh ji 🙏 I found you on numericcvaastu.com and would like to know more.'),
 };
 
 /** Public Instagram profile snapshot, copied from instagram.com/numerologybyaadarshh on 10 October 2026.
@@ -27,12 +28,15 @@ export const instagramProfile = {
   asOf: '10 October 2026',
 };
 
-/** Reconfirm each figure with the client before launch; `source` records where it came from. */
+/** Reconfirm each figure with the client before launch; `source` records where it came from.
+ *  `live` makes the figure tick upwards on screen like a live subscriber counter: a random [min, max]
+ *  added every `every` ms (components/LiveCount.jsx). Leave it off for figures that should stay fixed. */
 export const stats = [
-  {value: '20,000+', label: 'Consultations', source: 'Instagram bio, October 2026'},
+  {value: '80,000,000+', label: 'Views across all platforms', source: 'Client, 21 October 2026', live: {step: [3, 19], every: 1600}},
+  {value: '20,000+', label: 'Consultations', source: 'Instagram bio, October 2026', live: {step: [1, 1], every: 9000}},
   {value: `${appearances.length + ownShow.length}+`, label: 'Podcast conversations', source: 'data/podcasts.js'},
   {value: '7+', label: 'Years of practice', source: 'Instagram bio, October 2026'},
-  {value: '24K+', label: 'Instagram followers', source: 'instagram.com/numerologybyaadarshh, 10 October 2026'},
+  {value: '24,200+', label: 'Instagram followers', source: 'instagram.com/numerologybyaadarshh, 10 October 2026', live: {step: [1, 2], every: 6000}},
 ];
 
 export const book = {
@@ -81,18 +85,16 @@ export const awards = [
  * instagramUrl: the full reel link, e.g. https://www.instagram.com/reel/ABC123xyz/
  * poster: optional; YouTube entries fall back to the video's own thumbnail.
  */
+/** Client rule: podcasts under this many YouTube views are not shown in the homepage highlights. */
+export const PODCAST_MIN_VIEWS = 30000;
+
 export const videos = {
-  /** From youtube.com/@Numerologistadarshpandey (October 2026): his podcast playlist plus his most-viewed
-   *  podcast-style video, most viewed first. Thumbnails are saved locally so nothing loads from YouTube until play. */
-  podcasts: [
-    {title: 'Mobile number’s last 6 digits can change your luck', youtubeId: 'kCPtD7mMC-Q', poster: '/images/youtube/kCPtD7mMC-Q.webp'},
-    {title: 'How to manifest love, career and money', youtubeId: 'm9IGTcZQWRY', poster: '/images/youtube/m9IGTcZQWRY.webp'},
-    {title: 'Loans, stress and pain: healing over manifestation', youtubeId: 'xozPx9IbpvQ', poster: '/images/youtube/xozPx9IbpvQ.webp'},
-    {title: 'Mulank 2, 4 and 8: know your lucky and enemy numbers', youtubeId: 'OZqY4L99khg', poster: '/images/youtube/OZqY4L99khg.webp'},
-    {title: 'Lal Kitab vs astrology: predictions and career secrets', youtubeId: 'SdrSfaJAEc0', poster: '/images/youtube/SdrSfaJAEc0.webp'},
-    {title: 'How missing numbers block your success', youtubeId: 'vjBBaqjPT_I', poster: '/images/youtube/vjBBaqjPT_I.webp', with: 'Mushtaq Khan'},
-    {title: 'Lucky numbers for love, business and life', youtubeId: '8bk-2Yqg9So', poster: '/images/youtube/8bk-2Yqg9So.webp'},
-  ],
+  /** The client shows only podcasts with at least 30K views on YouTube (October 2026). Built from
+   *  data/podcasts.js, most viewed first, so episodes join or leave as their view counts are updated. */
+  podcasts: [...appearances, ...ownShow]
+    .filter((e) => e.views >= PODCAST_MIN_VIEWS)
+    .sort((a, b) => b.views - a.views)
+    .map((e) => ({title: e.title, youtubeId: e.id, poster: `/images/podcasts/${e.id}.webp`, views: e.views, with: e.show})),
   /** Most-viewed YouTube Shorts in which Adarshh appears on screen (October 2026). */
   shorts: [
     {title: 'Keeping deities at home: faith and respect', youtubeId: 'TEpksbK16sE', poster: '/images/youtube/TEpksbK16sE.webp'},
@@ -114,5 +116,18 @@ export const videos = {
     {title: 'How missing numbers block your success', views: 331000, instagramUrl: 'https://www.instagram.com/reel/DbbaGYLSwG8/', poster: '/images/reels/DbbaGYLSwG8.webp', with: 'Bharat Brand Baazar'},
     {title: 'Mulank 1: how will the next three months go?', views: 50000, instagramUrl: 'https://www.instagram.com/reel/DeQ2tuqTwae/', poster: '/images/reels/DeQ2tuqTwae.webp', with: 'Anuj Srivastava'},
     {title: 'Mobile number combinations: 2-4, 4-4 and 2-3', views: 28000, instagramUrl: 'https://www.instagram.com/reel/Dc56oUqnc2b/', poster: '/images/reels/Dc56oUqnc2b.webp'},
+    // Added 21 October 2026 at the client's request. Instagram hides reel views from logged-out visitors; add `views` once the client shares the count.
+    {title: 'Dharmendra ji and the challenging 8–2 phase', instagramUrl: 'https://www.instagram.com/reel/DRcMX9Diafk/', poster: '/images/reels/DRcMX9Diafk.webp', with: 'Ekta Mishra'},
   ],
 };
+
+/** Self-hosted videos in public/videos, supplied by the client in October 2026. Posters are frames from each video.
+ *  The students are not named on screen; add `name` to an entry once the client confirms it may be shown. */
+export const studentVideos = [
+  {src: '/videos/student-feedback-01.mp4', poster: '/videos/posters/student-feedback-01.webp', title: 'Student feedback on Adarshh’s numerology course', minutes: '1:19'},
+  {src: '/videos/student-feedback-02.mp4', poster: '/videos/posters/student-feedback-02.webp', title: 'Student feedback on Adarshh’s numerology course', minutes: '2:34'},
+  {src: '/videos/student-feedback-03.mp4', poster: '/videos/posters/student-feedback-03.webp', title: 'Student feedback on Adarshh’s numerology course', minutes: '2:08'},
+];
+
+/** Adarshh walking through his book, Numerology: Numbers That Speak. */
+export const bookVideo = {src: '/videos/book-numbers-that-speak.mp4', poster: '/videos/posters/book-numbers-that-speak.webp', title: 'Adarshh Panndey on his book, Numerology: Numbers That Speak', minutes: '1:34'};
