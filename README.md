@@ -19,7 +19,7 @@ Open http://localhost:3000 (or the port reported by Next.js). Use `npm run build
 
 Copy `.env.example` to `.env.local`. `NEXT_PUBLIC_SITE_URL` is the canonical production origin. `NEXT_PUBLIC_CONTACT_EMAIL` activates a prepared email enquiry; when absent, the booking form downloads a draft locally and makes no submission. `NEXT_PUBLIC_BOOKING_URL` is retained from the earlier prototype but the new booking page owns the current journey.
 
-The image assets downloaded from the former site are in `public/images/adarshh/`; their provenance is in `docs/existing-site-assets.json`. Confirm captions and permissions for people at certificate events before adding names. The founder surname follows the owner-supplied spelling “Pandey”; the old site sometimes uses “Panndey”.
+The image assets downloaded from the former site are in `public/images/adarshh/`; their provenance is in `docs/existing-site-assets.json`. Confirm captions and permissions for people at certificate events before adding names. Use the owner-confirmed name “Adarshh Panndey” everywhere in website copy. Existing image filenames retain their original `adarshh-pandey-` slug.
 
 ## Loader preview
 

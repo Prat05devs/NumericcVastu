@@ -62,7 +62,7 @@ export function SalesHero() {
 
   return <section className="sales-hero wrap" aria-labelledby="sales-hero-title">
     <div className="sales-hero__copy">
-      <span className="sales-hero__eyebrow"><span aria-hidden="true">✳</span> NUMEROLOGY EDUCATION WITH ADARSHH PANDEY</span>
+      <span className="sales-hero__eyebrow"><span aria-hidden="true">✳</span> NUMEROLOGY EDUCATION WITH ADARSHH PANNDEY</span>
       <h1 id="sales-hero-title">Learn to read numbers.<br/><em>Build a practice with purpose.</em></h1>
       <p className="sales-hero__lead">Go from your first calculation to a structured reading with guided practice and a clear learning path.</p>
       <div className="sales-hero__actions">
