@@ -1296,3 +1296,4 @@ body:has(.sticky-buy.is-shown) .wa-float{bottom:calc(86px + env(safe-area-inset-
 .reviews-block .student-videos{margin-top:8px}
 .ac-certs{columns:4 220px}
 @media(max-width:600px){.ac-certs{columns:2;column-gap:12px}.ac-certs .ac-photo{margin-bottom:12px}.ac-certs figcaption{font-size:12.5px;padding:10px 12px}}
+.co-paypal{margin-top:16px;min-height:50px;position:relative;z-index:0}

@@ -3,6 +3,7 @@ import {useEffect, useMemo, useRef, useState} from 'react';
 import {ArrowLeft, ArrowRight, Check, Copy, Pencil} from 'lucide-react';
 import WhatsAppIcon from './WhatsAppIcon';
 import {buildMessage, whatsappUrl} from '../lib/whatsapp';
+import {useCurrency} from '../lib/useCurrency';
 
 const TIMES = ['Morning', 'Afternoon', 'Evening', 'Any time'];
 const LANGUAGES = ['Hindi', 'English', 'Either'];
@@ -44,7 +45,8 @@ export default function EnquiryFlow({consultations, courses, scenarios, number, 
     root.current?.querySelector('.eq-panel')?.focus({preventScroll: true});
   }, [step]);
 
-  const list = kind === 'course' ? courses : kind === 'consultation' ? consultations : [];
+  const currency = useCurrency();
+  const list = (kind === 'course' ? courses : kind === 'consultation' ? consultations : []).map((o) => ({...o, priceLabel: o.priceLabels[currency]}));
   const offer = list.find((o) => o.id === offerId) || null;
   const suggestions = kind === 'course' ? COURSE_GOALS : kind === 'consultation' && offer ? scenarios[offer.id] || [] : [];
   const set = (key) => (value) => setForm((f) => ({...f, [key]: value}));

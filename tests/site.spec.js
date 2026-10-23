@@ -6,9 +6,9 @@ test('consultation page, WhatsApp enquiry and checkout',async({page})=>{
  await expect(page.getByRole('heading',{name:/Not sure which consultation/})).toBeVisible();
  await expect(page.locator('.cs__box')).toHaveCount(6);
  const priceCard=page.getByRole('article').filter({has:page.getByRole('link',{name:'Personal Numerology Blueprint Session'})}).first();
- const price=await priceCard.locator('strong').last().textContent();
+ const price=await priceCard.locator('strong').last().innerText();
  await priceCard.getByRole('link',{name:'Personal Numerology Blueprint Session',exact:true}).click();
- await expect(page.locator('.csd-hero .cd-price strong')).toHaveText(price);
+ await expect(page.locator('.csd-hero .cd-price strong')).toHaveText(price,{useInnerText:true});
  await page.getByRole('link',{name:/Ask first/}).click();
  await expect(page.locator('.eq-chosen strong')).toHaveText('Personal Numerology Blueprint Session');
  await page.getByLabel('Your name').fill('Test Visitor');

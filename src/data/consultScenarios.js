@@ -97,3 +97,6 @@ export const consultScenarios = {
     'Which direction should you face while working?',
   ],
 };
+
+/** Short labels for each consultation, used by the Consultations page hero and the site guide. */
+export const consultShortNames = {'consult-blueprint':'Personal blueprint','consult-career':'Career','consult-relationship':'Relationships','consult-business':'Business','consult-baby-name':'Baby name','consult-name':'Name correction','consult-mobile':'Mobile number','consult-watch':'Wristwatch','consult-signature':'Signature','consult-home-vastu':'Home Vastu','consult-office-vastu':'Office Vastu'};

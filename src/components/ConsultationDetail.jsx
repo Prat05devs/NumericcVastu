@@ -5,7 +5,8 @@ import {SiteFooter} from './SiteChrome';
 import StickyBuy from './StickyBuy';
 import ReviewCards from './ReviewCards';
 import WhatsAppIcon from './WhatsAppIcon';
-import {consultations, formatPrice, offerCatalog} from '../data/offers';
+import {consultations, offerCatalog} from '../data/offers';
+import Price from './Price';
 import {consultScenarios} from '../data/consultScenarios';
 import {intakeFor, sessionFields} from '../data/intake';
 import {googleReviews} from '../data/content';
@@ -54,7 +55,7 @@ export default function ConsultationDetail({offer}) {
               <li><Languages size={16}/>Hindi or English</li>
             </ul>
             <div className="csd-hero__buy" id="buy-anchor">
-              <div className="cd-price is-dark"><strong>{formatPrice(offer)}</strong><span>Consultation fee</span></div>
+              <div className="cd-price is-dark"><strong><Price offer={offer}/></strong><span>Consultation fee</span></div>
               <Link className="hv-button hv-button--gold" href={checkout}>Book this session <ArrowUpRight size={18}/></Link>
               <Link className="hv-button hv-button--ghost" href={ask}><WhatsAppIcon size={18}/> Ask first</Link>
             </div>
@@ -112,10 +113,10 @@ export default function ConsultationDetail({offer}) {
       {related.length > 0 && <section className="hv-section hv-tint" aria-labelledby="csd-more">
         <div className="hv-wrap">
           <div className="hv-head"><div><span className="hv-eyebrow">Related sessions</span><h2 id="csd-more">You might <em>also need.</em></h2></div><div className="hv-head__aside"><Link className="hv-link" href="/consultations">All consultations <ArrowUpRight size={16}/></Link></div></div>
-          <ul className="csd-related">{related.map((r) => <li key={r.id}><Link href={`/consultations/${r.slug}`}><small>{r.category}</small><h3>{r.name}</h3><p>{r.summary}</p><span><b>{formatPrice(r)}</b><ArrowUpRight size={18}/></span></Link></li>)}</ul>
+          <ul className="csd-related">{related.map((r) => <li key={r.id}><Link href={`/consultations/${r.slug}`}><small>{r.category}</small><h3>{r.name}</h3><p>{r.summary}</p><span><b><Price offer={r}/></b><ArrowUpRight size={18}/></span></Link></li>)}</ul>
         </div>
       </section>}
-      <StickyBuy name={offer.name} price={formatPrice(offer)} href={checkout} label="Book now"/>
+      <StickyBuy name={offer.name} price={<Price offer={offer}/>} href={checkout} label="Book now"/>
       <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify({'@context': 'https://schema.org', '@type': 'Service', name: offer.name, description: offer.summary, provider: {'@type': 'Person', name: 'Adarshh Panndey'}, areaServed: 'IN', url: `${origin}/consultations/${offer.slug}`, offers: {'@type': 'Offer', price: offer.pricePaise / 100, priceCurrency: 'INR', url: `${origin}/checkout?offer=${offer.id}`}}).replace(/</g, '\\u003c')}}/>
     </main>
     <SiteFooter/>
