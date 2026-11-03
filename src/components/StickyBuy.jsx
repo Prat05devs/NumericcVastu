@@ -1,4 +1,6 @@
 'use client';
+import LocalizedContent from '../i18n/LocalizedContent';
+
 import {useEffect, useState} from 'react';
 import Link from 'next/link';
 import {ArrowUpRight} from 'lucide-react';
@@ -13,10 +15,10 @@ export default function StickyBuy({name, price, href, label, watch = '#buy-ancho
     io.observe(el);
     return () => io.disconnect();
   }, [watch]);
-  return <div className={show ? 'sticky-buy is-shown' : 'sticky-buy'} aria-hidden={!show}>
+  return <LocalizedContent><div className={show ? 'sticky-buy is-shown' : 'sticky-buy'} aria-hidden={!show}>
     <div className="hv-wrap sticky-buy__inner">
       <div><b>{name}</b><span>{price}</span></div>
       <Link className="hv-button hv-button--gold" href={href} tabIndex={show ? 0 : -1}>{label} <ArrowUpRight size={17}/></Link>
     </div>
-  </div>;
+  </div></LocalizedContent>;
 }

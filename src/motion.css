@@ -96,7 +96,7 @@
 
   /* ---------- Ambient: floating numerals in dark bands ---------- */
   .nv-float{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
-  .nv-float span{position:absolute;bottom:-15%;font-family:'NV Digits','Cormorant Garamond',serif;font-weight:600;line-height:1;color:#fff;opacity:0;animation:nv-drift linear infinite}
+  .nv-float span{position:absolute;bottom:-15%;font-family:'NV Digits',var(--font-cormorant),serif;font-weight:600;line-height:1;color:#fff;opacity:0;animation:nv-drift linear infinite}
   @keyframes nv-drift{0%{translate:0 0;rotate:-6deg;opacity:0}12%{opacity:.07}50%{translate:14px -60vh;rotate:4deg}88%{opacity:.06}100%{translate:-8px -120vh;rotate:-2deg;opacity:0}}
   :is(.hv-final,.cd-hero,.pc-invite,.cd-mentor){position:relative;overflow:hidden}
   :is(.hv-final,.cd-hero,.pc-invite,.cd-mentor)>:not(.nv-float){position:relative;z-index:1}

@@ -19,6 +19,8 @@ export const faceBoxes = {
   '/images/gallery/award-felicitation-stage.webp': [0.163, 0.046, 0.863, 0.406],
   '/images/gallery/award-gurucool-book-of-the-year-2025.webp': [0.224, 0.3, 0.776, 0.729],
   '/images/gallery/award-international-spotlight.webp': [0.412, 0.289, 0.604, 0.571],
+  '/images/gallery/award-spotlight-ceremony.webp': [0.29, 0.24, 0.66, 0.45],
+  '/images/gallery/event-garlanded-hd.webp': [0.33, 0.27, 0.57, 0.44],
   '/images/gallery/award-mahakumbh-plaque.webp': [0.249, 0.089, 0.701, 0.439],
   '/images/gallery/award-national-awards-2025.webp': [0.152, 0.109, 0.812, 0.452],
   '/images/gallery/award-plaque-presentation.webp': [0.142, 0.145, 0.702, 0.385],

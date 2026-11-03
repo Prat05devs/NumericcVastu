@@ -5,7 +5,7 @@
  * - Mulank (driver/psychic number): the day of birth reduced to one digit.
  * - Bhagyank (conductor/destiny number): every digit of the full date added and reduced.
  * - Grid: every non-zero digit of DD-MM-YYYY, plus Bhagyank, plus Mulank when the day has two
- *   different digits (11–31 except 20 and 30; for 1–9, 10, 20 and 30 the Mulank digit is already there),
+ *   digits with non-zero units (11–31 except 20 and 30; for 1–9, 10, 20 and 30 the Mulank digit is already there),
  *   plus Kua when the person chooses to include it. Zeros have no cell and are left out.
  * - Kua (from Feng Shui, widely used alongside Lo Shu in India): reduce the last two digits of the year.
  *   Born before 2000: male 10 − n, female n + 5. Born 2000 or later: male 9 − n, female n + 6.
@@ -95,6 +95,25 @@ export const PLANES = [
   {key: 'silver', name: 'Silver Yog (Rajat Yog)', digits: [2, 5, 8], kind: 'Diagonal', full: 'Traditionally linked with property, land and strong willpower, often after ups and downs.', none: 'Property and assets build slowly; patience matters.'},
 ];
 
+/** Separate Vedic planes in the 3-1-9 / 6-7-5 / 2-8-4 layout.
+ * Structural reference: Aditya Vastu's own Vedic calculator. Wording is reflective,
+ * not a reproduction of deterministic medical or financial predictions.
+ */
+export const VEDIC_PLANES = [
+  {key:'vedic-thought',name:'Vedic thought plane',digits:[3,1,9],full:'A theme of planning, clear aims and taking responsibility.',none:'Practise turning an idea into a written plan.'},
+  {key:'vedic-will',name:'Vedic will plane',digits:[6,7,5],full:'A theme of persistence, emotional steadiness and following through.',none:'Use small regular commitments to strengthen consistency.'},
+  {key:'vedic-action',name:'Vedic action plane',digits:[2,8,4],full:'A theme of practical effort, organisation and steady execution.',none:'Make the next practical step small and specific.'},
+  {key:'vedic-intuition',name:'Vedic intuition plane',digits:[3,6,2],full:'A theme of imagination, empathy and explaining ideas to others.',none:'Create time to listen, reflect and ask questions.'},
+  {key:'vedic-balance',name:'Vedic balance plane',digits:[1,7,8],full:'A theme of analysis, self-discipline and thoughtful decisions.',none:'Balance independent work with outside feedback.'},
+  {key:'vedic-business',name:'Vedic business plane',digits:[9,5,4],full:'A theme of initiative, adaptability and organising work.',none:'Review priorities before committing energy to a new project.'},
+  {key:'vedic-learning',name:'Vedic learning diagonal',digits:[3,7,4],full:'A theme of sustained study and turning knowledge into practice.',none:'Choose one learning goal and a regular practice time.'},
+  {key:'vedic-resolve',name:'Vedic resolve diagonal',digits:[9,7,2],full:'A theme of courage, patience and meeting challenges thoughtfully.',none:'Build confidence through preparation and achievable steps.'},
+];
+const evaluatePlanes = (definitions, counts) => definitions.map(plane => {
+  const have = plane.digits.filter(n => counts[n]).length;
+  return {...plane, status: have === 3 ? 'full' : have === 0 ? 'none' : 'partial', have};
+});
+
 /** What each number is traditionally read as when it is missing from the grid. */
 export const MISSING = {
   1: 'Self-expression and confidence may need work; speaking up can feel hard.',
@@ -133,23 +152,46 @@ export const PERSONAL_YEAR = {
   9: 'Completion. Finish cycles and let go before the next one.',
 };
 
-/** Kua: best ("success") direction and East/West group, per the standard Eight Mansions table. */
-export const KUA = {
-  1: {group: 'East', best: 'South-east'}, 2: {group: 'West', best: 'North-east'}, 3: {group: 'East', best: 'South'},
-  4: {group: 'East', best: 'North'}, 6: {group: 'West', best: 'West'}, 7: {group: 'West', best: 'North-west'},
-  8: {group: 'West', best: 'South-west'}, 9: {group: 'East', best: 'East'},
+/** Eight Mansions (Ba Zhai) reference: each Kua has four favourable directions.
+ * https://www.fengshuied.com/kua-number
+ * https://www.fengshuiweb.co.uk/wp-content/uploads/2012/04/eightmansions-1.pdf
+ * These are traditional categories, not guaranteed health, career or relationship outcomes.
+ */
+export const KUA_PURPOSES = [
+  {key: 'growth', label: 'Personal growth & study', traditional: 'Fu Wei'},
+  {key: 'wellbeing', label: 'Rest & wellbeing', traditional: 'Tien Yi'},
+  {key: 'success', label: 'Work & ambition', traditional: 'Sheng Chi'},
+  {key: 'relationships', label: 'Relationships & harmony', traditional: 'Yan Nian'},
+];
+// Columns: Sheng Chi, Tien Yi, Yan Nian, Fu Wei. Retain `best` for compatibility;
+// display all four purposes to avoid presenting Sheng Chi as a universal recommendation.
+const KUA_ROWS = {
+  1: ['East', 'South-east', 'East', 'South', 'North'],
+  2: ['West', 'North-east', 'West', 'North-west', 'South-west'],
+  3: ['East', 'South', 'North', 'South-east', 'East'],
+  4: ['East', 'North', 'South', 'East', 'South-east'],
+  6: ['West', 'West', 'North-east', 'South-west', 'North-west'],
+  7: ['West', 'North-west', 'South-west', 'North-east', 'West'],
+  8: ['West', 'South-west', 'North-west', 'West', 'North-east'],
+  9: ['East', 'East', 'South-east', 'North', 'South'],
 };
+const KUA_COLUMN = {success: 1, wellbeing: 2, relationships: 3, growth: 4};
+export const KUA = Object.fromEntries(Object.entries(KUA_ROWS).map(([n, row]) => [n, {
+  group: row[0], best: row[1],
+  favourable: KUA_PURPOSES.map(purpose => ({...purpose, direction: row[KUA_COLUMN[purpose.key]]})),
+}]));
 
-export function kuaNumber(year, gender) {
-  const n = reduce(digitSum(String(year).slice(-2)));
-  let k;
-  if (gender === 'male') k = year < 2000 ? 10 - n : 9 - n;
-  else k = year < 2000 ? n + 5 : n + 6;
-  k = reduce(k);
-  if (k === 0) k = 9;
-  if (k === 5) k = gender === 'male' ? 2 : 8;
-  return k;
+export function kuaCalculation(year, gender) {
+  const digits = [...String(year).slice(-2)].map(Number);
+  const factor = reduce(digits.reduce((sum,n) => sum+n,0));
+  const constant = gender === 'male' ? (year < 2000 ? 10 : 9) : (year < 2000 ? 5 : 6);
+  const operator = gender === 'male' ? '−' : '+';
+  const raw = gender === 'male' ? constant - factor : factor + constant;
+  const reduced = reduce(raw);
+  const number = reduced === 0 ? 9 : reduced === 5 ? (gender === 'male' ? 2 : 8) : reduced;
+  return {digits, factor, constant, operator, raw, number};
 }
+export const kuaNumber = (year, gender) => kuaCalculation(year, gender).number;
 
 /** One-line themes for each life period, condensed from the full report's Maha Dasha chapter. */
 export const PERIOD_THEME = {
@@ -174,13 +216,24 @@ export function lifePeriods(day, month, year, mulank, today = new Date()) {
 
 export const personalYear = (day, month, year) => reduce(reduce(day) + reduce(month) + reduce(digitSum(String(year))));
 
+/** Strict validation shared by the form, URL prefill and full report. */
+export function validBirthDate(iso, today = new Date()) {
+  if (typeof iso !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return false;
+  const [year, month, day] = iso.split('-').map(Number);
+  const date = new Date(year, month - 1, day);
+  return year >= 1900 && date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day && date <= today;
+}
+
 /** Full reading for an ISO date (YYYY-MM-DD). gender: 'male' | 'female' | '' (no Kua). */
 export function readChart(iso, gender = '', today = new Date()) {
+  if (!validBirthDate(iso, today)) throw new RangeError('Enter a valid date of birth from 1900 to today.');
+  if (!['', 'male', 'female'].includes(gender)) throw new RangeError('Choose a valid Kua option.');
   const [y, m, d] = iso.split('-').map(Number);
   const dateDigits = `${String(d).padStart(2, '0')}${String(m).padStart(2, '0')}${y}`;
   const mulank = reduce(d);
   const bhagyank = reduce(digitSum(dateDigits));
-  const kua = gender ? kuaNumber(y, gender) : null;
+  const kuaDetails = gender ? kuaCalculation(y, gender) : null;
+  const kua = kuaDetails?.number || null;
 
   const sources = [...dateDigits].map(Number).filter(Boolean).map((n) => ({n, from: 'date'}));
   sources.push({n: bhagyank, from: 'bhagyank'});
@@ -189,14 +242,18 @@ export function readChart(iso, gender = '', today = new Date()) {
   if (kua) sources.push({n: kua, from: 'kua'});
 
   const counts = Object.fromEntries(GRID.map((n) => [n, sources.filter((s) => s.n === n).length]));
-  const vedicCounts = Object.fromEntries(GRID.map((n) => [n, sources.filter((s) => s.n === n && s.from !== 'kua').length]));
-  const planes = PLANES.map((plane) => {
-    const have = plane.digits.filter((n) => counts[n]).length;
-    return {...plane, status: have === 3 ? 'full' : have === 0 ? 'none' : 'partial', have};
-  });
+  // The separately sourced Vedic convention omits the birth-year century.
+  // https://www.adityavastu.co.in/tools/vedic-numerology-calculator
+  const vedicDateDigits = `${String(d).padStart(2, '0')}${String(m).padStart(2, '0')}${String(y).slice(-2)}`;
+  const vedicSources = [...vedicDateDigits].map(Number).filter(Boolean).map(n => ({n, from: 'date'}));
+  vedicSources.push({n: bhagyank, from: 'bhagyank'});
+  if (d > 9 && dayDigits[1] !== 0) vedicSources.push({n: mulank, from: 'mulank'});
+  const vedicCounts = Object.fromEntries(GRID.map(n => [n, vedicSources.filter(s => s.n === n).length]));
+  const planes = evaluatePlanes(PLANES, counts);
+  const vedicPlanes = evaluatePlanes(VEDIC_PLANES, vedicCounts);
   const thisYear = today.getFullYear();
   return {
-    day: d, month: m, year: y, dateDigits, mulank, bhagyank, kua, sources, counts, vedicCounts, planes,
+    day: d, month: m, year: y, dateDigits, mulank, bhagyank, kua, kuaCalculation: kuaDetails, sources, counts, vedicSources, vedicCounts, planes, vedicPlanes,
     missing: GRID.filter((n) => !counts[n]).sort(),
     present: GRID.filter((n) => counts[n]).sort(),
     monthNumber: reduce(m),

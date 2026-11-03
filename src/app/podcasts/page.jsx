@@ -1,39 +1,41 @@
+
+import LocalizedContent from '../../i18n/LocalizedContent';
+import Breadcrumbs from '../../components/Breadcrumbs';
 import Link from 'next/link';
 import {ArrowUpRight, Mic} from 'lucide-react';
 import {SiteFooter} from '../../components/SiteChrome';
 import PodcastList from '../../components/PodcastList';
+import {ChannelMarquee} from '../../components/ChannelMarquee';
 import YouTubeInline from '../../components/YouTubeInline';
 import WhatsAppIcon from '../../components/WhatsAppIcon';
 import FloatingNumbers from '../../components/FloatingNumbers';
-import {appearances, ownShow, TOPICS} from '../../data/podcasts';
+import {appearances, ownShow, TOPICS, PODCAST_CONVERSATIONS} from '../../data/podcasts';
 import {contact} from '../../data/contact';
 import {formatCount, formatTotal} from '../../lib/formatCount';
+import {pageMetadata} from '../../data/seo';
 
-const origin = process.env.NEXT_PUBLIC_SITE_URL || 'https://numericcvaastu.com';
+import {siteUrl as origin} from '../../lib/site';
 const featured = appearances[0];
 const totalViews = appearances.reduce((s, e) => s + e.views, 0);
 const hours = Math.round((appearances.reduce((s, e) => s + e.minutes, 0) + ownShow.reduce((s, e) => s + e.minutes, 0)) / 60);
 const shows = [...new Set(appearances.map((e) => e.show))];
 const invite = `https://wa.me/${contact.whatsapp}?text=${encodeURIComponent('Namaste Adarshh ji 🙏\n\nWe would love to invite you as a guest on our podcast.\n\n*Show:* \n*Host:* \n*Topic idea:* \n*Preferred dates:* \n\n— Sent from numericcvaastu.com')}`;
 
-export const metadata = {
-  title: 'Podcasts | Numerologist Adarshh Panndey | NumericcVaastu',
-  description: `Watch Adarshh Panndey on ${shows.length} podcasts, including Podcast Baba, RSR Podcast and Kadak Chai Show: numerology, mobile numbers, predictions and remedies.`,
-  alternates: {canonical: '/podcasts'},
-};
+export const metadata = pageMetadata('/podcasts', {description: `Watch numerologist Adarshh Panndey on ${shows.length} podcasts, including Podcast Baba, RSR Podcast and Kadak Chai Show: mobile numbers, names and predictions.`});
 
 export default function Page() {
   const ld = {'@context': 'https://schema.org', '@type': 'ItemList', name: 'Podcasts featuring Adarshh Panndey', itemListElement: appearances.map((e, i) => ({'@type': 'ListItem', position: i + 1, item: {'@type': 'VideoObject', name: `${e.title} | ${e.show}`, description: e.points[0], thumbnailUrl: `${origin}/images/podcasts/${e.id}.webp`, uploadDate: e.date, embedUrl: `https://www.youtube.com/embed/${e.id}`, url: `https://www.youtube.com/watch?v=${e.id}`}}))};
-  return <>
+  return <LocalizedContent><>
     <main id="main" className="hv pc-page">
       <section className="pc-hero">
+        <div className="hv-wrap"><Breadcrumbs className="breadcrumbs hv-crumbs" items={[["Podcasts","/podcasts"]]}/></div>
         <div className="hv-wrap pc-hero__grid">
           <div className="pc-hero__copy">
             <span className="hv-eyebrow">As heard on</span>
             <h1>Adarshh Panndey, <em>on India’s podcasts.</em></h1>
             <p>Conversations on numerology, mobile numbers, names, remedies and the predictions people keep coming back to, with hosts across India.</p>
             <ul className="pc-stats">
-              <li><strong data-count>{appearances.length + ownShow.length}+</strong>podcast conversations</li>
+              <li><strong data-count>{PODCAST_CONVERSATIONS}+</strong>podcast conversations</li>
               <li><strong data-count>{formatTotal(totalViews)}</strong>views on guest episodes</li>
               <li><strong data-count>{hours}+</strong>hours on record</li>
             </ul>
@@ -43,9 +45,7 @@ export default function Page() {
             <figcaption><b>Most watched · {featured.show}</b>{featured.title}</figcaption>
           </figure>
         </div>
-        <div className="pc-shows" aria-label="Shows he has appeared on">
-          <div className="pc-shows__track">{[...shows, ...shows].map((s, i) => <span key={i} aria-hidden={i >= shows.length}>{s}</span>)}</div>
-        </div>
+        <div className="pc-shows"><ChannelMarquee size="sm"/></div>
       </section>
 
       <section className="hv-section hv-wrap" aria-labelledby="pc-all">
@@ -84,5 +84,5 @@ export default function Page() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(ld).replace(/</g, '\\u003c')}}/>
     </main>
     <SiteFooter/>
-  </>;
+  </></LocalizedContent>;
 }

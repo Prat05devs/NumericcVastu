@@ -3,7 +3,7 @@
 .course-layout{display:grid;grid-template-columns:minmax(0,1fr) 350px;column-gap:56px}
 .course-hero{grid-column:1;grid-row:1;position:relative;isolation:isolate;color:var(--ivory);padding:0 0 56px}
 .course-hero:before{content:'';position:absolute;inset:0 -100vmax;background:var(--wine);z-index:-1}
-.course-hero:after{content:'✼';position:absolute;right:-30px;bottom:-120px;font:300px 'NV Digits','Cormorant Garamond',serif;opacity:.05;pointer-events:none;z-index:-1}
+.course-hero:after{content:'✼';position:absolute;right:-30px;bottom:-120px;font:300px 'NV Digits',var(--font-cormorant),serif;opacity:.05;pointer-events:none;z-index:-1}
 .course-hero .breadcrumbs{color:#c5aadc}
 .course-hero .breadcrumbs a{color:var(--ivory)}
 .course-hero .breadcrumbs a:hover{color:#d2b5ec}
@@ -72,7 +72,7 @@
 .curriculum-body li{display:flex;align-items:center;gap:10px;font-size:15px}
 .curriculum-body li svg{color:var(--terra);flex-shrink:0}
 
-.course-instructor-name{font:600 30px/1.1 'NV Digits','Cormorant Garamond',serif;color:var(--wine);border-bottom:1px solid var(--terra)}
+.course-instructor-name{font:600 30px/1.1 'NV Digits',var(--font-cormorant),serif;color:var(--wine);border-bottom:1px solid var(--terra)}
 .course-instructor-name:hover{color:var(--terra)}
 .course-instructor>span{display:block;font-size:14.5px;color:var(--muted);margin-top:8px}
 .course-instructor>div{display:flex;gap:24px;align-items:flex-start;margin:20px 0 6px}

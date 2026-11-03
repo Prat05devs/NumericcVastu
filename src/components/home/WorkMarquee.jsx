@@ -1,3 +1,5 @@
+
+import LocalizedContent from '../../i18n/LocalizedContent';
 import Image from 'next/image';
 import {photos} from '../../data/content';
 
@@ -6,7 +8,7 @@ const find = (slug) => photos.find((photo) => photo.src.endsWith(`/${slug}.webp`
 
 /** Two rows of photographs drifting in opposite directions. Each row is rendered twice for a seamless loop; the copy is hidden from assistive tech. */
 export default function WorkMarquee({rows}) {
-  return <div className="hv-marquee">
+  return <LocalizedContent><div className="hv-marquee">
     {rows.map((row, r) => {
       const list = row.map(find).filter(Boolean);
       const tiles = (copy) => list.map((photo) => <figure key={`${copy}-${photo.src}`} className="hv-marquee__tile" style={{width: Math.round(HEIGHT * photo.w / photo.h)}}>
@@ -17,5 +19,5 @@ export default function WorkMarquee({rows}) {
         <div className="hv-marquee__track">{tiles(0)}<div className="hv-marquee__copy" aria-hidden="true">{tiles(1)}</div></div>
       </div>;
     })}
-  </div>;
+  </div></LocalizedContent>;
 }

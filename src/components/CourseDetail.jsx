@@ -1,3 +1,5 @@
+
+import LocalizedContent from '../i18n/LocalizedContent';
 import Link from 'next/link';
 import Image from 'next/image';
 import {ArrowUpRight, Award, Check, CreditCard, GraduationCap, Mic, Plus, Users} from 'lucide-react';
@@ -12,11 +14,12 @@ import Price from './Price';
 import {getCourseDetail} from '../data/courseDetails';
 import {book} from '../data/media';
 import {googleReviews, photos} from '../data/content';
-import {appearances, ownShow} from '../data/podcasts';
+import {PODCAST_CONVERSATIONS} from '../data/podcasts';
 import {crop} from '../lib/crop';
 
-const origin = process.env.NEXT_PUBLIC_SITE_URL || 'https://numericcvaastu.com';
-const jsonLd = (object) => <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(object).replace(/</g, '\\u003c')}}/>;
+import {siteUrl as origin, jsonLdHtml} from '../lib/site';
+import {breadcrumbs, faqPage, ids, offerPrices} from '../lib/schema';
+const jsonLd = (object) => <LocalizedContent><script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(object).replace(/</g, '\\u003c')}}/></LocalizedContent>;
 const studentPhotos = photos.filter((p) => p.category === 'With students' && !p.src.includes('teaching'));
 /** Three different student photos per course for the hero collage. */
 const collageFor = (i) => [studentPhotos[(i * 5) % studentPhotos.length], studentPhotos[(i * 5 + 2) % studentPhotos.length], studentPhotos[(i * 5 + 4) % studentPhotos.length]];
@@ -38,13 +41,14 @@ export default function CourseDetail({offer}) {
     certificate,
   ].filter(Boolean);
 
-  return <>
+  return <LocalizedContent><>
     <main id="main" className="hv cd">
       <section className="cd-hero">
         <FloatingNumbers/>
         <div className="hv-wrap cd-hero__grid">
           <div className="cd-hero__copy">
             <nav className="cd-crumbs" aria-label="Breadcrumb"><Link href="/">Home</Link> / <Link href="/courses">Courses</Link> / <span aria-current="page">{offer.name}</span></nav>
+            <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdHtml(breadcrumbs([['Courses', '/courses'], [offer.name, `/courses/${offer.slug}`]]))}/>
             <span className="cd-level">Level {level + 1} of {courses.length} · {offer.category}</span>
             <h1>{offer.name}</h1>
             <p className="cd-hero__lede">{detail.headline}</p>
@@ -106,7 +110,7 @@ export default function CourseDetail({offer}) {
             <ul className="cd-mentor__stats">
               <li><b data-count>1,500+</b>students trained</li>
               <li><b data-count>20,000+</b>consultations</li>
-              <li><b data-count>{appearances.length + ownShow.length}+</b>podcast conversations</li>
+              <li><b data-count>{PODCAST_CONVERSATIONS}+</b>podcast conversations</li>
               <li><b data-count>7+</b>years of practice</li>
             </ul>
             <div className="hv-actions"><Link className="hv-link" href="/about">His story <ArrowUpRight size={16}/></Link><Link className="hv-link" href="/podcasts"><Mic size={16}/> Hear him on podcasts</Link></div>
@@ -117,14 +121,20 @@ export default function CourseDetail({offer}) {
       <section className="hv-section hv-wrap" aria-labelledby="cd-students">
         <div className="hv-head"><div><span className="hv-eyebrow">His students</span><h2 id="cd-students">Real classes, <em>real certificates.</em></h2></div><div className="hv-head__aside"><p>Moments from Adarshh’s certification ceremonies and workshops.</p><Link className="hv-link" href="/gallery">See the gallery <ArrowUpRight size={16}/></Link></div></div>
         <ul className="cd-mosaic">{studentPhotos.slice(0, 8).map((p) => <li key={p.src}><Image src={p.src} alt="Adarshh Panndey with his numerology students" fill sizes="(max-width: 700px) 46vw, 280px" style={crop(p.src, 0.8, [p.w, p.h])}/></li>)}</ul>
-        <StudentVideos title="What his students say"/>
         <ReviewCards reviews={googleReviews.slice(0, 2)} className="cd-reviews"/>
+      </section>
+
+      <section className="hv-section hv-tint" aria-labelledby="cd-results">
+        <div className="hv-wrap">
+          <div className="hv-head"><div><span className="hv-eyebrow">Student results</span><h2 id="cd-results">In their <em>own words.</em></h2></div><div className="hv-head__aside"><p>Students talk about what changed for them after learning with Adarshh, including the practice and income they have built.</p></div></div>
+          <StudentVideos title=""/>
+        </div>
       </section>
 
       <section className="hv-section hv-cream" aria-labelledby="cd-cert">
         <div className="hv-wrap cd-cert">
           <div className="cd-cert__visual" aria-hidden="true">
-            <img src="/images/logo-nv.png" alt=""/>
+            <img src="/images/logo-nv.webp" alt=""/>
             <small>NumericcVaastu Academy</small>
             <strong>Certificate of Completion</strong>
             <span>{offer.name}</span>
@@ -158,12 +168,13 @@ export default function CourseDetail({offer}) {
       </section>
 
       <section className="hv-section hv-wrap hv-faq" aria-labelledby="cd-faq">
+        <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdHtml(faqPage(detail.faqs))}/>
         <div><span className="hv-eyebrow">Questions</span><h2 id="cd-faq">Before you <em>enrol.</em></h2><p>Anything else? Ask Adarshh’s team on WhatsApp.</p><Link className="hv-link" href={ask}>Ask a question <ArrowUpRight size={16}/></Link></div>
         <div className="hv-faq__list">{detail.faqs.map(([q, a], i) => <details key={q} open={i === 0}><summary>{q}<Plus size={20} aria-hidden="true"/></summary><p>{a}</p></details>)}</div>
       </section>
       <StickyBuy name={offer.name} price={<Price offer={offer}/>} href={checkout} label="Enrol now"/>
-      {jsonLd({'@context': 'https://schema.org', '@type': 'Course', name: offer.name, description: offer.summary, url: `${origin}/courses/${offer.slug}`, provider: {'@type': 'Organization', name: 'NumericcVaastu', sameAs: origin}, instructor: {'@type': 'Person', name: 'Adarshh Panndey'}, offers: {'@type': 'Offer', price: offer.pricePaise / 100, priceCurrency: 'INR', url: `${origin}/checkout?offer=${offer.id}`, category: 'Paid'}})}
+      {jsonLd({'@context': 'https://schema.org', '@type': 'Course', name: offer.name, description: offer.summary, url: `${origin}/courses/${offer.slug}`, provider: {'@id': ids.business}, instructor: {'@id': ids.person}, inLanguage: ['hi', 'en'], ...(detail.syllabusConfirmed && {teaches: detail.modules.flatMap((m) => m.topics), syllabusSections: detail.modules.map((m) => ({'@type': 'Syllabus', name: m.title, description: `${m.summary} ${m.topics.join('; ')}.`}))}), coursePrerequisites: detail.requirements[0], educationalCredentialAwarded: detail.certificate, offers: offerPrices(offer, `${origin}/checkout?offer=${offer.id}`).map((o) => ({...o, category: 'Paid'}))})}
     </main>
     <SiteFooter/>
-  </>;
+  </></LocalizedContent>;
 }

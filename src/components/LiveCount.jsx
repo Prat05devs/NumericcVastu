@@ -1,4 +1,6 @@
 'use client';
+import LocalizedContent from '../i18n/LocalizedContent';
+
 import {useEffect, useRef, useState} from 'react';
 
 const group = (n) => n.toLocaleString('en-US');
@@ -48,17 +50,17 @@ export default function LiveCount({value, step = [1, 3], every = 2000, className
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!parsed) return <strong className={className}>{value}</strong>;
-  if (!live) return <strong ref={ref} className={className}>{value}</strong>;
+  if (!parsed) return <LocalizedContent><strong className={className}>{value}</strong></LocalizedContent>;
+  if (!live) return <LocalizedContent><strong ref={ref} className={className}>{value}</strong></LocalizedContent>;
   // Pad to the real figure's width so the roll-in from zero keeps every strip in place.
   const width = String(Math.max(n, parsed.value)).length;
   const chars = groupDigits(String(n).padStart(width, '0'));
-  return <strong ref={ref} className={`${className || ''} live-count`} aria-label={`${group(n)}${parsed.suffix}`}>
+  return <LocalizedContent><strong ref={ref} className={`${className || ''} live-count`} aria-label={`${group(n)}${parsed.suffix}`}>
     <span aria-hidden="true">
       {[...chars].map((c, i) => /\d/.test(c)
         ? <span key={chars.length - i} className="live-count__digit"><span style={{transform: `translateY(-${Number(c) * 10}%)`}}>{STRIP.map((d) => <span key={d}>{d}</span>)}</span></span>
         : <span key={chars.length - i}>{c}</span>)}
       {parsed.suffix}
     </span>
-  </strong>;
+  </strong></LocalizedContent>;
 }

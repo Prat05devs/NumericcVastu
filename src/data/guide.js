@@ -6,7 +6,9 @@ import {contact} from './contact';
 import {book, social, stats} from './media';
 import {highlights, achievementCount} from './achievements';
 import {predictionStats} from './predictions';
-import {appearances, ownShow} from './podcasts';
+import {PODCAST_CONVERSATIONS} from './podcasts';
+import {locations} from './locations';
+import {store, shopCategories, wristwatches} from './shop';
 
 /**
  * Knowledge base for the floating site guide (components/SiteGuide.jsx). No AI is involved: every answer is
@@ -89,7 +91,7 @@ export function guideEntries() {
     {
       id: 'more', label: 'More topics',
       text: ['Here is everything else on the site.'],
-      next: ['achievements', 'book', 'predictions', 'podcasts', 'videos', 'reviews', 'gallery', 'journal', 'policies'],
+      next: ['locations', 'shop', 'google', 'achievements', 'book', 'predictions', 'podcasts', 'videos', 'reviews', 'gallery', 'journal', 'policies'],
       keys: 'other topics more explore',
     },
     {
@@ -126,7 +128,7 @@ export function guideEntries() {
       id: 'calculator', label: 'Free numerology calculator',
       title: 'Your free Lo Shu report',
       text: ['Enter your date of birth for your Mulank, Bhagyank and Kua, the planes and yogs in your grid, your friend and enemy numbers, lucky colours, first remedies, your gemstone and the life period you are in now.'],
-      links: [['Open the calculator', '/numerology-calculator']],
+      links: [['Free Lo Shu tool', '/numerology-calculator'], ['Free Vedic tool', '/vedic-numerology-calculator']],
       next: ['find-consult', 'courses'],
       keys: 'calculator calculate free report lo shu loshu grid mulank bhagyank kua date of birth dob birthday lucky number colour color gemstone remedies missing numbers chart',
     },
@@ -134,8 +136,8 @@ export function guideEntries() {
       id: 'contact', label: 'Contact the team',
       title: 'Phone, email and office address',
       text: [`Phone and WhatsApp: ${contact.phone}`, `Email: ${contact.email}`, `Office: ${contact.addressLines.join(', ')}`],
-      links: [['Call now', contact.phoneHref], ['WhatsApp', social.whatsapp], ['Email', `mailto:${contact.email}`], ['Open in Google Maps', contact.mapUrl]],
-      next: ['booking', 'formats'],
+      links: [['Call now', contact.phoneHref], ['WhatsApp', social.whatsapp], ['Email', `mailto:${contact.email}`], ['Open in Google Maps', contact.mapUrl], ['Google Business Profile', contact.googleBusiness.url]],
+      next: ['booking', 'formats', 'locations', 'google'],
       keys: 'contact phone call number email mail address office location where rohini delhi map visit reach talk speak team whatsapp',
     },
     {
@@ -188,7 +190,7 @@ export function guideEntries() {
     },
     {
       id: 'podcasts', label: 'Podcasts',
-      text: [`Watch ${appearances.length + ownShow.length}+ podcast conversations with Adarshh on mobile numbers, names and birth dates, the Lo Shu grid, career, karma and remedies.`],
+      text: [`Watch ${PODCAST_CONVERSATIONS}+ podcast conversations with Adarshh on mobile numbers, names and birth dates, the Lo Shu grid, career, karma and remedies.`],
       links: [['Watch the podcasts', '/podcasts'], ['YouTube channel', social.youtube]],
       next: ['predictions', 'videos'],
       keys: 'podcast podcasts interview episode show youtube watch listen',
@@ -203,9 +205,33 @@ export function guideEntries() {
     {
       id: 'reviews', label: 'Client reviews',
       text: [`Read ${googleReviews.length} Google reviews and watch students talk about their courses on video.`],
-      links: [['Read the reviews', '/testimonials']],
-      next: ['find-consult', 'courses'],
+      links: [['Read the reviews', '/testimonials'], ['See all reviews on Google', contact.googleBusiness.url], ['Write a Google review', contact.reviewLink]],
+      next: ['google', 'find-consult', 'courses'],
       keys: 'review reviews testimonial testimonials feedback rating google experience students genuine trust',
+    },
+    {
+      id: 'google', label: 'Find us on Google',
+      title: 'Adarshh Panndey on Google',
+      text: ['Adarshh’s Google Business Profile has directions to the Rohini office, a one-tap call button and every review clients have left.', 'Had a session? A short Google review helps other people find the right guidance.'],
+      links: [['Open the Google profile', contact.googleBusiness.url], ['Write a Google review', contact.reviewLink]],
+      next: ['reviews', 'contact'],
+      keys: 'google business profile maps map listing review reviews rating stars rate feedback write near me nearby directions',
+    },
+    {
+      id: 'locations', label: 'Near me / my city',
+      title: 'Where Adarshh consults',
+      text: ['In person at the office in Sector 29, Rohini, New Delhi; by video or phone from anywhere in India or abroad; and on site for Vastu across Delhi NCR.'],
+      links: locations.map((l) => [l.eyebrow, `/${l.slug}`]),
+      next: ['formats', 'booking', 'google'],
+      keys: 'near me nearby city location area delhi new delhi rohini pitampura ncr noida greater noida gurgaon gurugram ghaziabad faridabad north india lucknow chandigarh jaipur dehradun online abroad usa uk dubai uae canada australia nri international best numerologist vastu consultant',
+    },
+    {
+      id: 'shop', label: 'Rudraksha, crystals & gemstones',
+      title: `Shop at ${store.domain}`,
+      text: [`Adarshh’s own store sells ${shopCategories.map((c) => c.name.toLowerCase()).join(', ')}.`, wristwatches.text],
+      links: [['Open the store', store.url], ...shopCategories.map((c) => [c.name, c.href]), ['Wristwatch Analysis', '/consultations/wristwatch-analysis']],
+      next: ['calculator', 'find-consult'],
+      keys: 'shop store buy order product products rudraksha rudraksh mala bracelet crystal crystals pyramid pyrite selenite amethyst gemstone gemstones stone ratna ring yantra yantras shree yantra wristwatch watch ghadi',
     },
     {
       id: 'gallery', label: 'Photo gallery',

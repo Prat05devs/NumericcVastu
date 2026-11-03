@@ -1,4 +1,6 @@
 'use client';
+import LocalizedContent from '../i18n/LocalizedContent';
+
 import {useEffect, useMemo, useRef, useState} from 'react';
 import {ArrowLeft, ArrowRight, Check, Copy, Pencil} from 'lucide-react';
 import WhatsAppIcon from './WhatsAppIcon';
@@ -15,9 +17,9 @@ const STEPS = ['What you need', 'About you', 'Send'];
 function Chips({options, value, onChange, multi = false, label}) {
   const on = (o) => (multi ? value.includes(o) : value === o);
   const toggle = (o) => onChange(multi ? (on(o) ? value.filter((v) => v !== o) : [...value, o]) : on(o) ? '' : o);
-  return <div className="eq-chips" role="group" aria-label={label}>
+  return <LocalizedContent><div className="eq-chips" role="group" aria-label={label}>
     {options.map((o) => <button key={o} type="button" aria-pressed={on(o)} className={on(o) ? 'is-on' : ''} onClick={() => toggle(o)}>{multi && on(o) && <Check size={14}/>}{o}</button>)}
-  </div>;
+  </div></LocalizedContent>;
 }
 
 /**
@@ -75,7 +77,7 @@ export default function EnquiryFlow({consultations, courses, scenarios, number, 
     catch { document.getElementById('eq-message')?.select(); }
   }
 
-  return <div className="eq" id="enquiry" ref={root}>
+  return <LocalizedContent><div className="eq" id="enquiry" ref={root}>
     <ol className="eq-steps" aria-label="Progress">
       {STEPS.map((label, i) => <li key={label} className={i === step ? 'is-current' : i < step ? 'is-done' : ''} aria-current={i === step ? 'step' : undefined}>
         <button type="button" disabled={i > step} onClick={() => i < step && setStep(i)}><span>{i < step ? <Check size={14}/> : i + 1}</span>{label}</button>
@@ -130,5 +132,5 @@ export default function EnquiryFlow({consultations, courses, scenarios, number, 
       {sent && <div className="eq-sent" role="status"><Check size={18}/><div><b>WhatsApp should now be open with your message.</b> Press Send there and Adarshh will reply to confirm the time and next steps. WhatsApp didn’t open? Copy the message and send it to <b>+{number.slice(0, 2)} {number.slice(2, 7)} {number.slice(7)}</b>.</div></div>}
       <div className="eq-actions"><button type="button" className="hv-link" onClick={() => setStep(1)}><ArrowLeft size={16}/> Edit details</button><button type="button" className="eq-copy" onClick={copy}>{copied ? <><Check size={16}/> Copied</> : <><Copy size={16}/> Copy message</>}</button></div>
     </div>}
-  </div>;
+  </div></LocalizedContent>;
 }

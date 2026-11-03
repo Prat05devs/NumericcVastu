@@ -1,0 +1,68 @@
+# CI for the commerce monorepo (commerce/). Release gate: every job must pass before a deploy is approved.
+name: commerce
+on:
+  push:
+    paths: ['commerce/**', '.github/workflows/commerce.yml']
+  pull_request:
+    paths: ['commerce/**', '.github/workflows/commerce.yml']
+
+defaults:
+  run:
+    working-directory: commerce
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env: {MYSQL_ROOT_PASSWORD: root, MYSQL_DATABASE: commerce}
+        ports: ['3316:3306']
+        options: >-
+          --health-cmd="mysqladmin ping -proot" --health-interval=5s --health-timeout=5s --health-retries=20
+      mariadb:
+        image: mariadb:10.11
+        env: {MARIADB_ROOT_PASSWORD: root, MARIADB_DATABASE: commerce}
+        ports: ['3317:3306']
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized" --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      DATABASE_URL: mysql://root:root@127.0.0.1:3316/commerce
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: {package_json_file: commerce/package.json}
+      - uses: actions/setup-node@v4
+        with: {node-version: 24, cache: pnpm, cache-dependency-path: commerce/pnpm-lock.yaml}
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm db:generate
+      - run: pnpm --filter @sc/contracts build
+      - name: Typecheck
+        run: pnpm -r typecheck
+      - name: Lint
+        run: pnpm lint
+      - name: Contracts unit tests
+        run: pnpm --filter @sc/contracts test
+      - name: Migrations apply cleanly and match the schema
+        run: |
+          pnpm db:migrate:deploy
+          test "$(npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --script | grep -cv '^--\|^$' || true)" = "0"
+      - name: API tests on MySQL 8.4 (unit, integration, concurrency, recovery, RBAC, back-office scenarios)
+        run: pnpm --filter api test
+        env: {TEST_DATABASE_URL: 'mysql://root:root@127.0.0.1:3316/commerce_test'}
+      - name: API tests on MariaDB 10.11
+        run: pnpm --filter api test
+        env: {TEST_DATABASE_URL: 'mysql://root:root@127.0.0.1:3317/commerce_test'}
+      - name: OpenAPI is up to date
+        run: pnpm openapi && git diff --exit-code docs/api/openapi.json
+      - name: Build API and web
+        run: |
+          pnpm --filter api build
+          API_INTERNAL_URL=http://localhost:4000 pnpm --filter web build
+      - name: End-to-end (Playwright, desktop + mobile)
+        run: |
+          pnpm --filter web exec playwright install --with-deps chromium
+          pnpm test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with: {name: playwright-traces, path: commerce/apps/web/test-results}

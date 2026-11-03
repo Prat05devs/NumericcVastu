@@ -1,3 +1,5 @@
+
+import LocalizedContent from '../../i18n/LocalizedContent';
 import Link from 'next/link';
 import {headers} from 'next/headers';
 import {notFound} from 'next/navigation';
@@ -21,7 +23,7 @@ export default async function Page({searchParams}) {
   const currency = requestCurrency(await headers());
   const offer = {id: found.id, kind: found.kind, name: found.name, summary: found.summary, priceLabel: formatPrice(found, undefined, currency), inclusions: found.inclusions, href: `/${found.kind === 'course' ? 'courses' : 'consultations'}/${found.slug}`};
   const payment = {currency, razorpay: onlinePayment(found, currency), paypal: currency === 'USD' ? paypalPayment(found) : null};
-  return <>
+  return <LocalizedContent><>
     <main id="main" className="hv co-page">
       <div className="hv-wrap co-layout">
         <div>
@@ -43,5 +45,5 @@ export default async function Page({searchParams}) {
       </div>
     </main>
     <SiteFooter/>
-  </>;
+  </></LocalizedContent>;
 }

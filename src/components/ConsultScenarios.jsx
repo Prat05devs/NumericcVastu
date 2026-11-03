@@ -1,4 +1,6 @@
 'use client';
+import LocalizedContent from '../i18n/LocalizedContent';
+
 import {useCallback, useEffect, useLayoutEffect, useRef, useState} from 'react';
 import Link from 'next/link';
 import {ArrowLeft, ArrowRight, ArrowUpRight} from 'lucide-react';
@@ -64,7 +66,7 @@ export default function ConsultScenarios({slides}) {
 
   const slide = slides[index];
   const go = (n) => setIndex((n + slides.length) % slides.length);
-  return <div className="cs" role="region" aria-roledescription="carousel" aria-label="Which consultation fits your situation" onMouseEnter={() => setHeld(true)} onMouseLeave={() => setHeld(false)} onFocus={() => setHeld(true)} onBlur={() => setHeld(false)}>
+  return <LocalizedContent><div className="cs" role="region" aria-roledescription="carousel" aria-label="Which consultation fits your situation" onMouseEnter={() => setHeld(true)} onMouseLeave={() => setHeld(false)} onFocus={() => setHeld(true)} onBlur={() => setHeld(false)}>
     <div className="cs__bar">
       <div className="cs__chips" ref={chips} role="tablist" aria-label="Consultations">
         {slides.map((s, i) => <button key={s.id} type="button" role="tab" aria-selected={i === index} className={i === index ? 'is-active' : ''} onClick={() => go(i)}>{s.short}</button>)}
@@ -94,5 +96,5 @@ export default function ConsultScenarios({slides}) {
       </div>
     </div>
 
-  </div>;
+  </div></LocalizedContent>;
 }

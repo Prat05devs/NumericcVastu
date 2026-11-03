@@ -1,5 +1,7 @@
 'use client';
-import {useState} from 'react';
+import LocalizedContent from '../i18n/LocalizedContent';
+
+import {useEffect, useState} from 'react';
 import {ArrowUpRight, Check, Hourglass} from 'lucide-react';
 import YouTubeInline from './YouTubeInline';
 
@@ -11,11 +13,13 @@ const FILTERS = [['all', 'All'], ['came-true', 'Came true'], ['awaiting', 'Await
 
 /** Predictions with their source video, the date he said it, and (when it happened) the dated outcome with a news source. */
 export default function PredictionList({items}) {
+  const [ready,setReady]=useState(false);
+  useEffect(()=>setReady(true),[]);
   const [filter, setFilter] = useState('all');
   const list = filter === 'all' ? items : items.filter((p) => p.status === filter);
-  return <>
+  return <LocalizedContent><>
     <div className="pr-filters" role="group" aria-label="Filter predictions">
-      {FILTERS.map(([key, label]) => <button key={key} type="button" aria-pressed={filter === key} className={filter === key ? 'is-on' : ''} onClick={() => setFilter(key)}>{label}<span>{key === 'all' ? items.length : items.filter((p) => p.status === key).length}</span></button>)}
+      {FILTERS.map(([key, label]) => <button key={key} type="button" disabled={!ready} aria-pressed={filter === key} className={filter === key ? 'is-on' : ''} onClick={() => setFilter(key)}>{label}<span>{key === 'all' ? items.length : items.filter((p) => p.status === key).length}</span></button>)}
     </div>
     <ol className="pr-list">
       {list.map((p) => {
@@ -40,5 +44,5 @@ export default function PredictionList({items}) {
         </li>;
       })}
     </ol>
-  </>;
+  </></LocalizedContent>;
 }

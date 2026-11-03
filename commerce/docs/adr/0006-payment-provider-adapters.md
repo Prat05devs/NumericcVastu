@@ -1,0 +1,7 @@
+# ADR-0006 — Payment provider modules; webhooks are the source of truth
+
+**Decision.** `apps/api/src/providers/payments/` holds one module per provider behind `ProviderModule` (configured, create, chargeFor, verifyWebhook, parseWebhook, keyStatus) and `PaymentProvider` (createOrder, checkoutParams, fetchPayments, capture, refund). Registered: **Razorpay** (INR; HMAC-SHA256 of raw body), **PayPal** (USD; Orders v2 with server-side capture; webhook verified through PayPal's verify-webhook-signature API with the configured Webhook ID), **mock** (development/tests; refused in production). Adding a provider = one file + one registry line.
+
+**Rules.** No provider call inside a DB transaction. Webhook pipeline: verify → parse → (server-side capture for approved/authorised payments) → insert `UNIQUE(provider, event_id)` and apply in one transaction → 2xx after commit; duplicates acknowledged. Browser "success" is never trusted: it only triggers a server-to-server check (`/orders/:id/payment-sync`). Reconciliation cron asks providers about stale payments and captures approved-but-uncaptured ones. Credentials are stored AES-256-GCM encrypted (`secrets` table) and never returned.
+
+**Mode switch.** mock → test → live without code changes. Live requires the owner, explicit confirmation, live credentials, reviewed tax settings **and** `ALLOW_LIVE_PAYMENTS=true` on the server (human go-live approval).

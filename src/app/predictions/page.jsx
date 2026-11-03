@@ -1,23 +1,24 @@
+
+import LocalizedContent from '../../i18n/LocalizedContent';
+import Breadcrumbs from '../../components/Breadcrumbs';
 import Link from 'next/link';
 import {ArrowUpRight, ShieldCheck} from 'lucide-react';
 import {SiteFooter} from '../../components/SiteChrome';
 import PredictionList from '../../components/PredictionList';
 import FloatingNumbers from '../../components/FloatingNumbers';
 import {predictions, predictionStats} from '../../data/predictions';
+import {pageMetadata} from '../../data/seo';
 
-export const metadata = {
-  title: 'Predictions that came true | Numerologist Adarshh Panndey',
-  description: 'Numerology predictions Adarshh Panndey made on video before they happened: the 2026 Bengal election, gold prices, IPL 2026 and more, each with the date and a news source.',
-  alternates: {canonical: '/predictions'},
-};
+export const metadata = pageMetadata('/predictions');
 
 export default function Page() {
   const stats = predictionStats();
   const proven = predictions.filter((p) => p.status === 'came-true');
-  return <>
+  return <LocalizedContent><>
     <main id="main" className="hv pr-page">
       <section className="pr-hero">
         <div className="hv-wrap">
+          <Breadcrumbs className="breadcrumbs hv-crumbs" items={[["Predictions","/predictions"]]}/>
           <span className="hv-eyebrow">Predictions on record</span>
           <h1>He said it first. <em>Then it happened.</em></h1>
           <p className="pr-hero__lede">Adarshh Panndey makes his predictions in public: on his channel, on podcasts and on Instagram. These are the ones you can check, each with the date he said it and what happened next.</p>
@@ -44,5 +45,5 @@ export default function Page() {
       </section>
     </main>
     <SiteFooter/>
-  </>;
+  </></LocalizedContent>;
 }
