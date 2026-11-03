@@ -1,4 +1,4 @@
-import {appearances, ownShow} from './podcasts';
+import {appearances, ownShow, PODCAST_CONVERSATIONS} from './podcasts';
 import {contact} from './contact';
 
 /**
@@ -11,18 +11,19 @@ import {contact} from './contact';
 export const social = {
   instagram: process.env.NEXT_PUBLIC_INSTAGRAM_URL || 'https://www.instagram.com/numerologybyaadarshh/',
   youtube: process.env.NEXT_PUBLIC_YOUTUBE_URL || 'https://www.youtube.com/@Numerologistadarshpandey',
+  linkedin: process.env.NEXT_PUBLIC_LINKEDIN_URL || 'https://www.linkedin.com/in/adarshh-panndey-23075987/',
   whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_URL || `https://wa.me/${contact.whatsapp}?text=` + encodeURIComponent('Namaste Adarshh ji 🙏 I found you on numericcvaastu.com and would like to know more.'),
 };
 
-/** Public Instagram profile snapshot, copied from instagram.com/numerologybyaadarshh on 10 October 2026.
- *  Update the counts from time to time; the photo is Instagram's 150px version (ask for a larger original). */
+/** Public Instagram profile snapshot, copied from instagram.com/numerologybyaadarshh on 10 October 2026; followers
+ *  updated to 25K+ by the client on 2 November 2026. Update the counts from time to time; the photo is Instagram's 150px version (ask for a larger original). */
 export const instagramProfile = {
   handle: 'numerologybyaadarshh',
   verified: true,
   name: 'Adarshh Panndey | India Leading Numerology Career Coach',
   category: 'Astrologist and psychic',
   avatar: '/images/reels/profile-numerologybyaadarshh.webp',
-  counts: [['1,382', 'posts'], ['24.2K', 'followers'], ['410', 'following']],
+  counts: [['1,382', 'posts'], ['25K+', 'followers'], ['410', 'following']],
   bio: ['🎓 India’s Leading Numerologist & Vastu Expert', '🔮 Crystals | Rudraksha', '✨ 7+ Years | 20K+ Consultations', '🚀 Learn Now! 👇'],
   link: {label: 'learn.numericcvaastu.com', href: 'https://learn.numericcvaastu.com/'},
   asOf: '10 October 2026',
@@ -34,9 +35,9 @@ export const instagramProfile = {
 export const stats = [
   {value: '80,000,000+', label: 'Views across all platforms', source: 'Client, 21 October 2026', live: {step: [3, 19], every: 1600}},
   {value: '20,000+', label: 'Consultations', source: 'Instagram bio, October 2026', live: {step: [1, 1], every: 9000}},
-  {value: `${appearances.length + ownShow.length}+`, label: 'Podcast conversations', source: 'data/podcasts.js'},
+  {value: `${PODCAST_CONVERSATIONS}+`, label: 'Podcast conversations', source: 'Client, 3 November 2026'},
   {value: '7+', label: 'Years of practice', source: 'Instagram bio, October 2026'},
-  {value: '24,200+', label: 'Instagram followers', source: 'instagram.com/numerologybyaadarshh, 10 October 2026', live: {step: [1, 2], every: 6000}},
+  {value: '25,000+', label: 'Instagram followers', source: 'Client, 2 November 2026', live: {step: [1, 2], every: 6000}},
 ];
 
 export const book = {
@@ -50,16 +51,14 @@ export const book = {
 
 /** Hero photos: real event, studio and portrait photographs first, the two edited studio portraits last. `position` keeps the face in frame. */
 export const heroSlides = [
-  {src: '/images/gallery/media-podcast-portrait.webp', alt: 'Adarshh Panndey seated at a podcast microphone'},
-  {src: '/images/gallery/award-book-of-the-year.webp', alt: 'Adarshh Panndey receiving the Book of the Year award on stage'},
-  {src: '/images/gallery/talk-ntt-talk-show.webp', alt: 'Adarshh Panndey speaking on the NTT Talk Show stage'},
-  {src: '/images/gallery/portrait-standing.webp', alt: 'Adarshh Panndey standing with his hands together'},
-  {src: '/images/gallery/talk-mahakumbh-podium.webp', alt: 'Adarshh Panndey speaking at a podium'},
+  // Client choice, 3 November 2026: professional podcast-studio portraits looking at the camera, then the temple visit
+  // and the 2026 International Awards Spotlight Ceremony. The temple photo is a 2× sharpened copy of the original.
+  {src: '/images/gallery/media-podcast-portrait.webp', alt: 'Adarshh Panndey seated at a podcast microphone, looking at the camera'},
+  {src: '/images/gallery/media-podcast-chair.webp', alt: 'Adarshh Panndey in a podcast studio chair'},
   {src: '/images/gallery/media-podcast-red-set.webp', alt: 'Adarshh Panndey seated in a studio chair with a microphone'},
-  // Edited studio portraits go last, after the real photographs.
-  {src: '/images/adarshh/adarshh-pandey-studio-portrait.webp', alt: 'Adarshh Panndey in a studio portrait against a purple background'},
-  {src: '/images/adarshh/adarshh-pandey-with-book.webp', alt: 'Adarshh Panndey holding his book Numerology: Numbers That Speak'},
-  {src: '/images/gallery/portrait-arms-crossed.webp', alt: 'Adarshh Panndey standing with arms crossed in a studio'},
+  {src: '/images/gallery/media-podcast-studio.webp', alt: 'Adarshh Panndey on a podcast set in a checked blazer'},
+  {src: '/images/gallery/event-garlanded-hd.webp', alt: 'Adarshh Panndey with folded hands, garlanded at a temple'},
+  {src: '/images/gallery/award-spotlight-ceremony.webp', alt: 'Adarshh Panndey receiving an honour at the International Awards Spotlight Ceremony'},
 ];
 
 export const marqueeRows = [
@@ -121,12 +120,13 @@ export const videos = {
   ],
 };
 
-/** Self-hosted videos in public/videos, supplied by the client in October 2026. Posters are frames from each video.
+/** Self-hosted videos in public/videos, supplied by the client in October 2026, in which students describe their results
+ *  after the course, including their earnings. Posters are frames from each video.
  *  The students are not named on screen; add `name` to an entry once the client confirms it may be shown. */
 export const studentVideos = [
-  {src: '/videos/student-feedback-01.mp4', poster: '/videos/posters/student-feedback-01.webp', title: 'Student feedback on Adarshh’s numerology course', minutes: '1:19'},
-  {src: '/videos/student-feedback-02.mp4', poster: '/videos/posters/student-feedback-02.webp', title: 'Student feedback on Adarshh’s numerology course', minutes: '2:34'},
-  {src: '/videos/student-feedback-03.mp4', poster: '/videos/posters/student-feedback-03.webp', title: 'Student feedback on Adarshh’s numerology course', minutes: '2:08'},
+  {src: '/videos/student-feedback-01.mp4', poster: '/videos/posters/student-feedback-01.webp', title: 'A student on their practice and results after Adarshh’s numerology course', minutes: '1:19'},
+  {src: '/videos/student-feedback-02.mp4', poster: '/videos/posters/student-feedback-02.webp', title: 'A student on their practice and results after Adarshh’s numerology course', minutes: '2:34'},
+  {src: '/videos/student-feedback-03.mp4', poster: '/videos/posters/student-feedback-03.webp', title: 'A student on their practice and results after Adarshh’s numerology course', minutes: '2:08'},
 ];
 
 /** Adarshh walking through his book, Numerology: Numbers That Speak. */

@@ -1,6 +1,6 @@
 /**
- * Free remedies shown in the online report. Only a first taste is published here: the complete remedies
- * (Vastu placements, further rituals and donations) stay in the paid report, so they are not in the site code.
+ * Introductory traditional practices shown in the free reading and combined test report.
+ * Additional placements documented in the supplied sample live in fullReport.js.
  *
  * Missing 2, 3, 4 and 6: taken from the remedies in NumericcVaastu's full report.
  * Missing 1, 5, 7, 8 and 9: widely used traditional remedies; have Adarshh confirm them before launch.

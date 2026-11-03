@@ -1,0 +1,100 @@
+/* Local pages, the Google Business Profile card and the About page facts (search and AI visibility). */
+
+/* Google Business Profile card */
+.gbp-card{display:grid;gap:14px;margin-top:32px;padding:26px 28px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:20px;box-shadow:0 24px 50px -36px #2a104666}
+.gbp-card__head{display:flex;align-items:center;gap:14px}
+.gbp-card__badge{display:grid;place-items:center;width:42px;height:42px;flex-shrink:0;border-radius:50%;background:var(--cream);color:var(--gold-text)}
+.gbp-card__head small{display:block;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-text)}
+.gbp-card h3{font-size:21px;font-weight:800;color:var(--purple-deep);line-height:1.3}
+.gbp-card>p{font-size:15.5px;max-width:62ch}
+.gbp-card__rating{font-size:15px;color:var(--purple-deep)}
+.gbp-card__rating span{color:var(--gold);letter-spacing:2px}
+.gbp-card__actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px}
+.gbp-card__actions .hv-button{width:auto;min-height:46px;padding:11px 20px;font-size:14.5px}
+.gbp-card__call{display:inline-flex;align-items:center;gap:8px;font-weight:700;color:var(--purple)}
+.gbp-card.is-compact{padding:20px 22px}
+.gbp-card.is-compact h3{font-size:18px}
+.co-done .gbp-card{text-align:left;margin-block:8px 18px}
+
+/* Location pages */
+.loc-call{display:inline-flex;align-items:center;gap:8px;font-weight:800;color:var(--purple)}
+.loc-proof{margin-top:-28px;position:relative;z-index:1}
+.loc-proof ul{list-style:none;margin:0;padding:22px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:0 30px 60px -44px #2a104680}
+.loc-proof li{display:grid;grid-template-columns:auto 1fr;column-gap:12px;align-items:center;padding:6px 10px}
+.loc-proof svg{grid-row:span 2;color:var(--gold-text)}
+.loc-proof b{font-size:18px;color:var(--purple-deep);line-height:1.25}
+.loc-proof span{font-size:13.5px;color:var(--muted)}
+.loc-story{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:64px;align-items:start}
+.loc-story h2{margin:12px 0 20px}
+.loc-story p+p{margin-top:16px}
+.loc-story .hv-link{margin-top:24px}
+.loc-areas{background:var(--lavender);border:1px solid var(--line);border-radius:22px;padding:28px}
+.loc-areas h3{font-size:19px;font-weight:800;color:var(--purple-deep);margin-bottom:16px}
+.loc-areas ul,.loc-places ul,.contact-places ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.loc-areas li{background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 13px;font-size:14px;font-weight:600;color:var(--purple-deep)}
+.loc-fees{margin-top:40px;overflow-x:auto}
+.loc-fees h3{font-size:22px;font-weight:800;color:var(--purple-deep);margin-bottom:14px}
+.loc-fees table{width:100%;border-collapse:collapse;min-width:520px;background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.loc-fees th,.loc-fees td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--line);font-size:15px}
+.loc-fees thead th{background:var(--lavender);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--purple-mid)}
+.loc-fees tbody th{font-weight:700;color:var(--purple-deep)}
+.loc-fees td{font-weight:700;white-space:nowrap}
+.loc-visit{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:56px;align-items:center}
+.loc-visit h2{margin:12px 0 18px}
+.loc-visit .gbp-card{margin-top:0}
+.loc-address{display:grid;gap:2px;font-style:normal;font-size:17px;color:var(--ink)}
+.loc-contact{display:flex;flex-wrap:wrap;gap:8px 20px;margin:16px 0 22px}
+.loc-contact a{display:inline-flex;align-items:center;gap:8px;font-weight:700;color:var(--purple)}
+.loc-places{padding-bottom:24px}
+.loc-places h2{font-size:clamp(28px,3vw,38px);margin-bottom:18px}
+.loc-places a,.contact-places a{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border:1px solid var(--line);border-radius:999px;font-weight:700;font-size:14.5px;color:var(--purple);background:#fff;transition:border-color .2s,background .2s}
+.loc-places a:hover,.contact-places a:hover{border-color:var(--gold);background:var(--cream)}
+.loc-places svg{color:var(--gold-text)}
+
+.loc .inner-cta h2{color:#fff}
+.loc .inner-cta h2 em{color:var(--gold)}
+
+/* Homepage: where Adarshh consults */
+.hv-near__places{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.hv-near__places a,.hv-near__shop{height:100%;display:flex;align-items:flex-start;gap:12px;padding:18px;background:#fff;border:1px solid var(--line);border-radius:18px;transition:border-color .2s,transform .2s}
+.hv-near__places a:hover,.hv-near__shop:hover{border-color:var(--gold);transform:translateY(-2px)}
+.hv-near__places svg:first-child,.hv-near__shop svg:first-child{flex-shrink:0;color:var(--gold-text);margin-top:2px}
+.hv-near__places span,.hv-near__shop span{display:grid;gap:4px;flex:1}
+.hv-near__places b,.hv-near__shop b{font-size:16px;color:var(--purple-deep);line-height:1.3}
+.hv-near__places small,.hv-near__shop small{font-size:14px;line-height:1.5;color:var(--muted)}
+.hv-near__shop{margin-top:14px;align-items:center;background:var(--purple-deep);border-color:var(--purple-deep)}
+.hv-near__shop b{color:#fff}
+.hv-near__shop small{color:#d9cbe9}
+.hv-near__shop svg{color:var(--gold)!important}
+
+/* About: quick facts */
+.about-facts{margin:10px 0 60px;padding:36px;border:1px solid var(--line);border-radius:18px;background:#fff}
+.about-facts h2{font-size:clamp(32px,3.4vw,44px)}
+.about-facts dl{margin:26px 0 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 40px}
+.about-facts dl>div{display:grid;grid-template-columns:140px 1fr;gap:16px;padding:14px 0;border-top:1px solid var(--line)}
+.about-facts dt{font-size:12.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--terra);padding-top:3px}
+.about-facts dd{margin:0;font-size:15.5px;line-height:1.6;color:var(--ink)}
+.about-facts dd a{color:var(--wine);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+
+/* Contact: local pages */
+.contact-places{margin:44px 0 0}
+.contact-places h2{font-size:clamp(30px,3.4vw,42px);margin-bottom:18px}
+
+@media (min-width:901px){.footer-top{grid-template-columns:1.5fr 1fr 1fr 1fr}}
+@media (max-width:1100px){
+  .loc-proof ul,.hv-near__places{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:900px){
+  .loc-story,.loc-visit{grid-template-columns:1fr;gap:32px}
+  .about-facts dl{grid-template-columns:1fr}
+  .footer-top{grid-template-columns:1fr 1fr}
+  .footer-top>div:first-child{grid-column:1/-1}
+}
+@media (max-width:600px){
+  .loc-proof{margin-top:20px}
+  .loc-proof ul,.hv-near__places{grid-template-columns:1fr}
+  .about-facts{padding:24px}
+  .about-facts dl>div{grid-template-columns:1fr;gap:4px}
+  .gbp-card{padding:20px}
+  .gbp-card__actions .hv-button{width:100%}
+}

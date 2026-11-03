@@ -1,4 +1,6 @@
 'use client';
+import LocalizedContent from '../../i18n/LocalizedContent';
+
 import {useEffect, useRef, useState} from 'react';
 import {ArrowLeft, ArrowRight, ArrowUpRight, BadgeCheck, Play} from 'lucide-react';
 import {countWord, formatCount, formatTotalWords} from '../../lib/formatCount';
@@ -48,11 +50,11 @@ function VideoTile({item, format, platform, playing, onPlay}) {
     window.addEventListener('message', onMessage);
     return () => window.removeEventListener('message', onMessage);
   }, [playing, instagram]);
-  if (playing) return <div className={`hv-video is-${format} is-playing${instagram ? ' is-instagram' : ''}${instagram && !height ? ' is-loading' : ''}`} style={instagram && height ? {height} : undefined}>
+  if (playing) return <LocalizedContent><div className={`hv-video is-${format} is-playing${instagram ? ' is-instagram' : ''}${instagram && !height ? ' is-loading' : ''}`} style={instagram && height ? {height} : undefined}>
     {instagram && !height && <span className="hv-video__loading" aria-live="polite">Loading reel…</span>}
     <iframe src={embedFor(item)} title={`${item.title} on ${platform}`} allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen scrolling="no"/>
-  </div>;
-  return <div className={`hv-video is-${format}`}>
+  </div></LocalizedContent>;
+  return <LocalizedContent><div className={`hv-video is-${format}`}>
     {poster && <img src={poster} alt="" loading="lazy"/>}
     <span className="hv-video__shade" aria-hidden="true"/>
     {watchUrl
@@ -67,12 +69,12 @@ function VideoTile({item, format, platform, playing, onPlay}) {
       {item.views > 0 && <span className="hv-video__views"><Play size={13} fill="currentColor" aria-hidden="true"/>{formatCount(item.views)} views</span>}
       <p className="hv-video__title">{item.title}{item.with && <small>with {item.with}</small>}</p>
     </div>
-  </div>;
+  </div></LocalizedContent>;
 }
 
 /** Account snapshot in the style of an Instagram profile header, built from public profile data. */
 function InstagramCard({profile, url}) {
-  return <div className="hv-ig">
+  return <LocalizedContent><div className="hv-ig">
     <a className="hv-ig__avatar" href={url} target="_blank" rel="noopener noreferrer" aria-label={`@${profile.handle} on Instagram`}><img src={profile.avatar} alt="" width="150" height="150"/></a>
     <div className="hv-ig__body">
       <div className="hv-ig__top">
@@ -85,7 +87,7 @@ function InstagramCard({profile, url}) {
       <p className="hv-ig__bio">{profile.bio.map((line) => <span key={line}>{line}</span>)}</p>
       {profile.link && <a className="hv-ig__link" href={profile.link.href} target="_blank" rel="noopener noreferrer">{profile.link.label}</a>}
     </div>
-  </div>;
+  </div></LocalizedContent>;
 }
 
 export default function MediaWall({videos, social, instagram, children}) {
@@ -106,7 +108,7 @@ export default function MediaWall({videos, social, instagram, children}) {
     setPlaying(null);
     document.getElementById(`hv-tab-${target.key}`)?.focus();
   }
-  return <section className="hv-section hv-watch" id="watch" aria-labelledby="hv-watch-title">
+  return <LocalizedContent><section className="hv-section hv-watch" id="watch" aria-labelledby="hv-watch-title">
     <div className="hv-wrap">
     {children}
     {instagram && social.instagram && <InstagramCard profile={instagram} url={social.instagram}/>}
@@ -130,5 +132,5 @@ export default function MediaWall({videos, social, instagram, children}) {
       {social.youtube && <a className="hv-button hv-button--ghost" href={social.youtube} target="_blank" rel="noopener noreferrer">Subscribe on YouTube <ArrowUpRight size={17}/></a>}
     </div>}
     </div>
-  </section>;
+  </section></LocalizedContent>;
 }

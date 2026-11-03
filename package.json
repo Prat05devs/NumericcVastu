@@ -8,7 +8,9 @@
     "build": "next build --webpack",
     "start": "next start --hostname 0.0.0.0",
     "test": "playwright test",
-    "test:catalogue": "node --experimental-strip-types tests/catalogue.mjs"
+    "test:catalogue": "node --experimental-strip-types tests/catalogue.mjs",
+    "test:numerology": "node tests/numerology.mjs",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "clsx": "^2.1.1",

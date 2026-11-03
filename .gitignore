@@ -7,3 +7,7 @@ playwright-report/
 next-env.d.ts
 *.tsbuildinfo
 .DS_Store
+
+# Local document extraction and report QA (may contain personal data)
+tmp/
+output/

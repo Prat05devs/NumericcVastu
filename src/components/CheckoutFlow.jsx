@@ -1,4 +1,6 @@
 'use client';
+import LocalizedContent from '../i18n/LocalizedContent';
+
 import {useEffect, useMemo, useRef, useState} from 'react';
 import Link from 'next/link';
 import {ArrowLeft, ArrowRight, Check, CreditCard, Lock, Pencil, ShieldCheck} from 'lucide-react';
@@ -12,11 +14,11 @@ const fmtDate = (iso) => (iso ? new Date(`${iso}T00:00:00`).toLocaleDateString('
 const show = (f, v) => (f.type === 'date' ? fmtDate(v) : v);
 
 function Field({f, value, onChange}) {
-  if (f.type === 'heading') return <h4 className="co-subhead">{f.label}</h4>;
-  if (f.type === 'note') return <p className="co-note">{f.label}</p>;
+  if (f.type === 'heading') return <LocalizedContent><h4 className="co-subhead">{f.label}</h4></LocalizedContent>;
+  if (f.type === 'note') return <LocalizedContent><p className="co-note">{f.label}</p></LocalizedContent>;
   const id = `co-${f.name}`;
   const common = {id, name: f.name, required: f.required, value: value || '', onChange: (e) => onChange(f.name, e.target.value)};
-  return <div className={f.half ? 'co-field is-half' : 'co-field'}>
+  return <LocalizedContent><div className={f.half ? 'co-field is-half' : 'co-field'}>
     <label htmlFor={id}>{f.label}{!f.required && f.type !== 'textarea' && !f.hint?.startsWith('Optional') && <span> (optional)</span>}</label>
     {f.type === 'select'
       ? <select {...common}><option value="" disabled>Choose</option>{f.options.map((o) => <option key={o}>{o}</option>)}</select>
@@ -25,7 +27,7 @@ function Field({f, value, onChange}) {
         : <input {...common} type={f.type} placeholder={f.placeholder} maxLength={f.type === 'text' ? 120 : undefined}
           min={f.type === 'date' ? (f.future ? tomorrow() : '1900-01-01') : undefined} max={f.type === 'date' && !f.future ? (f.name === 'babyDob' ? undefined : today()) : undefined}/>}
     {f.hint && <small>{f.hint}</small>}
-  </div>;
+  </div></LocalizedContent>;
 }
 
 /**
@@ -162,7 +164,7 @@ export default function CheckoutFlow({offer, intake, sessionFields, payment, wha
     }
   }
 
-  return <div className="co">
+  return <LocalizedContent><div className="co">
     <ol className="co-steps" aria-label="Checkout progress">
       {STEPS.map((label, i) => <li key={label} className={i === step ? 'is-current' : i < step ? 'is-done' : ''} aria-current={i === step ? 'step' : undefined}>
         <button type="button" disabled={i >= step} onClick={() => setStep(i)}><span>{i < step ? <Check size={14}/> : i + 1}</span>{label}</button>
@@ -205,5 +207,5 @@ export default function CheckoutFlow({offer, intake, sessionFields, payment, wha
       </ul>
       <div className="co-actions"><button type="button" className="hv-link" onClick={() => setStep(1)}><ArrowLeft size={16}/> Back</button></div>
     </div>}
-  </div>;
+  </div></LocalizedContent>;
 }

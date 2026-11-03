@@ -7,7 +7,7 @@
 .path-image img{object-fit:cover}
 .path-body{background:var(--sand);border-radius:18px;padding:32px 34px;display:flex;flex-direction:column}
 .path-meta{font-size:13px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:var(--terra)}
-.path-body h3{font:600 36px/1.05 'NV Digits','Cormorant Garamond',serif;color:var(--wine);margin:12px 0 12px;letter-spacing:-.5px}
+.path-body h3{font:600 36px/1.05 'NV Digits',var(--font-cormorant),serif;color:var(--wine);margin:12px 0 12px;letter-spacing:-.5px}
 .path-body h3 a:hover{color:var(--terra)}
 .path-body>p{font-size:15px}
 .path-for{margin-top:10px}

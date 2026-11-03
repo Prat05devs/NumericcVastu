@@ -1,3 +1,6 @@
+
+import LocalizedContent from '../../i18n/LocalizedContent';
+import Breadcrumbs from '../../components/Breadcrumbs';
 import Image from 'next/image';
 import Link from 'next/link';
 import {ArrowUpRight, Award, BookOpen, GraduationCap, Mic, Newspaper} from 'lucide-react';
@@ -8,28 +11,26 @@ import {achievementCount, bookLaunch, certificates, groups, highlights, moments,
 import {book, bookVideo} from '../../data/media';
 import LocalVideo from '../../components/LocalVideo';
 import {contact} from '../../data/contact';
+import {pageMetadata} from '../../data/seo';
 
 const GROUP_ICONS = {awards: Award, guest: Mic, training: GraduationCap};
 const invite = `https://wa.me/${contact.whatsapp}?text=${encodeURIComponent('Namaste Adarshh ji 🙏\n\nWe would love to invite you to speak at our event.\n\n*Event:* \n*Organiser:* \n*City / online:* \n*Preferred dates:* \n\n— Sent from numericcvaastu.com')}`;
 
-export const metadata = {
-  title: 'Achievements and Awards | Numerologist Adarshh Panndey | NumericcVaastu',
-  description: 'Awards, honours and press for Adarshh Panndey: The Popular Story 40 Under 40 (2026), Numerology Career Coach of the Year 2026, GuruCool Book of the Year 2025 and more.',
-  alternates: {canonical: '/achievements'},
-};
+export const metadata = pageMetadata('/achievements');
 
 function Photo({src, w, h, caption, sizes}) {
-  return <figure className="ac-photo">
+  return <LocalizedContent><figure className="ac-photo">
     <Image src={src} alt={caption || 'Adarshh Panndey at an event'} width={w} height={h} sizes={sizes}/>
     {caption && <figcaption>{caption}</figcaption>}
-  </figure>;
+  </figure></LocalizedContent>;
 }
 
 export default function Page() {
   const [lead, ...rest] = highlights;
-  return <>
+  return <LocalizedContent><>
     <main id="main" className="hv ac-page">
       <section className="pc-hero ac-hero">
+        <div className="hv-wrap"><Breadcrumbs className="breadcrumbs hv-crumbs" items={[["Achievements","/achievements"]]}/></div>
         <div className="hv-wrap pc-hero__grid">
           <div className="pc-hero__copy">
             <span className="hv-eyebrow">Achievements</span>
@@ -135,5 +136,5 @@ export default function Page() {
       </section>
     </main>
     <SiteFooter/>
-  </>;
+  </></LocalizedContent>;
 }

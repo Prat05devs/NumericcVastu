@@ -1,4 +1,6 @@
 'use client';
+import LocalizedContent from '../i18n/LocalizedContent';
+
 import {useRef, useState} from 'react';
 import {Play} from 'lucide-react';
 
@@ -11,11 +13,11 @@ export default function LocalVideo({src, poster, title, label, className = ''}) 
     setStarted(true);
     document.querySelectorAll('video.local-video__el').forEach((v) => { if (v !== ref.current) v.pause(); });
   }
-  return <div className={`local-video ${className}`}>
+  return <LocalizedContent><div className={`local-video ${className}`}>
     <video ref={ref} className="local-video__el" src={src} poster={poster} controls={started} preload="none" playsInline onPlay={onPlay} aria-label={title}/>
     {!started && <button type="button" className="local-video__start" onClick={() => ref.current?.play()} aria-label={`Play: ${title}`}>
       <span className="local-video__play" aria-hidden="true"><Play size={22} fill="currentColor"/></span>
       {label && <span className="local-video__label">{label}</span>}
     </button>}
-  </div>;
+  </div></LocalizedContent>;
 }

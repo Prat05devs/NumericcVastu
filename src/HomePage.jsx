@@ -1,19 +1,25 @@
+
+import LocalizedContent from './i18n/LocalizedContent';
 import Image from 'next/image';
 import Link from 'next/link';
-import {ArrowRight, ArrowUpRight, Baby, BookOpen, Briefcase, Building2, Check, Compass, HeartHandshake, Home, Plus, Sparkles} from 'lucide-react';
+import {ArrowRight, ArrowUpRight, Baby, BookOpen, Briefcase, Building2, Check, Compass, HeartHandshake, Home, MapPin, Plus, ShoppingBag, Sparkles} from 'lucide-react';
 import {SiteFooter} from './components/SiteChrome';
 import HeritageBand from './components/HeritageBands';
 import HeroSlideshow from './components/home/HeroSlideshow';
 import WorkMarquee from './components/home/WorkMarquee';
+import FeaturedChannels from './components/ChannelMarquee';
+import {homeFeatured} from './data/featured';
 import MediaWall from './components/home/MediaWall';
-import LoShuCalculator from './components/home/LoShuCalculator';
 import AwardsCarousel from './components/home/AwardsCarousel';
 import ReviewCards from './components/ReviewCards';
 import StudentVideos from './components/StudentVideos';
 import {courses, consultations} from './data/offers';
 import Price from './components/Price';
-import {awards, book, heroSlides, instagramProfile, marqueeRows, social, stats, videos} from './data/media';
+import {awards, book, heroSlides, marqueeRows, social, videos} from './data/media';
+import {getInstagramData} from './lib/instagram';
 import {faqs, googleReviews, posts} from './data/content';
+import {faqPage} from './lib/schema';
+import {jsonLdHtml} from './lib/site';
 import BlogCards from './components/BlogCards';
 import WhatsAppIcon from './components/WhatsAppIcon';
 import FloatingNumbers from './components/FloatingNumbers';
@@ -21,6 +27,9 @@ import LiveCount from './components/LiveCount';
 import {contact} from './data/contact';
 import {predictions} from './data/predictions';
 import {crop} from './lib/crop';
+import GoogleBusinessCard from './components/GoogleBusinessCard';
+import {locations} from './data/locations';
+import {store} from './data/shop';
 
 const featuredConsultations = [
   ['consult-blueprint', Sparkles], ['consult-career', Briefcase], ['consult-relationship', HeartHandshake],
@@ -32,7 +41,6 @@ const courseImages = {
   'course-accelerator': '/images/students/students-03.webp',
   'course-mastery': '/images/students/students-17.webp',
 };
-const blueprint = consultations.find((item) => item.id === 'consult-blueprint') || consultations[0];
 
 const steps = [
   ['Choose a session', 'Pick the consultation that fits your question, or send a general enquiry if you are unsure.'],
@@ -43,20 +51,22 @@ const steps = [
 const formatShortDate = (iso) => new Date(`${iso}T00:00:00`).toLocaleDateString('en-IN', {day: 'numeric', month: 'short', year: 'numeric'});
 
 function SectionHead({eyebrow, title, accent, text, id, children, center = false}) {
-  return <div className={center ? 'hv-head is-center' : 'hv-head'}>
+  return <LocalizedContent><div className={center ? 'hv-head is-center' : 'hv-head'}>
     <div><span className="hv-eyebrow">{eyebrow}</span><h2 id={id}>{title} {accent && <em>{accent}</em>}</h2></div>
     {(text || children) && <div className="hv-head__aside">{text && <p>{text}</p>}{children}</div>}
-  </div>;
+  </div></LocalizedContent>;
 }
 
-export default function HomePage() {
-  return <>
+export default async function HomePage() {
+  // Follower counts refresh from Instagram every five days when the API is configured (lib/instagram.js).
+  const {stats, instagramProfile} = await getInstagramData();
+  return <LocalizedContent><>
     <main id="main" className="hv">
       <section className="hv-hero" aria-labelledby="hv-hero-title">
         <div className="hv-hero__copy">
-          <span className="hv-eyebrow">Numerology · Numeric Vaastu · Learning</span>
+          <span className="hv-eyebrow">Numerologist &amp; Vastu consultant · Rohini, Delhi</span>
           <h1 id="hv-hero-title">Know your numbers. <em>Find your way.</em></h1>
-          <p className="hv-hero__lede">Personal numerology and Numeric Vaastu consultations with Adarshh Panndey, author of <cite>{book.title}</cite>. And structured courses for people who want to learn the practice themselves.</p>
+          <p className="hv-hero__lede">Personal numerology and Numeric Vaastu consultations with Delhi numerologist Adarshh Panndey, author of <cite>{book.title}</cite>. And structured courses for people who want to learn the practice themselves.</p>
           <div className="hv-actions">
             <Link className="hv-button hv-button--gold" href="/book-consultation">Book a consultation <ArrowUpRight size={18}/></Link>
             <Link className="hv-button hv-button--ghost" href="/courses">Explore courses <ArrowRight size={18}/></Link>
@@ -70,6 +80,8 @@ export default function HomePage() {
           {stats.map((item) => <div key={item.label}>{item.live ? <LiveCount value={item.value} {...item.live}/> : <strong data-count>{item.value}</strong>}<span>{item.label}</span></div>)}
         </div>
       </section>
+
+      <FeaturedChannels headingId="hv-channels-title" channels={homeFeatured} rows={1}/>
 
       <section className="hv-section hv-work" aria-labelledby="hv-work-title">
         <div className="hv-wrap">
@@ -160,10 +172,14 @@ export default function HomePage() {
         </ul>
       </section>
 
-      <section className="hv-section hv-cream" aria-labelledby="hv-loshu-title">
+      <section className="hv-section hv-cream" id="free-tools" aria-labelledby="hv-loshu-title">
         <div className="hv-wrap">
-          <SectionHead id="hv-loshu-title" eyebrow="Free tool" title="Find your numbers" accent="the Indian way." text="Your Mulank, Bhagyank, Kua and Lo Shu grid from your date of birth, with the planes, yogs and missing numbers that numerologists read. Open your free report for remedies, your gemstone and your current life period."/>
-          <LoShuCalculator readingHref={`/consultations/${blueprint.slug}`}/>
+          <SectionHead id="hv-loshu-title" eyebrow="Two free tools" title="Explore your numbers," accent="choose your method." text="Separate free Lo Shu and Vedic numerology tools. Each reads your name, phone number and birth date, and each offers the same combined full report."/>
+          <div className="nv-free-tools">
+            <article><Compass size={28} aria-hidden="true"/><h3>Lo Shu numerology</h3><p>Your 4-9-2 grid, Kua, planes, yogs and missing numbers, with name and phone analysis.</p><Link className="hv-button hv-button--gold" href="/numerology-calculator">Open free Lo Shu tool <ArrowUpRight size={17}/></Link></article>
+            <article><Sparkles size={28} aria-hidden="true"/><h3>Vedic numerology</h3><p>Your planetary 3-1-9 kundli and number interpretations, with name and phone analysis.</p><Link className="hv-button hv-button--gold" href="/vedic-numerology-calculator">Open free Vedic tool <ArrowUpRight size={17}/></Link></article>
+          </div>
+          <p className="nv-tool-report-note">One full report includes both methods. Generate it from either tool; free during testing.</p>
         </div>
       </section>
 
@@ -205,7 +221,8 @@ export default function HomePage() {
             <Link href="/testimonials" className="hv-link">More client experiences <ArrowUpRight size={17}/></Link>
           </SectionHead>
           <ReviewCards reviews={googleReviews}/>
-          <StudentVideos title="Students of his courses, on video"/>
+          <GoogleBusinessCard/>
+          <StudentVideos title="Students on their results after the course"/>
         </div>
       </section>}
 
@@ -216,7 +233,18 @@ export default function HomePage() {
         <BlogCards posts={posts} carousel/>
       </section>}
 
+      <section className="hv-section hv-cream" aria-labelledby="hv-near-title">
+        <div className="hv-wrap hv-near">
+          <SectionHead id="hv-near-title" eyebrow="In person and online" title="In Rohini, across Delhi NCR," accent="and online worldwide." text="Meet Adarshh at the Rohini office, book a Vastu site visit anywhere in Delhi NCR, or consult by video or phone from anywhere, in Hindi or English.">
+            <a href={contact.mapUrl} className="hv-link" target="_blank" rel="noopener noreferrer">Directions to the office <ArrowUpRight size={17}/></a>
+          </SectionHead>
+          <ul className="hv-near__places">{locations.map((l) => <li key={l.slug}><Link href={`/${l.slug}`}><MapPin size={18} aria-hidden="true"/><span><b>{l.eyebrow}</b><small>{l.card}</small></span><ArrowUpRight size={16} aria-hidden="true"/></Link></li>)}</ul>
+          <a className="hv-near__shop" href={store.url} target="_blank" rel="noopener noreferrer"><ShoppingBag size={22} aria-hidden="true"/><span><b>Rudraksha, crystals, gemstones and yantras</b><small>From Adarshh’s own store, with wristwatches made to order.</small></span><ArrowUpRight size={18} aria-hidden="true"/></a>
+        </div>
+      </section>
+
       <section className="hv-section hv-wrap hv-faq" aria-labelledby="hv-faq-title">
+        <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdHtml(faqPage(faqs))}/>
         <div>
           <span className="hv-eyebrow">Questions</span>
           <h2 id="hv-faq-title">Before you <em>begin.</em></h2>
@@ -232,7 +260,7 @@ export default function HomePage() {
         <FloatingNumbers/>
         <HeritageBand kind="small" className="hv-final__band"/>
         <div className="hv-wrap hv-final__inner">
-          <Image src="/images/logo-nv.png" alt="" width={84} height={76} className="hv-final__logo"/>
+          <Image src="/images/logo-nv.webp" alt="" width={84} height={76} className="hv-final__logo"/>
           <h2 id="hv-final-title">Your numbers have something to say. <em>Let’s listen together.</em></h2>
           <p>Book a one-to-one consultation with Adarshh, or start learning with the foundation course.</p>
           <div className="hv-actions is-center">
@@ -246,5 +274,5 @@ export default function HomePage() {
       </section>
     </main>
     <SiteFooter/>
-  </>;
+  </></LocalizedContent>;
 }

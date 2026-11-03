@@ -1,9 +1,12 @@
 'use client';
+import LocalizedContent from '../i18n/LocalizedContent';
+
 import {useEffect, useState} from 'react';
 import Link from 'next/link';
 import {CheckCircle2, AlertTriangle} from 'lucide-react';
 import WhatsAppIcon from './WhatsAppIcon';
 import {whatsappUrl} from '../lib/whatsapp';
+import GoogleBusinessCard from './GoogleBusinessCard';
 
 /** Shown after Razorpay returns. Reads the booking summary saved by the checkout in this tab. */
 export default function CheckoutSuccess({whatsapp, phone}) {
@@ -13,7 +16,7 @@ export default function CheckoutSuccess({whatsapp, phone}) {
     try { setBooking(JSON.parse(sessionStorage.getItem('nv-last-booking') || 'null')); } catch {}
     setPaid(new URLSearchParams(window.location.search).get('status') === 'paid');
   }, []);
-  return <section className="co-done">
+  return <LocalizedContent><section className="co-done">
     {paid ? <CheckCircle2 size={56} className="co-done__icon"/> : <AlertTriangle size={56} className="co-done__icon is-warn"/>}
     <h1>{paid ? 'Payment received. Thank you!' : 'We’re confirming your payment'}</h1>
     {booking && <p className="co-done__what"><b>{booking.offer}</b> · {booking.price}</p>}
@@ -25,6 +28,7 @@ export default function CheckoutSuccess({whatsapp, phone}) {
       <p><b>One last step:</b> send your details to Adarshh on WhatsApp so he can prepare.</p>
       <a className="hv-button hv-button--whatsapp" href={whatsappUrl(whatsapp, booking.message)} target="_blank" rel="noopener noreferrer"><WhatsAppIcon size={20}/> Send my details on WhatsApp</a>
     </>}
+    {paid && <GoogleBusinessCard compact title="After your session, review Adarshh on Google"/>}
     <Link className="hv-link" href="/">Back to home</Link>
-  </section>;
+  </section></LocalizedContent>;
 }

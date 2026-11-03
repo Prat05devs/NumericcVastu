@@ -1,3 +1,5 @@
+
+import LocalizedContent from '../i18n/LocalizedContent';
 import Link from 'next/link';
 import Image from 'next/image';
 import {ArrowUpRight, CalendarCheck, Check, ClipboardList, CreditCard, Languages, MessageCircleQuestion, Plus, Sparkles, Star, Video} from 'lucide-react';
@@ -11,11 +13,16 @@ import {consultScenarios} from '../data/consultScenarios';
 import {intakeFor, sessionFields} from '../data/intake';
 import {googleReviews} from '../data/content';
 import {crop} from '../lib/crop';
+import GoogleBusinessCard from './GoogleBusinessCard';
+import {offerSeo, serviceAreas} from '../data/seo';
+import {jsonLdHtml} from '../lib/site';
+import {breadcrumbs, faqPage, ids, offerPrices} from '../lib/schema';
 
-const origin = process.env.NEXT_PUBLIC_SITE_URL || 'https://numericcvaastu.com';
+import {siteUrl as origin} from '../lib/site';
 const PORTRAITS = ['/images/gallery/portrait-standing.webp', '/images/gallery/media-podcast-red-set.webp', '/images/gallery/portrait-arms-crossed.webp', '/images/gallery/media-podcast-portrait.webp'];
 
 const faqs = (offer) => [
+  ...(offerSeo[offer.id]?.faqs || []),
   ['Is the session online or in person?', offer.id.endsWith('vastu') ? 'Most Vastu consultations are done online from your floor plan and photos. Site visits in Delhi NCR can be arranged; travel is confirmed separately.' : 'Choose a video call, a phone call or an in-person meeting at the Rohini, Delhi office when you book.'],
   ['What if I don’t know my time of birth?', 'Leave it blank. Numerology works mainly from your name and date of birth; the time and place help Adarshh add detail where they are known.'],
   ['How do I book?', 'Fill in your details at checkout and pay securely with Razorpay (UPI, cards or net banking). The team then confirms your slot on WhatsApp. Prefer to talk first? Ask on WhatsApp.'],
@@ -40,7 +47,7 @@ export default function ConsultationDetail({offer}) {
     [Sparkles, 'Leave with next steps', 'Clear guidance and practical remedies you can act on.'],
   ];
 
-  return <>
+  return <LocalizedContent><>
     <main id="main" className="hv cs-d">
       <section className="csd-hero">
         <div className="hv-wrap csd-hero__grid">
@@ -103,6 +110,7 @@ export default function ConsultationDetail({offer}) {
       <section className="hv-section hv-wrap" aria-labelledby="csd-reviews">
         <div className="hv-head"><div><span className="hv-eyebrow">Client stories</span><h2 id="csd-reviews">What clients <em>say.</em></h2></div><div className="hv-head__aside"><Link className="hv-link" href="/testimonials">More experiences <ArrowUpRight size={16}/></Link></div></div>
         <ReviewCards reviews={googleReviews}/>
+        <GoogleBusinessCard compact title="Read every review on Google"/>
       </section>
 
       <section className="hv-section hv-wrap hv-faq" aria-labelledby="csd-faq">
@@ -117,8 +125,10 @@ export default function ConsultationDetail({offer}) {
         </div>
       </section>}
       <StickyBuy name={offer.name} price={<Price offer={offer}/>} href={checkout} label="Book now"/>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify({'@context': 'https://schema.org', '@type': 'Service', name: offer.name, description: offer.summary, provider: {'@type': 'Person', name: 'Adarshh Panndey'}, areaServed: 'IN', url: `${origin}/consultations/${offer.slug}`, offers: {'@type': 'Offer', price: offer.pricePaise / 100, priceCurrency: 'INR', url: `${origin}/checkout?offer=${offer.id}`}}).replace(/</g, '\\u003c')}}/>
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdHtml({'@context': 'https://schema.org', '@type': 'Service', name: offer.name, serviceType: offer.id.endsWith('vastu') ? 'Vastu consultation' : 'Numerology consultation', description: `${offer.summary} ${offer.outcome}`, provider: {'@id': ids.business}, areaServed: serviceAreas, url: `${origin}/consultations/${offer.slug}`, offers: offerPrices(offer, `${origin}/checkout?offer=${offer.id}`)})}/>
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdHtml(breadcrumbs([['Consultations', '/consultations'], [offer.name, `/consultations/${offer.slug}`]]))}/>
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdHtml(faqPage(faqs(offer)))}/>
     </main>
     <SiteFooter/>
-  </>;
+  </></LocalizedContent>;
 }

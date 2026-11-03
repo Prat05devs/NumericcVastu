@@ -1,11 +1,11 @@
 /* Gallery page: hero collage, category filters, masonry grid and lightbox. */
 .gallery-hero{display:grid;grid-template-columns:1.05fr .95fr;gap:50px;align-items:center;padding:70px 0 60px;border-bottom:1px solid var(--line)}
 .gallery-hero h1{font-size:clamp(46px,5.8vw,82px);font-weight:500;line-height:1.02;letter-spacing:-3.5px}
-.gallery-hero h1 em{font-family:'NV Digits','Cormorant Garamond',serif;color:var(--terra);font-weight:500}
+.gallery-hero h1 em{font-family:'NV Digits',var(--font-cormorant),serif;color:var(--terra);font-weight:500}
 .gallery-hero p{font-size:16.5px;max-width:520px;margin-top:22px}
 .gallery-hero-stats{list-style:none;padding:0;margin:32px 0 0;display:flex;flex-wrap:wrap;gap:12px 28px}
 .gallery-hero-stats li{display:grid;font-size:13.5px;color:var(--muted);letter-spacing:.3px}
-.gallery-hero-stats strong{font:600 34px/1 'NV Digits','Cormorant Garamond',serif;color:var(--wine)}
+.gallery-hero-stats strong{font:600 34px/1 'NV Digits',var(--font-cormorant),serif;color:var(--wine)}
 .gallery-collage{position:relative;height:440px}
 .gallery-collage>div{position:absolute;overflow:hidden;background:var(--sand);box-shadow:0 20px 40px #4a1f7a1f}
 .gallery-collage img{object-fit:cover}

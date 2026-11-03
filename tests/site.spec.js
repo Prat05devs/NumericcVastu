@@ -22,7 +22,8 @@ test('consultation page, WhatsApp enquiry and checkout',async({page})=>{
  await page.getByLabel('How would you like to meet?').selectOption({index:1});await page.getByLabel('Preferred language').selectOption('Hindi');
  await page.getByLabel('Preferred date').fill(new Date(Date.now()+2*86400000).toISOString().slice(0,10));await page.getByLabel('Preferred time').selectOption({index:1});
  await page.getByRole('button',{name:/Continue/}).click();
- await page.getByLabel(/full name, as on documents/).fill('Test Visitor');await page.getByLabel('Date of birth').fill('1990-05-23');await page.getByLabel('Place of birth').fill('Delhi');await page.getByLabel('Gender').selectOption('Female');await page.getByLabel(/What would you like to ask/).fill('Career direction');
+ await page.getByLabel(/full name, as on documents/).fill('Test Visitor');
+ await page.getByLabel('Date of birth').fill('1990-05-23');await page.getByLabel('Place of birth').fill('Delhi');await page.getByLabel('Gender').selectOption('Female');await page.getByLabel(/What would you like to ask/).fill('Career direction');
  await page.getByRole('button',{name:/Continue/}).click();
  await expect(page.getByRole('heading',{name:'Review your booking'})).toBeVisible();
  await expect(page.locator('.co-review')).toContainText('23 May 1990');
@@ -35,20 +36,19 @@ test('podcasts and predictions pages',async({page})=>{
  await page.getByRole('button',{name:/^Predictions/}).click();
  await expect(page.locator('.pc-card').first()).toBeVisible();
  await page.goto('/predictions');
- await page.getByRole('button',{name:/^Came true/}).click();
+ const outcomeFilter=page.getByRole('button',{name:/^Came true/});
+ await outcomeFilter.click();
+ await expect(outcomeFilter).toHaveAttribute('aria-pressed','true');
+ await expect(page.locator('.pr-card.is-awaiting')).toHaveCount(0);
  for(const card of await page.locator('.pr-card').all()) await expect(card.locator('.is-outcome a')).toHaveAttribute('href',/^https:/);
 });
 
-test('homepage calculator, slideshow and video tabs',async({page})=>{
+test('homepage free tools, slideshow and video tabs',async({page})=>{
  const errors=[];page.on('pageerror',error=>errors.push(error.message));
  await page.goto('/');
  await expect(page.getByRole('heading',{level:1})).toContainText('Know your numbers');
- await page.getByLabel('Date of birth').fill('1990-05-23');
- await page.locator('#hv-gender').selectOption('male');
- await page.getByRole('button',{name:'Show my numbers'}).click();
- await expect(page.locator('.nv-num strong')).toHaveText(['5','2','1']);
- await expect(page.locator('.hv-loshu__summary')).toContainText('Missing: 4 (Rahu), 6 (Venus), 7 (Ketu), 8 (Saturn)');
- await expect(page.locator('.hv-loshu__built span')).toHaveText(['2','3','5','1','9','9','2','5','1']);
+ await expect(page.getByRole('link',{name:'Open free Lo Shu tool'})).toHaveAttribute('href','/numerology-calculator');
+ await expect(page.getByRole('link',{name:'Open free Vedic tool'})).toHaveAttribute('href','/vedic-numerology-calculator');
  await expect(page.locator('.hv-stage__slide.is-active')).toHaveCount(1);
  await page.getByRole('tab',{name:/Instagram Reels/}).click();
  await expect(page.getByRole('tab',{name:/Instagram Reels/})).toHaveAttribute('aria-selected','true');
@@ -59,7 +59,8 @@ test('full numerology report reads the date from the link',async({page})=>{
  await page.goto('/numerology-calculator?dob=1996-04-15&g=male');
  await expect(page.locator('.nv-num strong')).toHaveText(['6','8','4']);
  await expect(page.locator('.nv-planes li.is-full b')).toHaveText(['Practical plane','Will plane','Golden Yog (Raj Yog)']);
- await expect(page.locator('.nv-kua h3')).toContainText('North');
+ await expect(page.locator('.nv-kua h3')).toContainText('Four favourable directions');
+ await expect(page.locator('.nv-kua .nv-direction-table tbody tr')).toHaveCount(4);
 });
 
 test('pricing redirects to courses',async({page})=>{
@@ -68,15 +69,18 @@ test('pricing redirects to courses',async({page})=>{
 });
 
 test('gallery opens and closes accessibly',async({page})=>{
- await page.goto('/gallery',{waitUntil:'networkidle'});
+ await page.goto('/gallery');
  await page.getByRole('button',{name:/Open Portraits photograph, 1 of \d+/}).click();
  await expect(page.getByRole('dialog',{name:'Image viewer'})).toBeVisible();
  await page.keyboard.press('Escape');
  await expect(page.getByRole('dialog',{name:'Image viewer'})).not.toBeVisible();
- await page.getByRole('button',{name:'Certificates',exact:true}).click();
- await expect(page.locator('.gallery-tile')).toHaveCount(6);
- await page.getByRole('button',{name:'With students',exact:true}).click();
- await expect(page.locator('.gallery-tile')).toHaveCount(19);
+ for(const name of ['Certificates','With students']){
+  const filter=page.locator('.gallery-filters button',{hasText:name});
+  await filter.click();
+  const expected=Number(await filter.locator('span').textContent());
+  expect(expected).toBeGreaterThan(0);
+  await expect(page.locator('.gallery-tile')).toHaveCount(expected);
+ }
 });
 
 test('loader preview follows progress and can close',async({page})=>{
@@ -91,12 +95,12 @@ test('loader preview follows progress and can close',async({page})=>{
 for(const width of [375,768,1024,1440]){
  test(`responsive pages ${width}px`,async({page})=>{
   await page.setViewportSize({width,height:900});
-  for(const route of ['/','/courses','/consultations','/courses/numerology-career-launchpad','/gallery','/book-consultation']){
+  for(const route of ['/','/courses','/consultations','/courses/numerology-career-launchpad','/numerology-calculator','/vedic-numerology-calculator','/gallery','/book-consultation']){
    await page.goto(route);
    await page.evaluate(()=>document.fonts.ready);
    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),route).toBe(true);
   }
-  if(width===375){await page.getByRole('button',{name:'Open navigation'}).click();await expect(page.getByRole('navigation').getByRole('link',{name:'Gallery'})).toBeVisible()}
+  if(width===375){await page.getByRole('button',{name:'Open navigation'}).click();const nav=page.getByRole('navigation',{name:'Main navigation',exact:true});await nav.getByRole('button',{name:'Watch & read',exact:true}).click();await expect(nav.getByRole('link',{name:'Gallery',exact:true})).toBeVisible()}
  });
 }
 
@@ -107,5 +111,26 @@ test('friend and enemy numbers follow the compatibility chart',async({page})=>{
  await expect(result.locator('.is-friend')).toHaveText(['1','2','5','6','7','9']);
  await expect(result.locator('.is-enemy')).toHaveText(['3','8']);
  await expect(page.locator('.nv-swatches').last()).toHaveText(/Yellow.*Black/);
- await expect(page.locator('#full-report')).toContainText('Six years ahead');
+ await expect(page.locator('#full-report')).toContainText('six years ahead');
+});
+
+test('local pages, shop and Google Business Profile',async({page})=>{
+ const errors=[];page.on('pageerror',error=>errors.push(error.message));
+ await page.goto('/numerologist-in-delhi');
+ await expect(page.getByRole('heading',{level:1})).toContainText('Numerologist in Delhi');
+ await expect(page.getByRole('link',{name:/Write a Google review/}).first()).toHaveAttribute('href',/share\.google|g\.page/);
+ await expect(page.locator('.hv-faq__list details')).toHaveCount(4);
+ await expect(page.locator('.loc-places a')).toHaveCount(7);
+ await page.getByRole('button',{name:'Switch language to Hindi'}).click();
+ await expect(page.getByRole('heading',{level:1})).toContainText('दिल्ली में अंक ज्योतिषी');
+ await page.getByRole('button',{name:'भाषा अंग्रेज़ी में बदलें'}).click();
+ await page.goto('/online-numerology-consultation');
+ await expect(page.locator('.loc-fees tbody tr')).toHaveCount(11);
+ await page.goto('/');
+ const shop=page.getByRole('navigation',{name:'Main navigation',exact:true}).getByRole('link',{name:'Shop',exact:true});
+ if(await shop.isVisible()){await expect(shop).toHaveAttribute('href','https://numericcvaastucrystal.in/');await expect(shop).toHaveAttribute('target','_blank')}
+ await expect(page.locator('a.hv-near__shop')).toHaveAttribute('href','https://numericcvaastucrystal.in/');
+ await expect(page.locator('.hv-near__places li')).toHaveCount(8);
+ await expect(page.locator('footer').getByRole('link',{name:'Find us on Google'})).toBeVisible();
+ expect(errors).toEqual([]);
 });

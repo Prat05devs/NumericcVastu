@@ -1,4 +1,6 @@
 'use client';
+import LocalizedContent from '../i18n/LocalizedContent';
+
 import {useState} from 'react';
 import {ArrowUpRight, CalendarDays, Clock, Eye} from 'lucide-react';
 import YouTubeInline from './YouTubeInline';
@@ -11,7 +13,7 @@ export default function PodcastList({episodes, topics}) {
   const [topic, setTopic] = useState('All');
   const list = topic === 'All' ? episodes : episodes.filter((e) => e.topics.includes(topic));
   const count = (t) => (t === 'All' ? episodes.length : episodes.filter((e) => e.topics.includes(t)).length);
-  return <>
+  return <LocalizedContent><>
     <div className="pc-filters" role="group" aria-label="Filter episodes by topic">
       {['All', ...topics].map((t) => <button key={t} type="button" aria-pressed={topic === t} className={topic === t ? 'is-on' : ''} onClick={() => setTopic(t)}>{t}<span>{count(t)}</span></button>)}
     </div>
@@ -33,5 +35,5 @@ export default function PodcastList({episodes, topics}) {
         </div>
       </li>)}
     </ol>
-  </>;
+  </></LocalizedContent>;
 }

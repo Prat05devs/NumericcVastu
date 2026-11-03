@@ -1,4 +1,6 @@
 'use client';
+import LocalizedContent from '../i18n/LocalizedContent';
+
 import Link from 'next/link';
 import {useEffect, useMemo, useRef, useState} from 'react';
 import {ArrowUpRight, MessageCircleQuestion, RotateCcw, SendHorizontal, X} from 'lucide-react';
@@ -11,7 +13,7 @@ import {useCurrency} from '../lib/useCurrency';
 
 const STOP = new Set('a an and are as at be by can could do does for from get go have how i im in is it its me my need of on or please show should tell that the this to want what when which who why will with would you your about numerology numericcvaastu ji hai kya ka ki ke mujhe'.split(' '));
 /** Spellings and Hinglish words visitors use, mapped to the words the entries contain. */
-const SAME = {vaastu: 'vastu', vasthu: 'vastu', charge: 'fee', charges: 'fee', cost: 'fee', costs: 'fee', price: 'fee', prices: 'fee', pricing: 'fee', rate: 'fee', kitna: 'fee', kitne: 'fee', paisa: 'fee', pay: 'payment', paying: 'payment', upi: 'payment', razorpay: 'payment', shaadi: 'marriage', shadi: 'marriage', vivah: 'marriage', naukri: 'job', ghar: 'home', makan: 'home', dukaan: 'shop', dukan: 'shop', naam: 'name', bachcha: 'baby', bacha: 'baby', dob: 'birth', birthday: 'birth', enroll: 'enrol', enrollment: 'enrol', admission: 'enrol', adarsh: 'adarshh', aadarsh: 'adarshh', pandey: 'panndey'};
+const SAME = {'फीस':'fee','शुल्क':'fee','कीमत':'fee','पैसे':'fee','भुगतान':'payment','बुकिंग':'booking','बुक':'booking','परामर्श':'consultation','पाठ्यक्रम':'course','कोर्स':'course','वास्तु':'vastu','नाम':'name','जन्मतिथि':'birth','करियर':'career','नौकरी':'job','व्यवसाय':'business','शादी':'marriage','विवाह':'marriage','घर':'home','मोबाइल':'mobile','रिपोर्ट':'calculator','कैलकुलेटर':'calculator','अंक':'numerology','ज्योतिष':'numerology','संपर्क':'contact','फ़ोन':'phone','फोन':'phone','समय':'timing','भाषा':'language','आदर्श':'adarshh','पुरस्कार':'award','प्रमाणपत्र':'certificate',vaastu: 'vastu', vasthu: 'vastu', charge: 'fee', charges: 'fee', cost: 'fee', costs: 'fee', price: 'fee', prices: 'fee', pricing: 'fee', rate: 'fee', kitna: 'fee', kitne: 'fee', paisa: 'fee', pay: 'payment', paying: 'payment', upi: 'payment', razorpay: 'payment', shaadi: 'marriage', shadi: 'marriage', vivah: 'marriage', naukri: 'job', ghar: 'home', makan: 'home', dukaan: 'shop', dukan: 'shop', naam: 'name', bachcha: 'baby', bacha: 'baby', dob: 'birth', birthday: 'birth', enroll: 'enrol', enrollment: 'enrol', admission: 'enrol', adarsh: 'adarshh', aadarsh: 'adarshh', pandey: 'panndey'};
 const DATE = /\b\d{1,2}[/.-]\d{1,2}[/.-]\d{2,4}\b/;
 const MOBILE = '(max-width: 560px)';
 const OPEN_EVENT = 'nv-guide-open';
@@ -20,7 +22,7 @@ export const openSiteGuide = () => window.dispatchEvent(new Event(OPEN_EVENT));
 
 /** A light stemmer, so “change”, “changes” and “changing” all match. */
 const stem = (w) => (w.length > 4 ? w.replace(/(ing|ed|es|s|e)$/, '') : w);
-const tokens = (text) => text.toLowerCase().replace(/[’']/g, '').split(/[^a-z0-9]+/).filter((w) => w && !STOP.has(w)).map((w) => stem(SAME[w] || w));
+const tokens = (text) => text.toLowerCase().replace(/[’']/g, '').split(/[^\p{L}\p{M}0-9]+/u).filter((w) => w && !STOP.has(w)).map((w) => stem(SAME[w] || w));
 
 /** Scores every entry against the question: a word in the label counts three times, in the keys twice, in the answer once; rarer words count more. */
 function buildIndex(entries) {
@@ -43,14 +45,14 @@ function buildIndex(entries) {
 }
 
 function Answer({entry, onLink}) {
-  return <>
+  return <LocalizedContent><>
     {entry.title && <strong className="sg-title">{entry.title}</strong>}
     {entry.text.map((t) => <p key={t}>{t}</p>)}
     {entry.list && <>{entry.list.title && <p className="sg-list-title">{entry.list.title}</p>}<ul>{entry.list.items.map((t) => <li key={t}>{t}</li>)}</ul></>}
     {entry.links?.length > 0 && <div className="sg-links">{entry.links.map(([label, href]) => href.startsWith('/')
       ? <Link key={href} href={href} onClick={onLink}>{label}<ArrowUpRight size={14} aria-hidden="true"/></Link>
       : <a key={href} href={href} target={href.startsWith('http') ? '_blank' : undefined} rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}>{label}<ArrowUpRight size={14} aria-hidden="true"/></a>)}</div>}
-  </>;
+  </></LocalizedContent>;
 }
 
 /** Fills each ¤{offer id} in the answers with that offer's price in the visitor's currency. */
@@ -108,18 +110,18 @@ export default function SiteGuide({entries: source, prices}) {
   const lastBot = log.at(-1);
   const chips = lastBot.miss ? byId.get('start').next : [...(lastBot.also || []), ...byId.get(lastBot.id).next.filter((id) => !lastBot.also?.includes(id))];
 
-  return <>
+  return <LocalizedContent><>
     {!open && <button ref={launcher} type="button" className="sg-launch" onClick={() => setOpen(true)} aria-haspopup="dialog" aria-label="Ask a question about NumericcVaastu"><MessageCircleQuestion size={26} aria-hidden="true"/><span>Ask a question</span></button>}
     {open && <section ref={panel} className="sg-panel" role="dialog" aria-label="NumericcVaastu site guide" tabIndex={-1}>
       <header className="sg-head">
-        <img src="/images/logo-nv.png" alt="" width="36" height="36"/>
+        <img src="/images/logo-nv.webp" alt="" width="36" height="36"/>
         <div><strong>Site guide</strong><small>Answers from this website</small></div>
         <button type="button" className="sg-icon" onClick={() => setLog([{from: 'bot', id: 'start'}])} aria-label="Start over" title="Start over"><RotateCcw size={18}/></button>
         <button type="button" className="sg-icon" onClick={() => setOpen(false)} aria-label="Close site guide" title="Close"><X size={20}/></button>
       </header>
       <div ref={scroller} className="sg-log">
         <div aria-live="polite">{log.map((m, i) => <div key={i} ref={i === log.length - 1 ? last : undefined} className={m.from === 'bot' ? 'sg-msg sg-bot' : 'sg-msg sg-user'}>
-          {m.from === 'user' ? <p>{m.text}</p> : m.miss
+          {m.from === 'user' ? <p translate="no">{m.text}</p> : m.miss
             ? <><p>I couldn’t find that on the website. Try one of the topics below, or ask Adarshh’s team directly.</p><div className="sg-links"><Link href="/book-consultation" onClick={onLink}>Ask on WhatsApp<ArrowUpRight size={14} aria-hidden="true"/></Link><Link href="/contact" onClick={onLink}>Contact details<ArrowUpRight size={14} aria-hidden="true"/></Link></div></>
             : <Answer entry={byId.get(m.id)} onLink={onLink}/>}
         </div>)}</div>
@@ -133,5 +135,5 @@ export default function SiteGuide({entries: source, prices}) {
         <button type="submit" className="sg-send" aria-label="Send question" disabled={!draft.trim()}><SendHorizontal size={20}/></button>
       </form>
     </section>}
-  </>;
+  </></LocalizedContent>;
 }
