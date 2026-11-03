@@ -1,0 +1,17 @@
+# Local MySQL for development and tests: `npm run db:up`. Matches the MySQL/MariaDB on the cloud hosting.
+# Development: DATABASE_URL=mysql://nv:nvpass@127.0.0.1:3306/numericcvaastu
+# Tests:       TEST_DATABASE_URL=mysql://root:root@127.0.0.1:3306/numericcvaastu_test
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: numericcvaastu
+      MYSQL_USER: nv
+      MYSQL_PASSWORD: nvpass
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    ports: ["127.0.0.1:3306:3306"]
+    volumes: [nv-mysql:/var/lib/mysql]
+volumes:
+  nv-mysql:
