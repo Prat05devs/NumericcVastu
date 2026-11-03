@@ -41,7 +41,7 @@ A second Node.js app from the same repository:
 
 | Setting | Value |
 |---|---|
-| Framework preset | Express or Other (the app runs Next's standalone server through the entry file) |
+| Framework preset | Express (server.js serves the built Next app from apps/web) |
 | Package manager | **pnpm** |
 | Root directory | `commerce` |
 | Build | automatic, as for the API, with `BUILD_TARGET=web` |

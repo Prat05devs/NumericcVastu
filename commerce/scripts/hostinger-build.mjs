@@ -8,12 +8,12 @@
  *
  *   api → prisma generate, build contracts + API, then (unless SKIP_MIGRATIONS=true) apply migrations, seed the base
  *         taxonomy (idempotent) and, when BOOTSTRAP_OWNER_EMAIL + STAFF_PASSWORD are set, create the owner if missing.
- *         Entry file: apps/api/dist/server.js
- *   web → build contracts + Next standalone server, copy its static assets beside it.
- *         Entry file: apps/web/.next/standalone/apps/web/server.js
+ *         Entry file: server.js (starts apps/api/dist/server.js)
+ *   web → build contracts + the Next app (served in place from apps/web).
+ *         Entry file: server.js (both targets)
  */
 import {execSync} from 'node:child_process';
-import {cpSync, existsSync} from 'node:fs';
+import {existsSync} from 'node:fs';
 import {dirname, join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
@@ -50,12 +50,7 @@ if (target === 'api') {
   if (!process.env.API_INTERNAL_URL) throw new Error('API_INTERNAL_URL is not set; the /api/v1 proxy is fixed at build time.');
   run('tsc', '-p tsconfig.json', 'packages/contracts');
   run('next', 'build --webpack', 'apps/web'); // webpack: Hostinger's glibc cannot load native SWC, and Turbopack refuses the WASM fallback
-  // next build's standalone output leaves static assets out; the server expects them beside it.
-  const web = join(root, 'apps/web');
-  const out = join(web, '.next/standalone/apps/web');
-  cpSync(join(web, '.next/static'), join(out, '.next/static'), {recursive: true});
-  if (existsSync(join(web, 'public'))) cpSync(join(web, 'public'), join(out, 'public'), {recursive: true});
-  console.log(`\nStandalone server ready: ${join(out, 'server.js')}`);
+  console.log('\nWeb build ready; server.js serves it from apps/web.');
 } else if (!target) {
   execSync('pnpm run build:all', {cwd: root, stdio: 'inherit'});
 } else {
