@@ -1,0 +1,29 @@
+# LOCAL DEVELOPMENT ONLY. Production runs on Hostinger managed Node.js + Hostinger MySQL (no Docker there).
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: commerce
+      MYSQL_USER: commerce
+      MYSQL_PASSWORD: commerce
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    ports: ["127.0.0.1:3316:3306"]
+    volumes: [commerce-mysql:/var/lib/mysql]
+  mariadb:
+    # Hostinger databases may be MariaDB; integration tests can target this too.
+    image: mariadb:10.11
+    profiles: ["mariadb"]
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: commerce
+    ports: ["127.0.0.1:3317:3306"]
+  minio:
+    # Optional S3-compatible object storage emulator for media uploads.
+    image: minio/minio:latest
+    profiles: ["storage"]
+    command: server /data --console-address ":9001"
+    environment: {MINIO_ROOT_USER: minio, MINIO_ROOT_PASSWORD: minio-secret}
+    ports: ["127.0.0.1:9000:9000", "127.0.0.1:9001:9001"]
+volumes:
+  commerce-mysql:

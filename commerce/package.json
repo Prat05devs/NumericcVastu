@@ -1,0 +1,33 @@
+{
+  "name": "numericcvaastu-commerce",
+  "private": true,
+  "description": "NumericcVaastu commerce platform: crystal store, shared commerce API and back office",
+  "packageManager": "pnpm@10.30.3",
+  "engines": {
+    "node": ">=22.12 <25"
+  },
+  "scripts": {
+    "build": "pnpm -r --filter ./packages/** --filter ./apps/** build",
+    "lint": "eslint .",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r --filter ./packages/** --filter ./apps/api test",
+    "test:e2e": "pnpm --filter web test:e2e",
+    "db:up": "docker compose up -d mysql",
+    "db:generate": "prisma generate",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:seed": "pnpm --filter api seed",
+    "openapi": "pnpm --filter api openapi",
+    "jobs:run": "pnpm --filter api jobs",
+    "load:test": "node scripts/load-test.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "dotenv": "^17.4.2",
+    "eslint": "^9.39.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "prisma": "7.10.1",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.72.1"
+  }
+}
