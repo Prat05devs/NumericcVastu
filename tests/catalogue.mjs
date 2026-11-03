@@ -4,7 +4,7 @@ import {locations} from '../src/data/locations.js';
 import {offerCatalog,courses,consultations,formatPrice,getPricePaise,getActivePromotion,getCurrentCoursePromotion,assertOfferCatalog} from '../src/data/offers.ts';
 assertOfferCatalog();
 assert.equal(courses.length,3);assert.equal(consultations.length,11);
-assert(offerCatalog.offers.every(offer=>!offer.checkoutEnabled));
+assert(offerCatalog.offers.every(offer=>!offer.checkoutEnabled||offer.priceVerified));
 assert.deepEqual(offerCatalog.offers.filter(offer=>offer.priceVerified).map(offer=>offer.id),['course-launchpad']);
 for(const offer of offerCatalog.offers){
  const detail=`.next/server/app/${offer.kind==='course'?'courses':'consultations'}/${offer.slug}.html`;
@@ -27,9 +27,11 @@ assert(!sitemap.includes('/loader-preview')&&!sitemap.includes('/privacy-policy'
 // Search and AI visibility: one canonical domain, local pages, shop, crawler access and llms.txt.
 const canonicalOrigin='https://www.numericcvaastu.com';
 assert(sitemap.includes(`${canonicalOrigin}/about`)&&!sitemap.includes('https://numericcvaastu.com/')&&!sitemap.includes('/shop'),'sitemap must use the www origin');
-// All three domains work on their own: no host redirect, only canonical links to .com. /shop opens the crystal store.
+// All three domains work on their own: only canonical links to .com, and the one host redirect is bare .com → www.
+// /shop opens the crystal store.
 const redirects=JSON.parse(fs.readFileSync('.next/routes-manifest.json','utf8')).redirects;
-assert(!redirects.some(rule=>rule.has?.some(item=>item.type==='host')),'domains must not redirect to each other');
+const hostRules=redirects.filter(rule=>rule.has?.some(item=>item.type==='host'));
+assert(hostRules.every(rule=>rule.has.some(item=>item.type==='host'&&item.value==='numericcvaastu.com')&&rule.destination.startsWith('https://www.numericcvaastu.com/')),'domains must not redirect to each other');
 assert(redirects.some(rule=>rule.source==='/shop'&&rule.destination==='https://numericcvaastucrystal.in/'));
 for(const location of locations){
  assert(sitemap.includes(`${canonicalOrigin}/${location.slug}`),`sitemap missing ${location.slug}`);
@@ -61,4 +63,4 @@ assert.equal(getActivePromotion(offer.id,new Date('2029-12-31T23:59:59Z')),undef
 assert.equal(getCurrentCoursePromotion(future)?.offer.id,offer.id);
 assertOfferCatalog();
 offerCatalog.promotions.pop();
-console.log(`Catalog parity verified: ${offerCatalog.offers.length} offers, listings, detail pages, XML sitemap, checkout disabled. ${locations.length} local pages, robots.txt and llms.txt verified.`);
+console.log(`Catalog parity verified: ${offerCatalog.offers.length} offers, listings, detail pages, XML sitemap, checkout only where the price is verified. ${locations.length} local pages, robots.txt and llms.txt verified.`);
