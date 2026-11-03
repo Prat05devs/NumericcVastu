@@ -7,6 +7,8 @@
     "node": ">=22.12 <25"
   },
   "scripts": {
+    "build:api": "node scripts/hostinger-build.mjs api",
+    "build:web": "node scripts/hostinger-build.mjs web",
     "build": "pnpm -r --filter ./packages/** --filter ./apps/** build",
     "lint": "eslint .",
     "typecheck": "pnpm -r typecheck",

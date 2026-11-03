@@ -1,39 +1,76 @@
-# Deploying on Hostinger (managed Node.js, shared plan)
+# Deploying on Hostinger (managed Node.js, Business/"Unlimited" plan)
 
-Two Node.js apps, one MySQL database, one cron entry. No Docker, Redis, workers or WebSockets are needed.
+Two Node.js apps built from this Git repository, one MySQL database and one cron entry. No SSH, Docker, Redis or
+workers are needed: the API build applies migrations, seeds the base taxonomy and creates the first owner.
+Hostinger installs the pnpm workspace (detected from `commerce/pnpm-lock.yaml`), runs the build script, then runs the
+entry file. Apps sleep when idle and wake on the next request, so scheduled work runs from cron (step 4).
 
 ## 1. Database
-1. hPanel → **Databases → MySQL**: create a database and user. Note host, name, user and password.
-2. On your computer (or CI), with `DATABASE_URL` pointing at it: `pnpm install && pnpm db:generate && pnpm db:migrate:deploy`.
-   If remote access is blocked, open hPanel → Remote MySQL for your IP while migrating, then remove it.
-3. `pnpm db:seed` (taxonomy only — never `--demo` on production).
-4. Create the owner (no default logins exist):
-   `STAFF_PASSWORD='a long passphrase' pnpm --filter api exec tsx src/scripts/create-staff.ts you@domain "Your Name" OWNER`
+hPanel → **Databases → Management**: create a database and user. Note the database name, user, password and the
+MySQL host shown on that page.
 
-## 2. API app (`api.<domain>`)
-1. Build: `pnpm --filter @sc/contracts build && pnpm --filter api build` (or let Hostinger build from Git).
-2. hPanel → **Websites → Node.js → Create app**: app root `commerce/apps/api`, entry `dist/server.js`, Node 22/24.
-3. Environment variables: everything in the API section of `.env.example` (production values, new secrets). Keep `ALLOW_LIVE_PAYMENTS=false` and `DEV_TOOLS=false`.
-4. Attach the subdomain `api.numericcvaastucrystal.in` and enable SSL. Check `https://api…/api/v1/health/ready` → `{"status":"ready"}`.
+## 2. API app
+hPanel → **Websites → Add website → Node.js app → Import Git repository** → `NumericcVastu`, then **Set up manually**:
 
-## 3. Web app (`www.<domain>`)
-1. Build with the API URL known at build time: `API_INTERNAL_URL=https://api… NEXT_PUBLIC_SITE_URL=https://www… pnpm --filter web build`.
-2. Create a second Node.js app: root `commerce/apps/web`, start command `npm start` (runs `next start`), env `API_INTERNAL_URL`, `NEXT_PUBLIC_SITE_URL`, `WEB_REVALIDATE_SECRET`.
-3. Attach `www.numericcvaastucrystal.in` (+ apex redirect) with SSL.
+| Setting | Value |
+|---|---|
+| Framework preset | Express (or Other) |
+| Branch | `main` |
+| Node.js version | 22.x |
+| Root directory | `commerce` |
+| Build command | `build:api` (runs `node scripts/hostinger-build.mjs api`) |
+| Entry file | `apps/api/dist/server.js` |
+| Domain | temporary domain first; later `api.<domain>` |
+
+Environment variables: **Import .env** with the API file (a filled copy of the API section of `.env.example`):
+`NODE_ENV=production`, `DATABASE_URL`, new random `SESSION_SECRET`, `ENCRYPTION_KEY` (back it up separately),
+`CRON_JOB_SECRET`, `WEB_REVALIDATE_SECRET`, `APP_BASE_URL` / `CORS_ORIGINS` (the admin app's address),
+`API_BASE_URL` (this app's address), `ALLOW_LIVE_PAYMENTS=false`, `DEV_TOOLS=false`, and for the first deploy
+`BOOTSTRAP_OWNER_EMAIL`, `BOOTSTRAP_OWNER_NAME`, `STAFF_PASSWORD` (12+ characters).
+
+The build then runs `prisma generate`, compiles contracts and API, `prisma migrate deploy`, the idempotent base seed,
+and creates the owner if that email has no account. After the first successful deploy, **delete `STAFF_PASSWORD`**
+from the app's variables (the owner keeps the password; the owner enrols an authenticator at first sign-in).
+Set `SKIP_MIGRATIONS=true` to build without touching the database.
+
+Check `https://<api address>/api/v1/health/ready` → `{"status":"ready"}`.
+
+## 3. Admin / web app
+A second Node.js app from the same repository:
+
+| Setting | Value |
+|---|---|
+| Framework preset | Other (the app runs Next's standalone server through the entry file) |
+| Root directory | `commerce` |
+| Build command | `build:web` |
+| Entry file | `apps/web/.next/standalone/apps/web/server.js` |
+
+Environment variables: `API_INTERNAL_URL` (the API address; fixed into the `/api/v1` proxy **at build time**, so
+redeploy after changing it), `NEXT_PUBLIC_SITE_URL` (this app's address), `WEB_REVALIDATE_SECRET` (same as the API).
+
+When the admin address changes, update the API's `APP_BASE_URL` and `CORS_ORIGINS` and redeploy the API too.
+The back office is at `/admin`.
 
 ## 4. Cron (every minute)
-hPanel → **Advanced → Cron Jobs**: `* * * * * cd ~/…/commerce/apps/api && node --env-file=.env dist/scripts/run-jobs.js >> ~/logs/commerce-jobs.log 2>&1`
-(or, if the plan's cron can only call URLs: `curl -fsS -X POST -H "Authorization: Bearer $CRON_JOB_SECRET" -H "Content-Type: application/json" -d '{}' https://api…/api/v1/internal/jobs/run`).
-Jobs are finite and leased; overlapping runs are safe.
+hPanel → **Advanced → Cron Jobs**, custom command:
+`curl -fsS -X POST -H "Authorization: Bearer <CRON_JOB_SECRET>" -H "Content-Type: application/json" -d '{}' https://<api address>/api/v1/internal/jobs/run`
+Jobs are finite and leased; overlapping runs are safe. Without cron, unpaid orders and stock holds are not released.
 
 ## 5. Media
-Use S3-compatible storage (Cloudflare R2 / Backblaze B2) with a CDN domain: set `STORAGE_DRIVER=s3` and the `OBJECT_STORAGE_*` + `PUBLIC_MEDIA_BASE_URL` variables, and allow `PUT` from the web origin in the bucket's CORS. Local disk storage is for development only (Hostinger redeploys can wipe it).
+`STORAGE_DRIVER=local` keeps uploads inside the build folder, which **each redeploy replaces**. Fine for a demo; before
+real products are uploaded use S3-compatible storage (Cloudflare R2 / Backblaze B2) with a CDN domain:
+`STORAGE_DRIVER=s3`, the `OBJECT_STORAGE_*` variables and `PUBLIC_MEDIA_BASE_URL`, and allow `PUT` from the web origin
+in the bucket's CORS.
 
 ## 6. Email
-Create `orders@<domain>` in Hostinger Email and set `MAIL_DRIVER=smtp`, `SMTP_URL=smtps://orders%40domain:PASSWORD@smtp.hostinger.com:465`. Sign-in codes and order emails depend on this.
+Staff sign-in uses password + authenticator, so the back office works without email. Customer sign-in codes and order
+emails need SMTP: create `orders@<domain>` in Hostinger Email and set `MAIL_DRIVER=smtp`,
+`SMTP_URL=smtps://orders%40domain:PASSWORD@smtp.hostinger.com:465`.
 
 ## 7. After deploy
-Back office → set up MFA → Settings (delivery, tax after review, returns, invoice) → Payments setup in **test** mode → place a test order end to end → follow `go-live.md`.
+Back office → set up MFA → Settings (delivery, tax after review, returns, invoice) → Payments setup in **test** mode →
+place a test order end to end → follow `go-live.md`.
 
 ## Updating
-`git pull` → `pnpm install` → `pnpm db:migrate:deploy` (migrations are additive; take a backup first) → rebuild → restart both apps in hPanel.
+Push to `main`; both apps rebuild. Migrations are additive, but take a database backup (hPanel → Databases →
+phpMyAdmin → Export, or the daily backups) before deploying a change that adds one.
