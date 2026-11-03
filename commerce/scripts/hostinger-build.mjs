@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
  * Build step for Hostinger's managed Node.js apps (docs/runbooks/hostinger-deployment.md). Hostinger installs the
- * pnpm workspace from this folder, then runs `pnpm run build:api` or `pnpm run build:web`, which call this script.
+ * pnpm workspace from this folder, then runs `pnpm run build`; each app's BUILD_TARGET variable (api | web) picks
+ * what to build. `build:api` / `build:web` pass the target explicitly; with no target, every package is built.
  *
  *   api → prisma generate, build contracts + API, then (unless SKIP_MIGRATIONS=true) apply migrations, seed the base
  *         taxonomy (idempotent) and, when BOOTSTRAP_OWNER_EMAIL + STAFF_PASSWORD are set, create the owner if missing.
@@ -15,7 +16,7 @@ import {dirname, join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const target = process.argv[2];
+const target = process.argv[2] ?? process.env.BUILD_TARGET;
 const run = (cmd, cwd = root) => { console.log(`\n$ ${cmd}`); execSync(cmd, {cwd, stdio: 'inherit', env: process.env}); };
 
 if (target === 'api') {
@@ -44,7 +45,9 @@ if (target === 'api') {
   cpSync(join(web, '.next/static'), join(out, '.next/static'), {recursive: true});
   if (existsSync(join(web, 'public'))) cpSync(join(web, 'public'), join(out, 'public'), {recursive: true});
   console.log(`\nStandalone server ready: ${join(out, 'server.js')}`);
+} else if (!target) {
+  run('pnpm run build:all');
 } else {
-  console.error('Usage: node scripts/hostinger-build.mjs <api|web>');
+  console.error(`Unknown BUILD_TARGET "${target}"; use api or web.`);
   process.exit(1);
 }
