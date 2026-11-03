@@ -69,19 +69,25 @@ function Login({onDone}: {onDone: () => void}) {
 
 function MfaSetup({onDone}: {onDone: () => void}) {
   const [setup, setSetup] = useState<{secret: string; otpauthUri: string} | null>(null);
+  const [qr, setQr] = useState('');
   const [code, setCode] = useState('');
   const [msg, setMsg] = useState('');
+  useEffect(() => {
+    if (!setup) return;
+    void import('qrcode').then((QR) => QR.toDataURL(setup.otpauthUri, {margin: 1, width: 220})).then(setQr).catch(() => setQr(''));
+  }, [setup]);
   return (
     <div className="card stack" style={{maxWidth: 560, margin: '0 auto'}}>
       <h1>Set up two-factor authentication</h1>
       <p>The back office requires an authenticator app (Google Authenticator, Microsoft Authenticator, 1Password…).</p>
       {!setup ? <button className="btn" onClick={async () => { const r = await post<{secret: string; otpauthUri: string}>('/auth/staff/mfa/setup'); if (r.ok) setSetup(r.data); else setMsg(r.error.message); }}>Start setup</button> : (
         <>
-          <p>In your app choose “add account → enter a setup key” and type this key (time-based):</p>
-          <pre className="code" aria-label="Setup key">{setup.secret.match(/.{1,4}/g)?.join(' ')}</pre>
-          <p className="small muted">Or open this link on the phone that has the app: <a href={setup.otpauthUri}>add to authenticator</a></p>
+          <p><strong>Easiest:</strong> in Google Authenticator tap <strong>+</strong> → <strong>Scan a QR code</strong> and scan this:</p>
+          {qr && <img src={qr} alt="QR code for your authenticator app" width={220} height={220} style={{border: '1px solid var(--line)', borderRadius: 8}}/>}
+          <p className="small">Or tap <strong>+</strong> → <strong>Enter a setup key</strong>, choose <strong>Time based</strong>, and type this key. It uses letters A–Z and the digits 2–7 only, so every “O” is the letter O (never zero) and every “I” is the letter I (never one):</p>
+          <pre className="code" aria-label="Setup key" style={{fontFamily: 'ui-monospace, Menlo, Consolas, monospace', letterSpacing: '.08em'}}>{setup.secret.match(/.{1,4}/g)?.join(' ')}</pre>
           <form className="row" onSubmit={async (e) => { e.preventDefault(); const r = await post('/auth/staff/mfa/confirm', {code}); if (r.ok) onDone(); else setMsg(r.error.message); }}>
-            <input inputMode="numeric" aria-label="6-digit code" placeholder="6-digit code" value={code} onChange={(e) => setCode(e.target.value)} style={{maxWidth: 180}} />
+            <input inputMode="numeric" aria-label="6-digit code" placeholder="6-digit code from the app" value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))} style={{maxWidth: 220}} />
             <button className="btn">Confirm</button>
           </form>
         </>
