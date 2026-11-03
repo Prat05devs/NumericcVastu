@@ -6,7 +6,7 @@
   "description": "Storefront, customer account, order tracking, partner portal and back office UI. Talks only to the commerce API; never to MySQL.",
   "scripts": {
     "dev": "next dev -p 3000",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start -p ${PORT:-3000}",
     "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test"

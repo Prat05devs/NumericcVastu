@@ -49,7 +49,7 @@ if (target === 'api') {
 } else if (target === 'web') {
   if (!process.env.API_INTERNAL_URL) throw new Error('API_INTERNAL_URL is not set; the /api/v1 proxy is fixed at build time.');
   run('tsc', '-p tsconfig.json', 'packages/contracts');
-  run('next', 'build', 'apps/web');
+  run('next', 'build --webpack', 'apps/web'); // webpack: Hostinger's glibc cannot load native SWC, and Turbopack refuses the WASM fallback
   // next build's standalone output leaves static assets out; the server expects them beside it.
   const web = join(root, 'apps/web');
   const out = join(web, '.next/standalone/apps/web');
