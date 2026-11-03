@@ -3,6 +3,8 @@
  * Build step for Hostinger's managed Node.js apps (docs/runbooks/hostinger-deployment.md). Hostinger installs the
  * pnpm workspace from this folder, then runs `pnpm run build`; each app's BUILD_TARGET variable (api | web) picks
  * what to build. `build:api` / `build:web` pass the target explicitly; with no target, every package is built.
+ * Hostinger's Express preset runs no build command, so `postinstall` also calls this with --postinstall: it builds
+ * when BUILD_TARGET is set (Hostinger) and does nothing otherwise (local installs, CI).
  *
  *   api → prisma generate, build contracts + API, then (unless SKIP_MIGRATIONS=true) apply migrations, seed the base
  *         taxonomy (idempotent) and, when BOOTSTRAP_OWNER_EMAIL + STAFF_PASSWORD are set, create the owner if missing.
@@ -16,7 +18,9 @@ import {dirname, join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const target = process.argv[2] ?? process.env.BUILD_TARGET;
+const postinstall = process.argv[2] === '--postinstall';
+const target = (postinstall ? undefined : process.argv[2]) ?? process.env.BUILD_TARGET;
+if (postinstall && !target) process.exit(0);
 const run = (cmd, cwd = root) => { console.log(`\n$ ${cmd}`); execSync(cmd, {cwd, stdio: 'inherit', env: process.env}); };
 
 if (target === 'api') {

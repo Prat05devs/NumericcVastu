@@ -19,8 +19,8 @@ hPanel → **Websites → Add website → Node.js app → Import Git repository*
 | Branch | `main` |
 | Node.js version | 22.x |
 | Root directory | `commerce` |
-| Build | runs `pnpm run build`; the `BUILD_TARGET=api` variable selects the API (`scripts/hostinger-build.mjs`) |
-| Entry file | `apps/api/dist/server.js` |
+| Build | automatic: `pnpm install` runs the `postinstall` build for `BUILD_TARGET=api` (`scripts/hostinger-build.mjs`) |
+| Entry file | `server.js` (the default; it starts the app named by `BUILD_TARGET`) |
 | Domain | temporary domain first; later `api.<domain>` |
 
 Environment variables: **Import .env** with the API file (a filled copy of the API section of `.env.example`):
@@ -44,8 +44,8 @@ A second Node.js app from the same repository:
 | Framework preset | Express or Other (the app runs Next's standalone server through the entry file) |
 | Package manager | **pnpm** |
 | Root directory | `commerce` |
-| Build | `pnpm run build` with `BUILD_TARGET=web` |
-| Entry file | `apps/web/.next/standalone/apps/web/server.js` |
+| Build | automatic, as for the API, with `BUILD_TARGET=web` |
+| Entry file | `server.js` |
 
 Environment variables: `BUILD_TARGET=web`, `API_INTERNAL_URL` (the API address; fixed into the `/api/v1` proxy **at build time**, so
 redeploy after changing it), `NEXT_PUBLIC_SITE_URL` (this app's address), `WEB_REVALIDATE_SECRET` (same as the API).

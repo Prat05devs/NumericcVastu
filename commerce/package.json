@@ -22,7 +22,9 @@
     "openapi": "pnpm --filter api openapi",
     "jobs:run": "pnpm --filter api jobs",
     "load:test": "node scripts/load-test.mjs",
-    "build:all": "pnpm -r --filter ./packages/** --filter ./apps/** build"
+    "build:all": "pnpm -r --filter ./packages/** --filter ./apps/** build",
+    "postinstall": "node scripts/hostinger-build.mjs --postinstall",
+    "start": "node server.js"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
