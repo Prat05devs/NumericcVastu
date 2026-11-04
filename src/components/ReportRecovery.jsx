@@ -5,7 +5,7 @@ import {ArrowUpRight} from 'lucide-react';
 
 const STORE = 'nv-report-passes';
 const remember = (value) => { try { const all = JSON.parse(localStorage.getItem(STORE) || '{}'); localStorage.setItem(STORE, JSON.stringify({...all, [`recovered|${value.paymentId}`]: value})); } catch {} };
-export const openReport = (pass, lang) => window.open(`/api/report/pdf?pass=${encodeURIComponent(pass)}&lang=${lang}`, '_blank', 'noopener');
+export const openReport = (pass, lang) => window.open(`/my-report/open?pass=${encodeURIComponent(pass)}&lang=${lang}`, '_blank', 'noopener');
 
 /** "Already paid? Get your report": payment ID + phone number → the report, on any device. */
 export default function ReportRecovery({compact = false}) {

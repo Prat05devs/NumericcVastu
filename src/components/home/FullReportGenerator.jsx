@@ -46,7 +46,7 @@ export default function FullReportGenerator({chart, gender, readingHref}) {
   const key = keyFor(inputs);
   useEffect(() => { setPass(savedPasses()[key] || null); }, [key]);
 
-  const open = (lang) => window.open(`/api/report/pdf?pass=${encodeURIComponent(pass.pass)}&lang=${lang}`, '_blank', 'noopener');
+  const open = (lang) => window.open(`/my-report/open?pass=${encodeURIComponent(pass.pass)}&lang=${lang}`, '_blank', 'noopener');
 
   async function pay(event) {
     event.preventDefault();
@@ -71,7 +71,7 @@ export default function FullReportGenerator({chart, gender, readingHref}) {
           setStatus({state: 'done', message: 'Payment received. Your report is ready: open it below in English or Hindi.'});
         },
       });
-      rzp.on('payment.failed', (e) => setStatus({state: 'error', message: `Payment failed: ${e.error?.description || 'please try again or use another method.'} No money is taken for a failed payment.`}));
+      rzp.on('payment.failed', (e) => setStatus({state: 'error', message: `Payment failed: ${e.error?.description || 'please try again or use another method.'} If money was deducted, the bank either confirms the payment or refunds it automatically within 3 days. If it is confirmed, open numericcvaastu.com/my-report with the payment ID from Razorpay’s SMS or email.`}));
       rzp.open();
       setStatus({state: 'idle', message: ''});
     } catch (error) {
