@@ -1312,7 +1312,7 @@ body:has(.sticky-buy.is-shown) .wa-float{bottom:calc(86px + env(safe-area-inset-
 .ch-row.is-reverse .ch-track{animation-direction:reverse;animation-duration:65s}
 .ch-band:hover .ch-track,.ch-band:focus-within .ch-track{animation-play-state:paused}
 .ch-list{display:flex;list-style:none;margin:0;padding:0}
-.ch-item{flex:none;width:176px;margin-right:24px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px}
+.ch-item{position:relative;flex:none;width:176px;margin-right:24px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px}
 .ch-logo{width:104px;height:104px;border-radius:50%;overflow:hidden;background:var(--lavender-2);border:1px solid var(--line);box-shadow:0 14px 30px -18px #2a104666;margin-bottom:8px;transition:transform .3s ease,box-shadow .3s ease}
 .ch-logo img{width:100%;height:100%;object-fit:cover;filter:grayscale(1);opacity:.72;transition:filter .3s ease,opacity .3s ease}
 .ch-item:hover .ch-logo{transform:translateY(-3px);box-shadow:0 18px 36px -16px #2a104680}

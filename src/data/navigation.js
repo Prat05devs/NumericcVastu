@@ -16,7 +16,30 @@ const courseLink = (id, description) => {
   return offer && {label: offer.name, href: `/courses/${offer.slug}`, description, icon: 'book'};
 };
 
+// Menu order (client's choice): About, Consultations, Courses, Free tools, Shop, Watch & read, Help & contact.
 export const navigationGroups = [
+  {
+    id: 'about', label: 'About', intro: 'The person, the practice and the people behind it.',
+    columns: [
+      {title: 'Meet NumericcVaastu', links: [
+        {label: 'About Adarshh', href: '/about', icon: 'user', keywords: 'Adarsh Pandey Aadarsh Pandey Adarshh Pandey Adarsh Panndey founder numerologist'},
+        {label: 'Achievements', href: '/achievements', icon: 'award'},
+        {label: 'Client experiences', href: '/testimonials', icon: 'heart'},
+      ]},
+      {title: 'See the work', links: [
+        {label: 'Photo gallery', href: '/gallery', icon: 'image'},
+        {label: 'Students & classes', href: '/gallery', icon: 'graduation'},
+        {label: 'Podcasts & interviews', href: '/podcasts', icon: 'mic'},
+      ]},
+      {title: 'Connect with us', links: [
+        {label: 'Contact the team', href: '/contact', icon: 'phone'},
+        {label: 'Invite Adarshh to speak', href: '/contact', icon: 'mic'},
+        {label: 'Book a consultation', href: '/book-consultation', icon: 'calendar'},
+      ]},
+    ],
+    footer: {label: 'Read his story', href: '/about'},
+    feature: {eyebrow: 'Meet the founder', title: 'A life in numbers.', text: 'From a career in pharma to teaching and consulting.', label: 'Meet Adarshh', href: '/about', image: '/images/gallery/portrait-holding-book.webp'},
+  },
   {
     id: 'consultations', label: 'Consultations', intro: 'Personal guidance, for the question on your mind.',
     columns: [
@@ -26,6 +49,16 @@ export const navigationGroups = [
     ],
     footer: {label: 'View all consultations', href: '/consultations'},
     feature: {eyebrow: 'One-to-one with Adarshh', title: 'Start with your question.', text: 'Find the session that feels right for you.', label: 'Help me choose', href: '/consultations', image: '/images/gallery/portrait-at-work.webp'},
+  },
+  {
+    id: 'courses', label: 'Courses', intro: 'From your first calculation to your own practice.',
+    columns: [
+      {title: '01 · Foundation', links: [courseLink('course-launchpad', 'Start with the fundamentals. No experience needed.')].filter(Boolean)},
+      {title: '02 · Application', links: [courseLink('course-accelerator', 'Deepen your methods and consultation skills.')].filter(Boolean)},
+      {title: '03 · Teaching & leadership', links: [courseLink('course-mastery', 'Mentorship for experienced practitioners.')].filter(Boolean)},
+    ],
+    footer: {label: 'Compare all courses', href: '/courses'},
+    feature: {eyebrow: 'The NumericcVaastu Academy', title: 'Learn with Adarshh.', text: 'Find the right path for where you are today.', label: 'Explore the academy', href: '/courses', image: '/images/students/teaching-what-is-numerology.webp'},
   },
   {
     id: 'tools', label: 'Free tools & reports', intro: 'A little self-discovery starts with your numbers.',
@@ -46,16 +79,6 @@ export const navigationGroups = [
     ],
     footer: {label: 'Explore both free tools', href: '/#free-tools'},
     feature: {eyebrow: 'Two methods. One report.', title: 'Get to know your numbers.', text: 'The combined report is free while we test.', label: 'Start my reading', href: '/numerology-calculator', kind: 'report'},
-  },
-  {
-    id: 'courses', label: 'Courses', intro: 'From your first calculation to your own practice.',
-    columns: [
-      {title: '01 · Foundation', links: [courseLink('course-launchpad', 'Start with the fundamentals. No experience needed.')].filter(Boolean)},
-      {title: '02 · Application', links: [courseLink('course-accelerator', 'Deepen your methods and consultation skills.')].filter(Boolean)},
-      {title: '03 · Teaching & leadership', links: [courseLink('course-mastery', 'Mentorship for experienced practitioners.')].filter(Boolean)},
-    ],
-    footer: {label: 'Compare all courses', href: '/courses'},
-    feature: {eyebrow: 'The NumericcVaastu Academy', title: 'Learn with Adarshh.', text: 'Find the right path for where you are today.', label: 'Explore the academy', href: '/courses', image: '/images/students/teaching-what-is-numerology.webp'},
   },
   // Opens Adarshh's crystal store (numericcvaastucrystal.in) directly, without a menu.
   {id: 'shop', label: 'Shop', href: store.url},
@@ -80,28 +103,6 @@ export const navigationGroups = [
     ],
     footer: {label: 'Browse the journal', href: '/blog'},
     feature: {eyebrow: 'Conversations worth hearing', title: 'A different perspective.', text: 'Watch Adarshh on India’s podcasts.', label: 'Watch the podcasts', href: '/podcasts', image: '/images/gallery/media-podcast-portrait.webp'},
-  },
-  {
-    id: 'about', label: 'About', intro: 'The person, the practice and the people behind it.',
-    columns: [
-      {title: 'Meet NumericcVaastu', links: [
-        {label: 'About Adarshh', href: '/about', icon: 'user', keywords: 'Adarsh Pandey Aadarsh Pandey Adarshh Pandey Adarsh Panndey founder numerologist'},
-        {label: 'Achievements', href: '/achievements', icon: 'award'},
-        {label: 'Client experiences', href: '/testimonials', icon: 'heart'},
-      ]},
-      {title: 'See the work', links: [
-        {label: 'Photo gallery', href: '/gallery', icon: 'image'},
-        {label: 'Students & classes', href: '/gallery', icon: 'graduation'},
-        {label: 'Podcasts & interviews', href: '/podcasts', icon: 'mic'},
-      ]},
-      {title: 'Connect with us', links: [
-        {label: 'Contact the team', href: '/contact', icon: 'phone'},
-        {label: 'Invite Adarshh to speak', href: '/contact', icon: 'mic'},
-        {label: 'Book a consultation', href: '/book-consultation', icon: 'calendar'},
-      ]},
-    ],
-    footer: {label: 'Read his story', href: '/about'},
-    feature: {eyebrow: 'Meet the founder', title: 'A life in numbers.', text: 'From a career in pharma to teaching and consulting.', label: 'Meet Adarshh', href: '/about', image: '/images/gallery/portrait-holding-book.webp'},
   },
   {
     id: 'help', label: 'Help & contact', intro: 'Find an answer, or a person to talk to.',

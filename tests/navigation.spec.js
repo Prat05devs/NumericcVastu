@@ -34,12 +34,12 @@ test('keyboard disclosure controls, Escape and outside click',async({page})=>{
  await expect(page.locator('#nv-panel-consultations a').first()).toBeFocused();
  await page.keyboard.press('Escape');await expect(trigger).toBeFocused();
  await expect(trigger).toHaveAttribute('aria-expanded','false');
- await page.keyboard.press('ArrowRight');await expect(page.locator('#nv-trigger-tools')).toBeFocused();
- await page.keyboard.press('Enter');await expect(page.locator('#nv-panel-tools')).toBeVisible();
+ await page.keyboard.press('ArrowRight');await expect(page.locator('#nv-trigger-courses')).toBeFocused();
+ await page.keyboard.press('Enter');await expect(page.locator('#nv-panel-courses')).toBeVisible();
  await page.keyboard.press('Escape');
- await page.locator('#nv-trigger-courses').click();
+ await page.locator('#nv-trigger-tools').click();
  await page.locator('.nv-navigation-scrim').click({position:{x:5,y:700}});
- await expect(page.locator('#nv-panel-courses')).toBeHidden();
+ await expect(page.locator('#nv-panel-tools')).toBeHidden();
 });
 
 test('page search filters destinations and accepts Hindi',async({page},testInfo)=>{

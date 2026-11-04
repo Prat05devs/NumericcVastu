@@ -6,6 +6,9 @@ const serverSettings=['RAZORPAY_KEY_ID','RAZORPAY_KEY_SECRET','RAZORPAY_WEBHOOK_
 /** @type {import('next').NextConfig} */
 const nextConfig={
   env:Object.fromEntries(serverSettings.filter((key)=>process.env[key]).map((key)=>[key,process.env[key]])),
+  // Hostinger's servers cannot load sharp, so /_next/image fails there (503). The images in public/ are already sized
+  // WebP files, so they are served as they are.
+  images:{unoptimized:true},
   webpack(config,{dev}){if(!dev)config.cache=false;return config},
   async redirects(){return [
     // Hostinger serves the bare domain directly; send it to the canonical www address.
