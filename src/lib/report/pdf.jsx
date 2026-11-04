@@ -20,15 +20,22 @@ import {contact} from '../../data/contact';
 const C = {sindoor: '#B3122E', sindoorSoft: '#FBEAEC', sindoorLine: '#E9C3C9', purple: '#4A1F7A', purpleDeep: '#2A1046', gold: '#C99A2E', goldText: '#8C6A12', goldLine: '#E5CF94', cream: '#FFFBF1', lavender: '#F7F2FB', ink: '#241B2F', body: '#3A2F46', muted: '#5E5869', line: '#E6DCEC', zebra: '#FCFAFD'};
 const SITE = 'www.numericcvaastu.com';
 
-// Fonts and images live beside this file and are traced into the server build (next.config outputFileTracingIncludes).
-const roots = [process.cwd(), path.join(process.cwd(), '..', '..')];
-function asset(rel) {
-  for (const root of roots) {
+// Fonts and images live in src/lib/report and are traced into the server build (next.config outputFileTracingIncludes).
+// Hostinger may run the app from the project folder or from .next/standalone, so look in both and walk up from the
+// compiled route as well.
+function candidateRoots() {
+  const roots = [process.cwd(), path.join(process.cwd(), '..', '..')];
+  try { for (let dir = __dirname, i = 0; i < 8; i++, dir = path.dirname(dir)) roots.push(dir); } catch {}
+  return [...new Set(roots)];
+}
+export function asset(rel) {
+  for (const root of candidateRoots()) {
     const file = path.join(root, 'src/lib/report', rel);
     if (fs.existsSync(file)) return file;
   }
-  throw new Error(`Report asset missing: ${rel}`);
+  throw new Error(`Report asset missing: ${rel} (looked in ${candidateRoots().join(', ')})`);
 }
+export const assetRoots = candidateRoots;
 let fontsReady = false;
 function registerFonts() {
   if (fontsReady) return;
