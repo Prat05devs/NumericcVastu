@@ -9,6 +9,11 @@ const api = process.env.API_INTERNAL_URL ?? 'http://localhost:4000';
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   transpilePackages: ['@sc/contracts'],
+  // admin.<domain> is the back office: its home page opens /admin, and nothing on that host is indexed. The storefront
+  // stays at / on any other host (local development, a future shop domain).
+  async redirects() {
+    return [{source: '/', has: [{type: 'host', value: 'admin\\..+'}], destination: '/admin', permanent: false}];
+  },
   async rewrites() {
     return [{source: '/api/v1/:path*', destination: `${api}/api/v1/:path*`}];
   },
@@ -21,6 +26,7 @@ const nextConfig: NextConfig = {
     ];
     return [
       {source: '/:path*', headers: security},
+      {source: '/:path*', has: [{type: 'host', value: 'admin\\..+'}], headers: [{key: 'X-Robots-Tag', value: 'noindex, nofollow'}]},
       // Never cache personal or back-office pages at the CDN.
       {source: '/(account|admin|partner|checkout|cart|orders)/:path*', headers: [{key: 'Cache-Control', value: 'private, no-store'}, {key: 'X-Robots-Tag', value: 'noindex'}]},
     ];
