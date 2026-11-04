@@ -784,6 +784,34 @@ model ConsultationLead {
   @@map("consultation_leads")
 }
 
+/// Courses, consultations and reports sold on the main website (numericcvaastu.com). The site creates the
+/// Razorpay order and reports each change here, keyed by the provider order id; contact and intake details are
+/// encrypted like consultation enquiries.
+model ServiceBooking {
+  id                String    @id @db.Char(26)
+  offerId           String    @map("offer_id") @db.VarChar(60)
+  offerName         String    @map("offer_name") @db.VarChar(200)
+  kind              String    @db.VarChar(20) // course | consultation | report
+  currency          String    @default("INR") @db.Char(3)
+  amountMinor       BigInt    @map("amount_minor") // paise or cents
+  provider          String    @default("razorpay") @db.VarChar(20)
+  environment       String    @default("live") @db.VarChar(10) // test | live
+  providerOrderId   String    @map("provider_order_id") @db.VarChar(80)
+  providerPaymentId String?   @map("provider_payment_id") @db.VarChar(80)
+  paymentStatus     String    @default("CREATED") @map("payment_status") @db.VarChar(20) // CREATED | PAID | FAILED | REFUNDED
+  status            String    @default("NEW") @db.VarChar(20) // NEW | CONTACTED | SCHEDULED | COMPLETED | CANCELLED
+  contactRef        String    @map("contact_ref") @db.Text // encrypted {customer, details}
+  failureReason     String?   @map("failure_reason") @db.VarChar(300)
+  paidAt            DateTime? @map("paid_at") @db.DateTime(3)
+  createdAt         DateTime  @default(now()) @map("created_at") @db.DateTime(3)
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.DateTime(3)
+
+  @@unique([provider, providerOrderId])
+  @@index([paymentStatus, createdAt])
+  @@index([status, createdAt])
+  @@map("service_bookings")
+}
+
 // ───────────────────────────── Content & platform (6)
 
 model CmsPage {

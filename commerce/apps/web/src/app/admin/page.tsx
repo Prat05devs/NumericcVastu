@@ -4,7 +4,7 @@ import {useResource, Loading} from '@/components/admin/kit';
 import {inr} from '@/lib/format';
 
 type Overview = {queues: Record<string, number>; last30Days?: {paidOrders: number; grossPaise: string; refundedPaise: string}; partnerCommissionOwedPaise?: string; paymentMode: string};
-const Q: [string, string, string][] = [['ordersToday', 'Orders today', '/admin/orders'], ['awaitingPayment', 'Awaiting payment', '/admin/orders?status=AWAITING_PAYMENT'], ['toShip', 'To pack & ship', '/admin/orders?status=PAID'], ['paidReview', 'Paid — needs review', '/admin/orders?status=PAID_REVIEW'], ['openCustomRequests', 'Wristwatch requests', '/admin/requests'], ['newConsultationLeads', 'New enquiries', '/admin/consultations'], ['lowStockVariants', 'Low stock', '/admin/inventory'], ['deadJobs', 'Failed jobs', '/admin/jobs']];
+const Q: [string, string, string][] = [['ordersToday', 'Orders today', '/admin/orders'], ['awaitingPayment', 'Awaiting payment', '/admin/orders?status=AWAITING_PAYMENT'], ['toShip', 'To pack & ship', '/admin/orders?status=PAID'], ['paidReview', 'Paid — needs review', '/admin/orders?status=PAID_REVIEW'], ['openCustomRequests', 'Wristwatch requests', '/admin/requests'], ['newBookings', 'New website bookings', '/admin/bookings'], ['newConsultationLeads', 'New enquiries', '/admin/consultations'], ['lowStockVariants', 'Low stock', '/admin/inventory'], ['deadJobs', 'Failed jobs', '/admin/jobs']];
 
 export default function Overview() {
   const {data, error, loading} = useResource<Overview>('/admin/overview');

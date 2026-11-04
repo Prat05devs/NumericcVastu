@@ -19,6 +19,8 @@ const Env = z.object({
   ENCRYPTION_KEY: z.string().refine((v) => Buffer.from(v, 'base64').length === 32, 'ENCRYPTION_KEY must be 32 bytes, base64'),
   CRON_JOB_SECRET: z.string().min(32),
   WEB_REVALIDATE_SECRET: z.string().min(16).optional(),
+  // Shared with the main website, which reports course, consultation and report bookings to /internal/bookings.
+  SITE_BOOKINGS_SECRET: z.string().min(32).optional(),
   // Payments: keys normally live encrypted in the back office; env values are a fallback for first setup.
   RAZORPAY_KEY_ID: z.string().optional(),
   RAZORPAY_KEY_SECRET: z.string().optional(),

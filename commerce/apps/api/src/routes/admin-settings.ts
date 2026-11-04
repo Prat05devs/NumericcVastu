@@ -26,12 +26,13 @@ route(r, {method: 'get', path: '/overview', access: 'STAFF:overview.read', tag: 
   const since = new Date(Date.now() - 30 * 86_400_000);
   const today = new Date(new Date().toISOString().slice(0, 10) + 'T00:00:00Z');
   const threshold = (await getSetting('catalogue'))?.lowStockThreshold ?? 2;
-  const [awaiting, toShip, review, openRequests, newLeads, lowStock, deadJobs, todayOrders, revenue, pendingCommission] = await Promise.all([
+  const [awaiting, toShip, review, openRequests, newLeads, newBookings, lowStock, deadJobs, todayOrders, revenue, pendingCommission] = await Promise.all([
     prisma.order.count({where: {status: {in: ['AWAITING_PAYMENT', 'PAYMENT_FAILED']}}}),
     prisma.order.count({where: {status: {in: ['PAID', 'PROCESSING']}}}),
     prisma.order.count({where: {status: 'PAID_REVIEW'}}),
     prisma.customRequest.count({where: {status: {in: ['REQUESTED', 'REVIEWING']}}}),
     prisma.consultationLead.count({where: {status: 'NEW'}}),
+    prisma.serviceBooking.count({where: {paymentStatus: 'PAID', status: 'NEW'}}),
     prisma.$queryRaw<{n: bigint}[]>`SELECT COUNT(*) AS n FROM inventory_items i JOIN product_variants v ON v.id=i.variant_id JOIN products p ON p.id=v.product_id WHERE p.status='PUBLISHED' AND i.on_hand_qty-i.reserved_qty<=${threshold}`,
     prisma.jobOutbox.count({where: {status: 'DEAD'}}),
     prisma.order.count({where: {createdAt: {gte: today}}}),
@@ -39,7 +40,7 @@ route(r, {method: 'get', path: '/overview', access: 'STAFF:overview.read', tag: 
     C.can(role, 'marketing.write') ? prisma.affiliateCommission.aggregate({where: {status: {in: ['PENDING', 'APPROVED']}}, _sum: {amountPaise: true, reversedPaise: true}}) : null,
   ]);
   send(res, toPlain({
-    queues: {awaitingPayment: awaiting, toShip, paidReview: review, openCustomRequests: openRequests, newConsultationLeads: newLeads, lowStockVariants: Number(lowStock[0]?.n ?? 0), deadJobs, ordersToday: todayOrders},
+    queues: {awaitingPayment: awaiting, toShip, paidReview: review, openCustomRequests: openRequests, newConsultationLeads: newLeads, newBookings, lowStockVariants: Number(lowStock[0]?.n ?? 0), deadJobs, ordersToday: todayOrders},
     ...(revenue && {last30Days: {paidOrders: revenue._count, grossPaise: revenue._sum.totalPaise ?? 0n, refundedPaise: revenue._sum.refundedPaise ?? 0n}}),
     ...(pendingCommission && {partnerCommissionOwedPaise: (pendingCommission._sum.amountPaise ?? 0n) - (pendingCommission._sum.reversedPaise ?? 0n)}),
     paymentMode: await paymentMode(),

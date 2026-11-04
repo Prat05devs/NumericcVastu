@@ -13,6 +13,7 @@ import {adminMarketingRouter} from './routes/admin-marketing.js';
 import {adminSettingsRouter} from './routes/admin-settings.js';
 import {partnerRouter} from './routes/partner.js';
 import {opsRouter} from './routes/ops.js';
+import {siteBookingsRouter} from './routes/site-bookings.js';
 
 export function createApp() {
   const app = express();
@@ -33,6 +34,7 @@ export function createApp() {
   v1.use(partnerRouter);
   v1.use('/admin', adminCatalogueRouter, adminOrdersRouter, adminMarketingRouter, adminSettingsRouter);
   v1.use(opsRouter);
+  v1.use(siteBookingsRouter);
   app.use('/api/v1', v1);
   app.use(notFoundHandler);
   app.use(errorHandler);
