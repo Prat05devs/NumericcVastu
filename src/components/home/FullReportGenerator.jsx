@@ -5,6 +5,7 @@ import {useEffect, useState} from 'react';
 import Link from 'next/link';
 import {ArrowUpRight, FileText, Lock, ShieldCheck} from 'lucide-react';
 import Price from '../Price';
+import ReportRecovery from '../ReportRecovery';
 import {reportOffer} from '../../data/offers';
 import {reportStyles} from '../../lib/reportStyles';
 import {useCurrency} from '../../lib/useCurrency';
@@ -84,7 +85,7 @@ export default function FullReportGenerator({chart, gender, readingHref}) {
     {pass ? <div className="fr-ready" role="status">
       <p><b>Your report is ready.</b> It opens in a new tab, where you can read it and download the PDF.</p>
       <div className="fr-toolbar"><button className="hv-button hv-button--gold" type="button" onClick={() => open('en')}>Open my report (English PDF) <ArrowUpRight size={18}/></button><button className="hv-button" type="button" onClick={() => open('hi')}><span lang="hi" translate="no">हिंदी PDF खोलें</span> <ArrowUpRight size={18}/></button></div>
-      <p className="fr-status">Payment ID: <span translate="no">{pass.paymentId}</span>. Keep it for your records; this browser remembers your report.</p>
+      <p className="fr-status">Payment ID: <span translate="no">{pass.paymentId}</span>. Keep it: with this ID and your phone number you can open the report on any device at <a href="/my-report">numericcvaastu.com/my-report</a>.</p>
     </div> : <form onSubmit={pay}>
       {name && phone ? <p>Your report uses the name and phone number from your calculation above.</p> : <p>Enter your name and phone number in the calculator above, then choose Show my numbers.</p>}
       <label htmlFor="nv-relationship-status">Your relationship context <span>(optional)</span></label>
@@ -100,6 +101,7 @@ export default function FullReportGenerator({chart, gender, readingHref}) {
       <p className="fr-status"><ShieldCheck size={16} aria-hidden="true"/> Secure payment by Razorpay. Your report opens straight after payment.</p>
     </form>}
     {status.message && <p className={status.state === 'error' ? 'fr-error' : 'fr-status'} role={status.state === 'error' ? 'alert' : 'status'}>{status.message}</p>}
+    {!pass && <details className="fr-recover-box"><summary>Already paid? Get your report</summary><ReportRecovery compact/></details>}
     <Link className="hv-link" href={readingHref}>Prefer a personal reading? Book a session with Adarshh <ArrowUpRight size={16}/></Link>
   </section></LocalizedContent>;
 }

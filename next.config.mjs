@@ -10,7 +10,9 @@ const nextConfig={
   // WebP files, so they are served as they are.
   images:{unoptimized:true},
   // The paid report's PDF route reads its fonts and cover images from disk; ship them with the server build.
-  outputFileTracingIncludes:{'/api/report/pdf':['./src/lib/report/fonts/**','./src/lib/report/assets/**']},
+  // The paid report's PDF routes read fonts and cover images from disk, and the PDF engine loads its own data files
+  // (e.g. pdfkit's standard fonts) by computed paths that build tracing misses; ship all of them with the server build.
+  outputFileTracingIncludes:Object.fromEntries(['/api/report/pdf','/api/report/diag'].map((route)=>[route,['./src/lib/report/fonts/**','./src/lib/report/assets/**','./node_modules/@react-pdf/**','./node_modules/pdfkit/**','./node_modules/fontkit/**','./node_modules/linebreak/**','./node_modules/unicode-properties/**','./node_modules/unicode-trie/**','./node_modules/brotli/**','./node_modules/hyphen/**','./node_modules/restructure/**','./node_modules/dfa/**','./node_modules/tiny-inflate/**','./node_modules/base64-js/**','./node_modules/png-js/**','./node_modules/jay-peg/**','./node_modules/yoga-layout/**','./node_modules/bidi-js/**','./node_modules/emoji-regex-xs/**','./node_modules/pako/**','./node_modules/fflate/**','./node_modules/@noble/ciphers/**','./node_modules/@noble/hashes/**']])),
   webpack(config,{dev}){if(!dev)config.cache=false;return config},
   async redirects(){return [
     // Hostinger serves the bare domain directly; send it to the canonical www address.

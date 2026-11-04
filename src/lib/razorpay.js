@@ -66,6 +66,16 @@ export async function createOrder({offerId, currency, customer, details}) {
   return {orderId: data.id, amount, currency, keyId: keyId(), offerName: offer.name, priceLabel: formatPrice(offer, undefined, currency), mode: state.mode};
 }
 
+/** A payment and its order straight from Razorpay, for recovering a paid report on another device. */
+export async function fetchPaymentWithOrder(paymentId) {
+  if (!/^pay_[A-Za-z0-9]{6,30}$/.test(paymentId) || paymentMode() === 'off') return null;
+  const auth = {Authorization: `Basic ${Buffer.from(`${keyId()}:${keySecret()}`).toString('base64')}`};
+  const payment = await fetch(`https://api.razorpay.com/v1/payments/${paymentId}`, {headers: auth}).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+  if (!payment?.order_id) return null;
+  const order = await fetch(`https://api.razorpay.com/v1/orders/${payment.order_id}`, {headers: auth}).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+  return order ? {payment, order} : null;
+}
+
 export function verifySignature({orderId, paymentId, signature}) {
   if (!orderId || !paymentId || !signature || !keySecret()) return false;
   const expected = createHmac('sha256', keySecret()).update(`${orderId}|${paymentId}`).digest('hex');
