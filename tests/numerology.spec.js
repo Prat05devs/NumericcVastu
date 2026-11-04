@@ -27,6 +27,13 @@ for(const [route,title,expected] of [
  await expect(pay).toBeDisabled(); // the buyer's own WhatsApp number is required
  await page.getByLabel('Your WhatsApp number',{exact:true}).fill('+91 98765 43210');
  await expect(pay).toBeEnabled();
+ // A date of birth filled in by a stray tap (today) is refused, and can be cleared.
+ await page.getByLabel(/Second person’s date of birth/).fill(new Date().toISOString().slice(0,10));
+ await expect(page.locator('#full-report .fr-error[role=alert]')).toContainText('at least 15 years ago');
+ await expect(pay).toBeDisabled();
+ await page.getByRole('button',{name:'Clear',exact:true}).click();
+ await expect(pay).toBeEnabled();
+ await expect(page.locator('.fr-review')).toContainText('None');
  expect(page.url()).not.toContain('Priya');expect(page.url()).not.toContain('1111111111');
  expect(errors).toEqual([]);
 });

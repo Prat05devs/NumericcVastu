@@ -18,12 +18,16 @@ const b64u = (buf) => Buffer.from(buf).toString('base64url');
 
 const text = (value, max) => String(value ?? '').replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, max);
 /** The details a report is made from, validated by building the report once. */
-export function reportInputs(body) {
+import {partnerDobProblem} from './access-rules.js';
+export {partnerDobProblem};
+/** strict: new orders only. A paid order is always rebuilt as it was bought. */
+export function reportInputs(body, {strict = false} = {}) {
   const inputs = {
     dob: text(body?.dob, 10), gender: ['male', 'female'].includes(body?.gender) ? body.gender : '',
     name: text(body?.name, 80), phone: text(body?.phone, 20).replace(/\D/g, ''),
     partnerDob: text(body?.partnerDob, 10), relationshipStatus: text(body?.relationshipStatus, 20) || 'unspecified',
   };
+  if (strict && partnerDobProblem(inputs.partnerDob)) throw Object.assign(new Error(partnerDobProblem(inputs.partnerDob)), {status: 400});
   if (!inputs.name || !inputs.phone) throw Object.assign(new Error('Enter your name and phone number in the calculator first.'), {status: 400});
   try { createFullReport(inputs); } catch (error) { throw Object.assign(new Error(error.message || 'Please check your details.'), {status: 400}); }
   return inputs;

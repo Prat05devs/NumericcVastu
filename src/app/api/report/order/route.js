@@ -7,7 +7,7 @@ export async function POST(request) {
   let body;
   try { body = await request.json(); } catch { return Response.json({error: 'Invalid request.'}, {status: 400}); }
   try {
-    const inputs = reportInputs(body);
+    const inputs = reportInputs(body, {strict: true});
     const email = String(body?.email ?? '').trim().slice(0, 120);
     // The buyer's own WhatsApp number, for contact; the phone in the reading can be someone else's.
     const whatsapp = String(body?.whatsapp ?? '').trim().slice(0, 20);

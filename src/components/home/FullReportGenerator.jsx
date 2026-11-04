@@ -9,6 +9,7 @@ import ReportRecovery from '../ReportRecovery';
 import {reportOffer} from '../../data/offers';
 import {reportStyles} from '../../lib/reportStyles';
 import {useCurrency} from '../../lib/useCurrency';
+import {partnerDobProblem} from '../../lib/report/access-rules';
 
 /**
  * The paid report (₹399 / $10). The visitor pays in Razorpay's window; the server verifies the payment and issues a
@@ -38,6 +39,8 @@ export default function FullReportGenerator({chart, gender, readingHref}) {
   const [whatsapp, setWhatsapp] = useState('');
   const [updates, setUpdates] = useState(false);
   const whatsappOk = /^\+?[0-9 ]{10,15}$/.test(whatsapp.trim());
+  const partnerProblem = partnerDobProblem(partnerDob);
+  const fmt = (iso) => new Date(`${iso}T00:00:00`).toLocaleDateString('en-IN', {day: 'numeric', month: 'long', year: 'numeric'});
   const [pass, setPass] = useState(null);
   const [status, setStatus] = useState({state: 'idle', message: ''});
   const now = new Date();
@@ -95,7 +98,8 @@ export default function FullReportGenerator({chart, gender, readingHref}) {
       <select id="nv-relationship-status" value={relationshipStatus} onChange={(e) => setRelationshipStatus(e.target.value)} aria-describedby="nv-relationship-hint"><option value="unspecified">Show both possibilities</option><option value="single">Single · open to a connection</option><option value="developing">Getting to know someone</option><option value="committed">In a committed relationship</option></select>
       <small id="nv-relationship-hint">Chooses the focus of your love-life chapter.</small>
       <label htmlFor="nv-partner-dob">Second person’s date of birth <span>(optional)</span></label>
-      <input id="nv-partner-dob" type="date" min="1900-01-01" max={maxDob} value={partnerDob} onChange={(e) => setPartnerDob(e.target.value)} aria-describedby="nv-partner-hint"/>
+      <div className="fr-date-row"><input id="nv-partner-dob" type="date" min="1900-01-01" max={maxDob} value={partnerDob} onChange={(e) => setPartnerDob(e.target.value)} aria-describedby="nv-partner-hint" aria-invalid={partnerProblem ? 'true' : undefined}/>{partnerDob && <button type="button" className="hv-link" onClick={() => setPartnerDob('')}>Clear</button>}</div>
+      {partnerProblem && <p className="fr-error" role="alert">{partnerProblem}</p>}
       <small id="nv-partner-hint">Add a partner’s date for a two-person number comparison.</small>
       <label htmlFor="nv-report-whatsapp">Your WhatsApp number</label>
       <input id="nv-report-whatsapp" type="tel" inputMode="tel" autoComplete="tel" required placeholder="+91 98xxxxxxxx" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} aria-describedby="nv-report-whatsapp-hint"/>
@@ -103,8 +107,14 @@ export default function FullReportGenerator({chart, gender, readingHref}) {
       <label htmlFor="nv-report-email">Email for your receipt <span>(optional)</span></label>
       <input id="nv-report-email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)}/>
       <label className="co-agree fr-consent"><input type="checkbox" checked={updates} onChange={(e) => setUpdates(e.target.checked)}/> <span>Send me new courses, sessions and offers on WhatsApp or email <span>(optional)</span></span></label>
+      {name && phone && <div className="fr-review"><p><b>Please check before paying.</b> Your report will be made for:</p><dl>
+        <div><dt>Name</dt><dd translate="no">{name}</dd></div>
+        <div><dt>Date of birth</dt><dd>{fmt(inputs.dob)}</dd></div>
+        <div><dt>Phone number analysed</dt><dd translate="no">{phone}</dd></div>
+        <div><dt>Second person</dt><dd>{partnerDob && !partnerProblem ? <>Born {fmt(partnerDob)}</> : 'None'}</dd></div>
+      </dl><small>To change the name, date of birth or phone, edit the calculator above and choose Show my numbers again.</small></div>}
       <p className="fr-price"><b><Price offer={reportOffer}/></b> · one-time payment</p>
-      <button className="hv-button hv-button--gold" type="submit" disabled={!name || !phone || !whatsappOk || status.state === 'busy'}><Lock size={18}/> {status.state === 'busy' ? 'Please wait…' : `Pay ${currency === 'USD' ? '$10' : '₹399'} and get my report`}</button>
+      <button className="hv-button hv-button--gold" type="submit" disabled={!name || !phone || !whatsappOk || !!partnerProblem || status.state === 'busy'}><Lock size={18}/> {status.state === 'busy' ? 'Please wait…' : `Pay ${currency === 'USD' ? '$10' : '₹399'} and get my report`}</button>
       <p className="fr-status"><ShieldCheck size={16} aria-hidden="true"/> Secure payment by Razorpay. Your report opens straight after payment.</p>
     </form>}
     {status.message && <p className={status.state === 'error' ? 'fr-error' : 'fr-status'} role={status.state === 'error' ? 'alert' : 'status'}>{status.message}</p>}
