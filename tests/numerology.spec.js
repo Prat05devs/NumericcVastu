@@ -1,5 +1,4 @@
 import {test,expect} from '@playwright/test';
-import fs from 'node:fs/promises';
 async function calculate(page,{name='Priya Sharma',phone='9876543210',gender='male'}={}) {
  await page.getByLabel('Your full name',{exact:true}).fill(name);
  await page.getByLabel('Phone number',{exact:true}).fill(phone);
@@ -22,33 +21,27 @@ for(const [route,title,expected] of [
  await page.getByRole('button',{name:'Show my numbers',exact:true}).click();
  await expect(grid.locator('b')).toHaveText(expected);
  await expect(page.getByTestId('phone-analysis')).toContainText('10 → 1');
- await page.getByRole('button',{name:'Generate my full report',exact:true}).click();
- await expect(page.locator('.full-report .fr-grid')).toHaveCount(2);
- await expect(page.getByRole('heading',{name:'Your Vedic numerology reading',exact:true})).toBeVisible();
+ // The complete report is a paid PDF: the buy box shows the price and is ready to pay.
+ await expect(page.locator('#full-report')).toContainText('₹399');
+ await expect(page.getByRole('button',{name:'Pay ₹399 and get my report',exact:true})).toBeEnabled();
  expect(page.url()).not.toContain('Priya');expect(page.url()).not.toContain('1111111111');
  expect(errors).toEqual([]);
 });
-test('full report downloads locally and can switch language without losing calculations',async({page})=>{
+test('paid report: buy box in both languages, and the PDF opens only with a valid pass',async({page,request})=>{
  await page.goto('/numerology-calculator');await calculate(page);
- await page.getByRole('button',{name:'Generate my full report',exact:true}).click();
- await expect(page.locator('.full-report .fr-page')).toHaveCount(20);
- await expect(page.locator('.fr-name')).toHaveText('Priya Sharma');
- await expect(page.locator('.full-report')).toContainText('9876543210');
+ const box=page.locator('#full-report');
+ await expect(box).toContainText('19 chapters in a PDF, in English and Hindi');
+ await expect(box).toContainText('Every missing number with its remedies');
+ await expect(box).not.toContainText('free');
  await page.getByRole('button',{name:'Switch language to Hindi'}).click();
  await expect(page.locator('html')).toHaveAttribute('lang','hi');
- await expect(page.getByRole('heading',{name:'आपके नाम का कैल्डियन विश्लेषण',exact:true})).toBeVisible();
- await expect(page.locator('.fr-name')).toHaveText('Priya Sharma');
- const downloaded=page.waitForEvent('download');await page.getByRole('button',{name:'रिपोर्ट डाउनलोड करें',exact:true}).click();
- const file=await downloaded;
- expect(file.suggestedFilename()).toBe('numericcvaastu-report-1990-05-23-hi.html');
- const html=await fs.readFile(await file.path(),'utf8');
- expect(html).toContain('<html lang="hi">');expect(html).toContain('Priya Sharma');
- expect(html).toContain('आपके अगले छह व्यक्तिगत वर्ष');expect(html).not.toContain('<script');
- expect(html).toContain('data:image/png;base64,');
- await page.goto('/courses');await expect(page.getByRole('heading',{level:1})).toHaveText('उद्देश्य के साथ अध्ययन।');
- await page.reload();await expect(page.locator('html')).toHaveAttribute('lang','hi');
+ await expect(page.getByRole('button',{name:'₹399 भुगतान करें और मेरी रिपोर्ट पाएं',exact:true})).toBeVisible();
  await page.getByRole('button',{name:'भाषा अंग्रेज़ी में बदलें'}).click();
- await expect(page.locator('html')).toHaveAttribute('lang','en');
+ expect((await request.get('/api/report/pdf?pass=not-a-pass&lang=en')).status()).toBe(403);
+ const missing=await request.post('/api/report/order',{data:{dob:'1990-05-23',name:'',phone:''}});
+ expect(missing.status()).toBe(400);
+ const forged=await request.post('/api/report/access',{data:{inputs:{dob:'1990-05-23',name:'Priya Sharma',phone:'9876543210'},razorpay_order_id:'order_x',razorpay_payment_id:'pay_x',razorpay_signature:'forged',binding:'x'}});
+ expect(forged.ok()).toBe(false);
 });
 test('invalid shared dates and invalid profile data show no broken report',async({page})=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
@@ -62,35 +55,15 @@ test('invalid shared dates and invalid profile data show no broken report',async
 });
 for(const width of [375,768,1024,1440])test(`Hindi calculator and navigation fit at ${width}px`,async({page})=>{
  await page.setViewportSize({width,height:950});await page.goto('/numerology-calculator');await calculate(page);
- await page.getByRole('button',{name:'Generate my full report',exact:true}).click();
  await page.getByRole('button',{name:'Switch language to Hindi'}).click();
  await expect(page.locator('html')).toHaveAttribute('lang','hi');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
 
-test('report print layouts in both languages',async({page},testInfo)=>{
- await page.goto('/numerology-calculator');await calculate(page);
- await page.getByRole('button',{name:'Generate my full report',exact:true}).click();
- await page.evaluate(()=>document.fonts.ready);
- await page.pdf({path:testInfo.outputPath('report-en.pdf'),format:'A4',printBackground:true});
- await page.getByRole('button',{name:'Switch language to Hindi'}).click();
- await expect(page.locator('html')).toHaveAttribute('lang','hi');
- await page.evaluate(()=>document.fonts.ready);
- await page.pdf({path:testInfo.outputPath('report-hi.pdf'),format:'A4',printBackground:true});
- await page.locator('.fr-cover').screenshot({path:testInfo.outputPath('cover-hi.png')});
- await page.setViewportSize({width:375,height:950});
- await page.goto('/numerology-calculator');
- await expect(page.locator('html')).toHaveAttribute('lang','hi');
- await page.screenshot({path:testInfo.outputPath('calculator-mobile-hi.png')});
-});
-
-
-test('Kua shows all four sourced directions in the free reading and report',async({page})=>{
+test('Kua shows all four sourced directions in the free reading',async({page})=>{
  await page.goto('/numerology-calculator');await calculate(page);
  // The default fixture is male 1990, Kua 1: N, E, SE, S by purpose.
  await expect(page.locator('.nv-kua .nv-direction-table tbody td')).toHaveText(['North','East','South-east','South']);
- await page.getByRole('button',{name:'Generate my full report',exact:true}).click();
- await expect(page.locator('.full-report .nv-direction-table tbody td')).toHaveText(['North','East','South-east','South']);
  await page.getByRole('button',{name:'Switch language to Hindi'}).click();
- await expect(page.locator('.full-report .nv-direction-table tbody td')).toHaveText(['उत्तर','पूर्व','दक्षिण-पूर्व','दक्षिण']);
+ await expect(page.locator('.nv-kua .nv-direction-table tbody td')).toHaveText(['उत्तर','पूर्व','दक्षिण-पूर्व','दक्षिण']);
 });

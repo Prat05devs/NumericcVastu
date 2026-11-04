@@ -7,8 +7,8 @@ const patterns=entries.map(([source,target])=>{
     if(/^\{\w+\}$/.test(part)){names.push(part.slice(1,-1));return '(.+?)'}
     return part.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
   }).join('');
-  return {regex:new RegExp(`^${escaped}$`),names,target};
-});
+  return {regex:new RegExp(`^${escaped}$`),names,target,literal:source.replace(/\{\w+\}/g,'').length};
+}).sort((a,b)=>b.literal-a.literal); // most specific template first, so "{plane}. {reading}" never shadows a fuller sentence
 /** Exact authored messages first; explicit variable templates second. Never changes unknown text. */
 export function translate(text,locale='en') {
   if(locale!=='hi'||typeof text!=='string'||!/[A-Za-z]/.test(text))return text;

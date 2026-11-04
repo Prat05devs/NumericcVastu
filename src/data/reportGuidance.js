@@ -83,7 +83,7 @@ export const LOVE_YEAR_THEMES = {
   "2": {
     "heading": "Connection, patience and emotional clarity",
     "single": "A slowly developing connection may deserve attention. Give friendship and dependable contact a chance before demanding a quick definition.",
-    "committed": "Existing bonds need attentive contact and a calm discussion of expectations. In the sample, year 2 specifically calls for care with an existing relationship."
+    "committed": "Existing bonds need attentive contact and a calm discussion of expectations. Year 2 especially calls for care with an existing relationship."
   },
   "3": {
     "heading": "Social openness and honest expression",
@@ -206,8 +206,8 @@ export const REMEDY_PRACTICES = [
         "role": "missing"
       }
     ],
-    "how": "If this is part of your practice, choose a comfortable Rudraksha or Tulsi mala. Use it as a reminder of the communication or consistency practice attached to this card.",
-    "rhythm": "Optional personal wear; the sample does not specify a bead count, weight or compulsory duration.",
+    "how": "Wear a Rudraksha or Tulsi mala. Let it remind you of your daily practice: speaking clearly for 3, keeping to your plan for 4.",
+    "rhythm": "Wear it daily. Adarshh can advise the right mala for you.",
     "meaning": "The same mala appears for missing 3 and 4 in the sample. One practice can support both intentions; a second purchase or a repeated ritual is not added.",
     "source": "sample"
   },
@@ -225,8 +225,8 @@ export const REMEDY_PRACTICES = [
         "role": "missing"
       }
     ],
-    "how": "Care for an existing plant or add a suitable plant or natural wood in a place you can maintain. Pair its regular care with your written learning or planning habit.",
-    "rhythm": "Regular care; no special direction is specified for this item in the sample.",
+    "how": "Keep healthy green plants or natural wood in your home or workspace, and look after them regularly.",
+    "rhythm": "Ongoing. Replace any plant that dries out.",
     "meaning": "This environmental suggestion is shared by missing 3 and 4 in the sample. Its practical support is a maintained, orderly setting, not a claim that an object changes the grid.",
     "source": "sample"
   },
@@ -240,8 +240,8 @@ export const REMEDY_PRACTICES = [
         "role": "missing"
       }
     ],
-    "how": "If you choose the sample’s bracelet practice, use it alongside the listening exercise for 2. The relevant intention is patient emotional attention, not simply wearing an item.",
-    "rhythm": "Optional personal wear; no charging sequence or weight is specified in the sample.",
+    "how": "Wear a clear quartz bracelet as a reminder to listen patiently before you respond.",
+    "rhythm": "Wear it daily.",
     "meaning": "The sample links this item to missing 2. The explanation of how to connect it with a listening habit is the report’s practical adaptation.",
     "source": "sample"
   },
@@ -255,8 +255,8 @@ export const REMEDY_PRACTICES = [
         "role": "missing"
       }
     ],
-    "how": "If consistent with your faith, offer water to a Shivling and chant Om Namah Shivaya. Add a sincere expression of gratitude to your mother or a caring elder.",
-    "rhythm": "Monday is specified in the sample; it gives no mandatory chant count.",
+    "how": "On Mondays, offer water to a Shivling and chant Om Namah Shivaya. Thank your mother or a caring elder in person.",
+    "rhythm": "Every Monday.",
     "meaning": "The linked intention is gratitude and patience. Keep the conversation and listening practice active alongside the devotional act.",
     "source": "sample"
   },
@@ -270,8 +270,8 @@ export const REMEDY_PRACTICES = [
         "role": "missing"
       }
     ],
-    "how": "The sample offers prayer to Dattatreya, Brihaspati or Vishnu on Thursday. Follow the form familiar to your faith and connect it with one useful act of learning or appreciation for a teacher or elder.",
-    "rhythm": "Thursday; choose one familiar practice rather than treating all named forms as compulsory.",
+    "how": "On Thursdays, pray to Lord Dattatreya, Brihaspati or Vishnu, whichever is familiar to you, and seek the blessings of a teacher or elder.",
+    "rhythm": "Every Thursday.",
     "meaning": "This supports the learning and expression intention attached to 3. The useful follow-through is applying advice, not collecting more advice.",
     "source": "sample"
   },
@@ -285,8 +285,8 @@ export const REMEDY_PRACTICES = [
         "role": "missing"
       }
     ],
-    "how": "The sample suggests a Himalayan salt lamp in the south-east. If used, place it on a dry, stable surface according to its electrical instructions. Pair it with the consistent planning habit for 4.",
-    "rhythm": "Optional placement; the sample does not specify a daily operating duration.",
+    "how": "Place a Himalayan salt lamp in the south-east of your home, on a dry, stable surface, following its electrical instructions.",
+    "rhythm": "A permanent placement in the south-east.",
     "meaning": "This is a missing-4 placement from the sample, separate from your Kua directions. It is not an air-purification or health treatment claim.",
     "source": "sample"
   },
@@ -300,8 +300,8 @@ export const REMEDY_PRACTICES = [
         "role": "missing"
       }
     ],
-    "how": "The sample pairs prayer to Maa Durga or the Sun with feeding birds or dogs. Use suitable food and a local feeding arrangement, and keep a manageable commitment.",
-    "rhythm": "A manageable routine; the sample gives no compulsory quantity or frequency.",
+    "how": "Pray to Maa Durga or the Sun, and feed birds or street dogs.",
+    "rhythm": "Regularly, at a pace you can keep up.",
     "meaning": "Service becomes a practice of dependable action. Follow through on the small commitment instead of using it as a substitute for a practical decision.",
     "source": "sample"
   },
@@ -315,8 +315,8 @@ export const REMEDY_PRACTICES = [
         "role": "missing"
       }
     ],
-    "how": "The sample suggests a silver watch or bracelet for missing 6. If you choose it, link it to remembering the agreed act of care, rather than expecting it to create affection by itself.",
-    "rhythm": "Optional wear; the sample gives no mandatory weight, finger or activation sequence.",
+    "how": "Wear a silver watch or bracelet.",
+    "rhythm": "Wear it daily.",
     "meaning": "The relevant support is family care and everyday responsibility. Wearing the item and fulfilling a promise are different actions; the second remains essential.",
     "source": "sample"
   },
@@ -330,8 +330,8 @@ export const REMEDY_PRACTICES = [
         "role": "missing"
       }
     ],
-    "how": "The sample gives north or east as alternatives for a Surya Pyra yantra. Discuss a suitable single placement with the practitioner before buying or changing an existing arrangement.",
-    "rhythm": "One optional placement; north and east are alternatives, not two required purchases.",
+    "how": "Place a Surya Pyra yantra in the north or the east of your home. One yantra in one of these directions is enough.",
+    "rhythm": "A permanent placement. Adarshh can confirm the best spot from your floor plan.",
     "meaning": "This placement belongs to the sample’s missing-6 remedy. A Kua direction serves a different method and does not replace this instruction.",
     "source": "sample"
   },
@@ -345,8 +345,8 @@ export const REMEDY_PRACTICES = [
         "role": "missing"
       }
     ],
-    "how": "The sample suggests wind chimes in the north-west. Choose a secure position that does not disturb others; the sample does not specify the material or number of rods.",
-    "rhythm": "Optional placement; confirm detailed product specifications with the practitioner.",
+    "how": "Hang wind chimes in the north-west of your home, where they move freely and do not disturb anyone.",
+    "rhythm": "A permanent placement in the north-west.",
     "meaning": "The intention is to support the home-and-harmony theme for missing 6. This does not label north-west as everyone’s best direction.",
     "source": "sample"
   },
@@ -360,8 +360,8 @@ export const REMEDY_PRACTICES = [
         "role": "missing"
       }
     ],
-    "how": "If part of your faith, pray to Maha Lakshmi on Friday. Connect the prayer with respecting a partner and women, listening to a practical need and completing one shared responsibility.",
-    "rhythm": "Friday is specified in the sample; no mandatory chant count is supplied.",
+    "how": "On Fridays, pray to Maha Lakshmi. Show respect and care to your partner and the women in your family.",
+    "rhythm": "Every Friday.",
     "meaning": "The sample includes honouring a wife and women. This report applies that respectfully as mutual care, without assuming marital status or making one person responsible for all harmony.",
     "source": "sample"
   },
@@ -379,8 +379,8 @@ export const REMEDY_PRACTICES = [
         "role": "missing"
       }
     ],
-    "how": "Support a responsible local cow-care arrangement or offer suitable green fodder with the caretaker’s guidance. Choose an affordable act of service you can sustain.",
-    "rhythm": "A manageable act of service; no compulsory donation amount is prescribed.",
+    "how": "Feed green grass or fodder to cows and calves, or support a local gaushala.",
+    "rhythm": "Regularly, as you are able.",
     "meaning": "Cow care appears in the sample for missing 6 and in the site’s introductory practice for 5. Where both apply, the same service is listed once with both intentions.",
     "source": "mixed"
   },
@@ -394,8 +394,8 @@ export const REMEDY_PRACTICES = [
         "role": "core"
       }
     ],
-    "how": "If you follow this tradition, pray to Ganesha on Wednesday and then complete one task you had left unfinished. The practical intention is follow-through.",
-    "rhythm": "Wednesday in the site’s introductory tradition; no compulsory chant count is added.",
+    "how": "On Wednesdays, pray to Lord Ganesha, then finish one task you had left incomplete.",
+    "rhythm": "Every Wednesday.",
     "meaning": "For a 5 core, the intended support is completing a chosen commitment before taking on another option. Link the devotional practice to that one action, rather than repeating a personality description.",
     "source": "introductory"
   },
@@ -409,8 +409,8 @@ export const REMEDY_PRACTICES = [
         "role": "missing"
       }
     ],
-    "how": "If it fits your faith, use a familiar Ganesha prayer followed by quiet reflection. Return to an unfinished conversation at the agreed time.",
-    "rhythm": "A brief, manageable routine from the site’s introductory guidance.",
+    "how": "Pray to Lord Ganesha and feed street dogs. Give a little quiet time each day to meditation or spiritual reading.",
+    "rhythm": "Daily, even briefly.",
     "meaning": "For missing 7, the practical intention is reflection that produces understanding rather than withdrawal. The sample does not supply a missing-7 protocol.",
     "source": "introductory"
   },
@@ -428,8 +428,8 @@ export const REMEDY_PRACTICES = [
         "role": "core"
       }
     ],
-    "how": "The sample’s birth-number-8 chapter includes Hanuman or Kali prayer on Saturday, help for people in need, and respectful treatment of workers. Choose useful food, time or an affordable donation through an appropriate arrangement.",
-    "rhythm": "Saturday for the prayer; service should follow the recipient’s actual need, not a compulsory amount.",
+    "how": "On Saturdays, pray to Lord Hanuman or Maa Kaali. Give food to labourers or people in need, and treat everyone who works for you with dignity.",
+    "rhythm": "Every Saturday.",
     "meaning": "For birth number 8 this is sourced from the sample. Its use for a missing 8 is introductory and requires practitioner confirmation. In either case, service does not replace fair handling of money and responsibilities.",
     "source": "sample-core8"
   },
@@ -443,8 +443,8 @@ export const REMEDY_PRACTICES = [
         "role": "missing"
       }
     ],
-    "how": "The site’s introductory guidance gives Hanuman prayer and a donation of red lentils on Tuesday. Use an appropriate local recipient and connect the practice with one calm, constructive action.",
-    "rhythm": "Tuesday in the introductory guidance; no donation amount or guaranteed result is specified.",
+    "how": "On Tuesdays, pray to Lord Hanuman and donate red lentils (masoor dal).",
+    "rhythm": "Every Tuesday.",
     "meaning": "The linked intention is directing energy and generosity constructively. A detailed missing-9 ritual was not supplied in the sample.",
     "source": "introductory"
   }

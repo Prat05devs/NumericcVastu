@@ -7,7 +7,7 @@ import {useLocale} from '../../i18n/LocaleProvider';
 import {readProfile} from '../../lib/profileNumbers';
 import Link from 'next/link';
 import {ArrowUpRight, Compass} from 'lucide-react';
-import {COMPAT, GRID, VEDIC_GRID, KUA, MISSING, NUMBERS, PERSONAL_YEAR, REPEATS, readChart, validBirthDate} from '../../lib/numerology';
+import {COMPAT, GRID, VEDIC_GRID, KUA, MISSING, NUMBERS, PERSONAL_YEAR, REPEATS, readChart, validBirthDate, reductionSteps} from '../../lib/numerology';
 
 import {FullReportPreview, LifePeriod, MoreInReport, Remedies, Snapshot} from './ReportExtras';
 
@@ -171,12 +171,12 @@ function CalculationDetails({chart, system}) {
   const eligible=c.sources.some(s=>s.from==='mulank');
   return <LocalizedContent><section className="nv-calculations" aria-label="Separate numerology calculations">
     <div className="nv-calculation-card"><h3>Birth-date calculations</h3><dl>
-      <div><dt>Mulank</dt><dd>{String(c.day).split('').join(' + ')} = {c.mulank}</dd></div>
-      <div><dt>Bhagyank</dt><dd>{c.dateDigits.split('').join(' + ')} → {c.bhagyank}</dd></div>
+      <div><dt>Mulank</dt><dd>{c.day>9?`${String(c.day).split('').join(' + ')} = ${reductionSteps(c.day).slice(1).join(' → ')}`:c.mulank}</dd></div>
+      <div><dt>Bhagyank</dt><dd>{c.dateDigits.split('').join(' + ')} = {reductionSteps(c.dateDigits.split('').reduce((sum,d)=>sum+Number(d),0)).join(' → ')}</dd></div>
       <div><dt>Month number</dt><dd>{c.month} → {c.monthNumber}</dd></div>
       <div><dt>Year number</dt><dd>{String(c.year).split('').join(' + ')} → {c.yearNumber}</dd></div>
     </dl></div>
-    {system === 'loshu' && <div className="nv-calculation-card"><h3>Kua calculation</h3>{c.kua?<><p>{c.year} · {c.kuaCalculation.digits.join(' + ')} → {c.kuaCalculation.factor}</p><p>{c.kuaCalculation.constant} {c.kuaCalculation.operator} {c.kuaCalculation.factor} = {c.kuaCalculation.raw} → {c.kua}</p><p>Kua uses the last two year digits, the birth-century rule and the selected gender. A result of 5 becomes 2 for male and 8 for female.</p><p>Direction group: {KUA[c.kua].group}</p></>:<p>Choose male or female to calculate Kua. Kua is optional and is used only in the Lo Shu kundli.</p>}</div>}
+    {system === 'loshu' && <div className="nv-calculation-card"><h3>Kua calculation</h3>{c.kua?<><p>{c.year} · {c.kuaCalculation.digits.join(' + ')} = {reductionSteps(c.kuaCalculation.yearSum).join(' → ')}</p><p>{c.kuaCalculation.operator==='−'?`11 − ${c.kuaCalculation.factor}`:`${c.kuaCalculation.factor} + 4`} = {reductionSteps(c.kuaCalculation.raw).join(' → ')}{c.kuaCalculation.fiveRule?` → ${c.kua}`:''}</p><p>Kua: add the digits of the birth year and reduce them to one number. Male: 11 minus that number. Female: that number plus 4. A result of 5 becomes 2 for male and 8 for female.</p><p>Direction group: {KUA[c.kua].group}</p></>:<p>Choose male or female to calculate Kua. Kua is optional and is used only in the Lo Shu kundli.</p>}</div>}
     {system === 'loshu' && <div className="nv-calculation-card"><h3>Lo Shu calculation</h3><p>Layout: 4-9-2 / 3-5-7 / 8-1-6.</p><p>Non-zero date digits: {c.sources.filter(s=>s.from==='date').map(s=>s.n).join(', ')}</p><p>Added Bhagyank: {c.bhagyank}</p><p>Added Mulank: {eligible?c.mulank:'Already represented in the birth date'}</p><p>Added Kua: {c.kua||'Not included'}</p></div>}
     {system === 'vedic' && <div className="nv-calculation-card"><h3>Vedic calculation</h3><p>Layout: 3-1-9 / 6-7-5 / 2-8-4.</p><p>Uses day, month and the last two year digits, plus Bhagyank and eligible Mulank. The century and Kua are excluded.</p><p>Cells in order: {[3,1,9,6,7,5,2,8,4].map(n=>`${n} × ${c.vedicCounts[n]}`).join(', ')}</p></div>}
     {c.nameAnalysis&&<div className="nv-calculation-card" data-testid="name-analysis"><h3>Name calculation · Chaldean</h3><p translate="no">{c.nameAnalysis.name}</p><p>{c.nameAnalysis.total} → {c.nameAnalysis.number}</p><p>{NUMBERS[c.nameAnalysis.number].strengths}</p><p>First name: {c.nameAnalysis.first.total} → {c.nameAnalysis.first.number}</p><p translate="no">{c.nameAnalysis.words.flatMap(w=>w.letters).map(l=>`${l.letter}=${l.value}`).join(' + ')}</p></div>}
@@ -281,7 +281,7 @@ export default function LoShuCalculator({readingHref, full = false, system = 'lo
       </div>
     </div>
     {chart && <CalculationDetails chart={chart} system={system}/>}
-    {full && chart && <p className="nv-combined-cta"><a className="hv-button hv-button--gold" href="#full-report">Get the combined full report <ArrowUpRight size={17}/></a><span>Includes both Lo Shu and Vedic. Free during testing.</span></p>}
+    {full && chart && <p className="nv-combined-cta"><a className="hv-button hv-button--gold" href="#full-report">Get the complete PDF report <ArrowUpRight size={17}/></a><span>Lo Shu and Vedic, remedies and your Maha Dasha · ₹399</span></p>}
     {full && chart && <FullReport chart={readingChart} reportChart={chart} gender={gender} system={system} readingHref={readingHref}/>}
   </></LocalizedContent>;
 }

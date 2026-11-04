@@ -1,11 +1,14 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {locations} from '../src/data/locations.js';
-import {offerCatalog,courses,consultations,formatPrice,getPricePaise,getActivePromotion,getCurrentCoursePromotion,assertOfferCatalog} from '../src/data/offers.ts';
+import {offerCatalog,reportOffer,courses,consultations,formatPrice,getPricePaise,getActivePromotion,getCurrentCoursePromotion,assertOfferCatalog} from '../src/data/offers.ts';
 assertOfferCatalog();
 assert.equal(courses.length,3);assert.equal(consultations.length,11);
 assert(offerCatalog.offers.every(offer=>!offer.checkoutEnabled||offer.priceVerified));
-assert.deepEqual(offerCatalog.offers.filter(offer=>offer.priceVerified).map(offer=>offer.id),['course-launchpad']);
+// Every listed offering takes payment at its listed price (client approval, 4 November 2026); the Blueprint is ₹14,999.
+assert(offerCatalog.offers.every(offer=>offer.priceVerified&&offer.checkoutEnabled));
+assert.equal(offerCatalog.offers.find(offer=>offer.id==='consult-blueprint').pricePaise,1499900);
+assert.equal(reportOffer.pricePaise,39900);assert.equal(reportOffer.priceUsdCents,1000);
 for(const offer of offerCatalog.offers){
  const detail=`.next/server/app/${offer.kind==='course'?'courses':'consultations'}/${offer.slug}.html`;
  assert(fs.existsSync(detail),`missing detail page ${detail}`);

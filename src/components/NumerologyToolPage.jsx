@@ -20,7 +20,7 @@ export default function NumerologyToolPage({system}) {
           <div><span className="hv-eyebrow">{vedic?'Free Vedic numerology tool':'Free Lo Shu numerology tool'}</span><h1 className="nv-calc-title">{vedic?'Your Vedic kundli,':'Your Lo Shu grid,'} <em>read for free.</em></h1></div>
           <div className="hv-head__aside"><p>{vedic?'Enter your name, phone number and birth date for your Vedic numerology kundli, planetary number readings, name analysis and phone compatibility.':'Enter your name, phone number, birth date and optional Kua gender for your Lo Shu kundli, planes, yogs, name analysis and phone compatibility.'}</p></div>
         </div>
-        <p className="nv-tool-report-note" id="report-options">Both free tools lead to one combined full report with Lo Shu and Vedic readings. Report generation is free during testing.</p>
+        <p className="nv-tool-report-note" id="report-options">Both free tools lead to one complete PDF report with Lo Shu and Vedic readings, remedies and your Maha Dasha, for ₹399.</p>
         <LoShuCalculator key={system} system={system} full readingHref="/consultations/personal-numerology-blueprint"/>
       </div></section>
       <section className="hv-section hv-wrap nv-calc-method" aria-labelledby="method">

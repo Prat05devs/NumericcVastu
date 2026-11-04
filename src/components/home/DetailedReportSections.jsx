@@ -1,5 +1,6 @@
 import LocalizedContent from '../../i18n/LocalizedContent';
-import {NUMBERS} from '../../lib/numerology';
+import {MISSING, NUMBERS} from '../../lib/numerology';
+import {MISSING_REMEDIES} from '../../data/remedies';
 import {REPORT_PROFILES} from '../../data/reportProfiles';
 import {REFLECTION_EXAMPLES} from '../../data/reflectionGuidance';
 
@@ -24,10 +25,30 @@ export function StrengthsReading({report}) {
   </></LocalizedContent>;
 }
 
+const REMEDY_KINDS={wear:'What to wear',place:'Vastu and placement',worship:'Prayer',service:'Service and donation'};
+/** Each missing number, followed straight away by its remedies, then the other themes to work on. */
 export function GrowthReading({report}) {
+  const plan=report.remedyPlan;
+  const traditional=number=>plan.cards.filter(card=>card.kind!=='behaviour'&&card.triggers.some(trigger=>trigger.role==='missing'&&trigger.number===number));
+  const themes=report.growthAreas.filter(area=>!area.missing);
   return <LocalizedContent><>
-    {report.growthAreas.map((area,i)=><div className="fr-detail-block" key={`${area.number}-${i}`}><h3>Focus {i+1} · {area.missing?'Missing number':'Number theme'} {area.number}</h3><p>{area.pattern}</p><h4>What to practise</h4><p>{area.practice}</p><h4>How to review it</h4><p>Record one real example each week: what happened, how you responded and what you would change next time.</p></div>)}
-    <h3>Your complete missing-number list</h3><p>{numbers(report.chart.missing)}</p><a href="#fr-chapter-15">See how each gap connects to the detailed remedy plan</a>
+    <p>A missing number points to a quality that does not come automatically and grows with practice. Each missing number below is followed straight away by its remedies: one everyday practice and the traditional remedies for that number.</p>
+    {plan.focuses.map(focus=>{const cards=traditional(focus.number);return <section className="fr-missing" id={`fr-remedy-gap-${focus.number}`} key={focus.number}>
+      <h3>Missing number {focus.number} · {NUMBERS[focus.number].planet}</h3>
+      <p className="fr-label">Missing in: {focus.grids.join(' / ')}</p>
+      <p>{MISSING[focus.number]}</p>
+      {focus.support&&<p>Support already in your chart: {focus.support.number} · {NUMBERS[focus.support.number].planet}. {focus.support.text}</p>}
+      <div className="fr-remedy-box">
+        <h4>Remedies for missing {focus.number}</h4>
+        <h5>Everyday practice</h5><p>{focus.how}</p>
+        {cards.length?cards.map(card=><div key={card.id}><h5>{REMEDY_KINDS[card.kind]} · {card.title}</h5><p>{card.how}</p><p className="fr-when">When: {card.rhythm}</p>{card.requiresReview&&<p className="fr-note">This number has a challenging relationship with one of your core numbers. Check this item with Adarshh before buying or placing it.</p>}</div>)
+          :<><h5>Traditional remedies</h5><ul>{MISSING_REMEDIES[focus.number].map(item=><li key={item}>{item}</li>)}</ul></>}
+        <h5>How to review it</h5><p>{focus.review}</p>
+      </div>
+    </section>})}
+    {!plan.focuses.length&&<p>No number is missing from either of your grids. The areas below come from your core numbers and name.</p>}
+    {!!themes.length&&<h3>Other areas to work on</h3>}
+    {themes.map((area,i)=><div className="fr-detail-block" key={`${area.number}-${i}`}><h4>Number theme {area.number} · {NUMBERS[area.number].planet}</h4><p>{area.pattern}</p><h5>What to practise</h5><p>{area.practice}</p></div>)}
   </></LocalizedContent>;
 }
 
@@ -71,7 +92,7 @@ export function RelationshipReading({report,locale}) {
     <p><b>{current.year} · Personal year {current.number} · {current.heading}</b></p>
     {showSingle&&<><h4>If you are single</h4><p>{current.single}</p></>}
     {showCommitted&&<><h4>{love.status==='developing'?'If a connection is developing':'If you are already in a relationship'}</h4><p>{current.committed}</p></>}
-    {love.currentPeriod&&<div className="fr-love-phase"><h4>What the active life period adds</h4><p>{love.currentPeriod.planet} · {love.currentPeriod.from}–{love.currentPeriod.to}</p><p>{love.currentPeriod.text}</p><p>Next period begins: {new Date(love.currentPeriod.to,c.month-1,c.day).toLocaleDateString(locale==='hi'?'hi-IN':'en-IN',{day:'numeric',month:'long',year:'numeric'})}</p></div>}
+    {love.currentPeriod&&<div className="fr-love-phase"><h4>What your current Maha Dasha adds</h4><p>{love.currentPeriod.planet} · {love.currentPeriod.from}–{love.currentPeriod.to}</p><p>{love.currentPeriod.text}</p><p>Next period begins: {new Date(love.currentPeriod.to,c.month-1,c.day).toLocaleDateString(locale==='hi'?'hi-IN':'en-IN',{day:'numeric',month:'long',year:'numeric'})}</p></div>}
     <h3>Possibilities over the next five years</h3>
     <p>These are traditional cycle themes for opportunities and conversations to consider. They do not establish that you are currently dating, or promise a partner, marriage date or a breakup.</p>
     <div className="fr-love-outlook">{love.outlook.slice(1).map(year=><section key={year.year}><h4>{year.year} · {year.number} · {year.heading}</h4>{showSingle&&<p><b>New connection:</b> {year.single}</p>}{showCommitted&&<p><b>Existing or developing bond:</b> {year.committed}</p>}</section>)}</div>
@@ -112,7 +133,7 @@ export function YearsReading({report}) {
 export function PeriodsReading({report}) {
   const c=report.chart;
   return <LocalizedContent><>
-    <p>Periods begin on your birthday. The first runs for your Mulank’s number of years, then the numbers cycle from 1 to 9. Each period below includes work, relationship and practical growth themes.</p>
+    <p>Each Maha Dasha begins on your birthday. The first runs for your Mulank’s number of years, then the numbers cycle from 1 to 9. Each Maha Dasha below includes work, relationship and practical growth themes.</p>
     {report.periods.map(period=><div className={`fr-period ${period.current?'fr-current':''}`} key={period.from}><h3>{period.from}–{period.to} · {period.n} · {NUMBERS[period.n].planet}{period.current?' · Current':''}</h3><p>Birthday boundary: {String(c.day).padStart(2,'0')}/{String(c.month).padStart(2,'0')}</p><p>{period.theme}</p><dl><div><dt>Work & skills</dt><dd>{period.work}</dd></div><div><dt>Relationship theme</dt><dd>{period.relationship}</dd></div><div><dt>Priority</dt><dd>{period.focus}</dd></div><div><dt>Watch for</dt><dd>{period.watch}</dd></div><div><dt>Practical step</dt><dd>{period.practice}</dd></div></dl></div>)}
   </></LocalizedContent>;
 }

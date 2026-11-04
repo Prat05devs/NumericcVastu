@@ -1,6 +1,8 @@
 import 'server-only';
 import {createHmac, timingSafeEqual} from 'node:crypto';
-import {offerCatalog, getPrice, formatPrice} from '../data/offers';
+import {after} from 'next/server';
+import {offerCatalog, reportOffer, getPrice, formatPrice} from '../data/offers';
+import {bookingOffer, recordBooking} from './bookings';
 
 /**
  * Razorpay Standard Checkout, server side. Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in the Vercel
@@ -29,7 +31,7 @@ export function onlinePayment(offer, currency = 'INR') {
 }
 
 export function findOffer(id) {
-  return offerCatalog.offers.find((o) => o.id === id) || null;
+  return [...offerCatalog.offers, reportOffer].find((o) => o.id === id) || null;
 }
 
 /** Razorpay notes allow 15 keys of up to 256 characters; keep the most useful details there. */
@@ -59,6 +61,8 @@ export async function createOrder({offerId, currency, customer, details}) {
     console.error('Razorpay order failed', res.status, data?.error?.description);
     throw Object.assign(new Error('Online payment is temporarily unavailable. Please try again shortly, or send your booking on WhatsApp.'), {status: 502});
   }
+  // Recorded after the response so a sleeping API app never delays the payment window.
+  after(() => recordBooking({...bookingOffer(offer, currency, amount), provider: 'razorpay', environment: state.mode, providerOrderId: data.id, paymentStatus: 'CREATED', customer, details}));
   return {orderId: data.id, amount, currency, keyId: keyId(), offerName: offer.name, priceLabel: formatPrice(offer, undefined, currency), mode: state.mode};
 }
 

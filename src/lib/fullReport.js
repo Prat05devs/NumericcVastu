@@ -76,7 +76,7 @@ export function createFullReport({dob, gender = '', name, phone, partnerDob = ''
     {label:'Name alignment',number:names.number,text:chart.mulank===chart.bhagyank?`With both core numbers: ${relation(chart.mulank,names.number)}.`:`With birth number: ${relation(chart.mulank,names.number)}. With destiny number: ${relation(chart.bhagyank,names.number)}.`,target:'fr-chapter-4'},
     {label:'Your practical priority',number:sharedGap?.number || chart.mulank,text:sharedGap?.title || CORE_PRACTICES[chart.mulank],target:sharedGap?`fr-remedy-gap-${sharedGap.number}`:`fr-remedy-core-${chart.mulank}`},
     {label:'Love-life theme now',number:years[0].number,text:LOVE_YEAR_THEMES[years[0].number].heading,target:'fr-chapter-11'},
-    {label:'Current life period',number:activePeriod?.n || chart.mulank,text:activePeriod?`${NUMBERS[activePeriod.n].planet} · ${activePeriod.from}–${activePeriod.to}`:PERIOD_THEME[chart.mulank],target:'fr-chapter-14'},
+    {label:'Current Maha Dasha',number:activePeriod?.n || chart.mulank,text:activePeriod?`${NUMBERS[activePeriod.n].planet} · ${activePeriod.from}–${activePeriod.to}`:PERIOD_THEME[chart.mulank],target:'fr-chapter-14'},
   ];
   const uniqueThree=values=>[...new Set(values)].slice(0,3);
   const actionPlan={

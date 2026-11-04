@@ -7,9 +7,9 @@
  * - Grid: every non-zero digit of DD-MM-YYYY, plus Bhagyank, plus Mulank when the day has two
  *   digits with non-zero units (11–31 except 20 and 30; for 1–9, 10, 20 and 30 the Mulank digit is already there),
  *   plus Kua when the person chooses to include it. Zeros have no cell and are left out.
- * - Kua (from Feng Shui, widely used alongside Lo Shu in India): reduce the last two digits of the year.
- *   Born before 2000: male 10 − n, female n + 5. Born 2000 or later: male 9 − n, female n + 6.
- *   Reduce again; male 0 counts as 9; Kua 5 becomes 2 for males and 8 for females.
+ * - Kua (from Feng Shui, widely used alongside Lo Shu in India), as NumericcVaastu teaches it: add the digits of the
+ *   birth year and reduce (1976 → 1+9+7+6 = 23 → 5). Male: 11 − that number. Female: that number + 4. Reduce again;
+ *   Kua 5 becomes 2 for males and 8 for females. (Same results as the older 10 − n / n + 5 rule on the last two digits.)
  * - Planets: 1 Sun, 2 Moon, 3 Jupiter, 4 Rahu, 5 Mercury, 6 Venus, 7 Ketu, 8 Saturn, 9 Mars.
  * - Friend, enemy and neutral numbers, colours and roles: the number compatibility chart NumericcVaastu
  *   teaches (COMPAT below). It is a numerology chart, not the Jyotish planetary friendships, so it is
@@ -182,14 +182,22 @@ export const KUA = Object.fromEntries(Object.entries(KUA_ROWS).map(([n, row]) =>
 }]));
 
 export function kuaCalculation(year, gender) {
-  const digits = [...String(year).slice(-2)].map(Number);
-  const factor = reduce(digits.reduce((sum,n) => sum+n,0));
-  const constant = gender === 'male' ? (year < 2000 ? 10 : 9) : (year < 2000 ? 5 : 6);
-  const operator = gender === 'male' ? '−' : '+';
-  const raw = gender === 'male' ? constant - factor : factor + constant;
+  const digits = [...String(year)].map(Number);
+  const yearSum = digits.reduce((sum, n) => sum + n, 0);
+  const factor = reduce(yearSum);
+  const male = gender === 'male';
+  const constant = male ? 11 : 4;
+  const operator = male ? '−' : '+';
+  const raw = male ? constant - factor : factor + constant;
   const reduced = reduce(raw);
-  const number = reduced === 0 ? 9 : reduced === 5 ? (gender === 'male' ? 2 : 8) : reduced;
-  return {digits, factor, constant, operator, raw, number};
+  const number = reduced === 5 ? (male ? 2 : 8) : reduced;
+  return {digits, yearSum, factor, constant, operator, raw, reduced, number, fiveRule: reduced === 5};
+}
+/** The working of a reduction, e.g. 32 → [32, 5] and 29 → [29, 11, 2]. */
+export function reductionSteps(total) {
+  const steps = [total];
+  while (steps.at(-1) > 9) steps.push(String(steps.at(-1)).split('').reduce((sum, d) => sum + Number(d), 0));
+  return steps;
 }
 export const kuaNumber = (year, gender) => kuaCalculation(year, gender).number;
 
