@@ -35,6 +35,9 @@ export default function FullReportGenerator({chart, gender, readingHref}) {
   const [partnerDob, setPartnerDob] = useState('');
   const [relationshipStatus, setRelationshipStatus] = useState('unspecified');
   const [email, setEmail] = useState('');
+  const [whatsapp, setWhatsapp] = useState('');
+  const [updates, setUpdates] = useState(false);
+  const whatsappOk = /^\+?[0-9 ]{10,15}$/.test(whatsapp.trim());
   const [pass, setPass] = useState(null);
   const [status, setStatus] = useState({state: 'idle', message: ''});
   const now = new Date();
@@ -51,13 +54,13 @@ export default function FullReportGenerator({chart, gender, readingHref}) {
     setStatus({state: 'busy', message: 'Opening secure payment…'});
     try {
       await loadRazorpay();
-      const res = await fetch('/api/report/order', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({...inputs, email})});
+      const res = await fetch('/api/report/order', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({...inputs, email, whatsapp: whatsapp.trim(), updates})});
       const order = await res.json();
       if (!res.ok) throw new Error(order.error || 'Could not start the payment.');
       const rzp = new window.Razorpay({
         key: order.keyId, order_id: order.orderId, amount: order.amount, currency: order.currency,
         name: 'NumericcVaastu', description: reportOffer.name, image: '/images/logo-nv.png',
-        prefill: {name, email, contact: phone}, theme: {color: '#4a1f7a'},
+        prefill: {name, email, contact: whatsapp.replace(/\s/g, '')}, theme: {color: '#4a1f7a'},
         modal: {ondismiss: () => setStatus({state: 'idle', message: 'Payment window closed. You can try again whenever you are ready.'})},
         handler: async (payment) => {
           setStatus({state: 'busy', message: 'Confirming your payment…'});
@@ -85,7 +88,7 @@ export default function FullReportGenerator({chart, gender, readingHref}) {
     {pass ? <div className="fr-ready" role="status">
       <p><b>Your report is ready.</b> It opens in a new tab, where you can read it and download the PDF.</p>
       <div className="fr-toolbar"><button className="hv-button hv-button--gold" type="button" onClick={() => open('en')}>Open my report (English PDF) <ArrowUpRight size={18}/></button><button className="hv-button" type="button" onClick={() => open('hi')}><span lang="hi" translate="no">हिंदी PDF खोलें</span> <ArrowUpRight size={18}/></button></div>
-      <p className="fr-status">Payment ID: <span translate="no">{pass.paymentId}</span>. Keep it: with this ID and your phone number you can open the report on any device at <a href="/my-report">numericcvaastu.com/my-report</a>.</p>
+      <p className="fr-status">Payment ID: <span translate="no">{pass.paymentId}</span>. Razorpay also sends it to you by SMS or email. With this ID and your phone number you can open the report on any device at <a href="/my-report">numericcvaastu.com/my-report</a>.</p>
     </div> : <form onSubmit={pay}>
       {name && phone ? <p>Your report uses the name and phone number from your calculation above.</p> : <p>Enter your name and phone number in the calculator above, then choose Show my numbers.</p>}
       <label htmlFor="nv-relationship-status">Your relationship context <span>(optional)</span></label>
@@ -94,10 +97,14 @@ export default function FullReportGenerator({chart, gender, readingHref}) {
       <label htmlFor="nv-partner-dob">Second person’s date of birth <span>(optional)</span></label>
       <input id="nv-partner-dob" type="date" min="1900-01-01" max={maxDob} value={partnerDob} onChange={(e) => setPartnerDob(e.target.value)} aria-describedby="nv-partner-hint"/>
       <small id="nv-partner-hint">Add a partner’s date for a two-person number comparison.</small>
+      <label htmlFor="nv-report-whatsapp">Your WhatsApp number</label>
+      <input id="nv-report-whatsapp" type="tel" inputMode="tel" autoComplete="tel" required placeholder="+91 98xxxxxxxx" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} aria-describedby="nv-report-whatsapp-hint"/>
+      <small id="nv-report-whatsapp-hint">So we can send you the report or help if anything goes wrong. The phone number analysed above can be anyone’s; this one is yours.</small>
       <label htmlFor="nv-report-email">Email for your receipt <span>(optional)</span></label>
       <input id="nv-report-email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)}/>
+      <label className="co-agree fr-consent"><input type="checkbox" checked={updates} onChange={(e) => setUpdates(e.target.checked)}/> <span>Send me new courses, sessions and offers on WhatsApp or email <span>(optional)</span></span></label>
       <p className="fr-price"><b><Price offer={reportOffer}/></b> · one-time payment</p>
-      <button className="hv-button hv-button--gold" type="submit" disabled={!name || !phone || status.state === 'busy'}><Lock size={18}/> {status.state === 'busy' ? 'Please wait…' : `Pay ${currency === 'USD' ? '$10' : '₹399'} and get my report`}</button>
+      <button className="hv-button hv-button--gold" type="submit" disabled={!name || !phone || !whatsappOk || status.state === 'busy'}><Lock size={18}/> {status.state === 'busy' ? 'Please wait…' : `Pay ${currency === 'USD' ? '$10' : '₹399'} and get my report`}</button>
       <p className="fr-status"><ShieldCheck size={16} aria-hidden="true"/> Secure payment by Razorpay. Your report opens straight after payment.</p>
     </form>}
     {status.message && <p className={status.state === 'error' ? 'fr-error' : 'fr-status'} role={status.state === 'error' ? 'alert' : 'status'}>{status.message}</p>}

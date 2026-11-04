@@ -13,7 +13,7 @@ export default function Page() {
       <style>{reportStyles}</style>
       <span className="hv-eyebrow">Already paid?</span>
       <h1 className="hv-title">Get your numerology report</h1>
-      <p>Enter the payment ID and the phone number you used. Your report opens straight away, on any phone or computer.</p>
+      <p>Enter your payment ID (shown after payment and sent by Razorpay by SMS or email) and the WhatsApp or phone number you used. Your report opens straight away, on any phone or computer.</p>
       <ReportRecovery/>
       <p className="fr-status">Need help? Call or WhatsApp <a href={contact.phoneHref} translate="no">{contact.phone}</a> with your payment ID.</p>
     </div></main>

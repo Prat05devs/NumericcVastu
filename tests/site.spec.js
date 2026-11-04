@@ -18,7 +18,7 @@ test('consultation page, WhatsApp enquiry and checkout',async({page})=>{
  expect(decodeURIComponent(href.split('text=')[1])).toContain(price);
  await page.goto('/checkout?offer=consult-blueprint',{waitUntil:'networkidle'});
  await expect(page.locator('.co-summary__total strong')).toHaveText(price);
- await page.getByLabel('Your name').fill('Test Visitor');await page.getByLabel(/Mobile/).fill('9876543210');await page.getByLabel('Email').fill('test@example.com');await page.getByLabel('City').fill('Delhi');
+ await page.getByLabel('Your name').fill('Test Visitor');await page.getByLabel('Your WhatsApp number',{exact:true}).fill('9876543210');await page.getByLabel('Email',{exact:true}).fill('test@example.com');await page.getByLabel('City').fill('Delhi');
  await page.getByLabel('How would you like to meet?').selectOption({index:1});await page.getByLabel('Preferred language').selectOption('Hindi');
  await page.getByLabel('Preferred date').fill(new Date(Date.now()+2*86400000).toISOString().slice(0,10));await page.getByLabel('Preferred time').selectOption({index:1});
  await page.getByRole('button',{name:/Continue/}).click();

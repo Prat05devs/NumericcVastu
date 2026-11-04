@@ -23,7 +23,10 @@ for(const [route,title,expected] of [
  await expect(page.getByTestId('phone-analysis')).toContainText('10 → 1');
  // The complete report is a paid PDF: the buy box shows the price and is ready to pay.
  await expect(page.locator('#full-report')).toContainText('₹399');
- await expect(page.getByRole('button',{name:'Pay ₹399 and get my report',exact:true})).toBeEnabled();
+ const pay=page.getByRole('button',{name:'Pay ₹399 and get my report',exact:true});
+ await expect(pay).toBeDisabled(); // the buyer's own WhatsApp number is required
+ await page.getByLabel('Your WhatsApp number',{exact:true}).fill('+91 98765 43210');
+ await expect(pay).toBeEnabled();
  expect(page.url()).not.toContain('Priya');expect(page.url()).not.toContain('1111111111');
  expect(errors).toEqual([]);
 });

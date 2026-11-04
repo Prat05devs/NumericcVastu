@@ -17,6 +17,7 @@ function Field({f, value, onChange}) {
   if (f.type === 'heading') return <LocalizedContent><h4 className="co-subhead">{f.label}</h4></LocalizedContent>;
   if (f.type === 'note') return <LocalizedContent><p className="co-note">{f.label}</p></LocalizedContent>;
   const id = `co-${f.name}`;
+  if (f.type === 'checkbox') return <LocalizedContent><div className="co-field co-check"><label className="co-agree"><input id={id} type="checkbox" checked={value === 'Yes'} onChange={(e) => onChange(f.name, e.target.checked ? 'Yes' : '')}/> <span>{f.label} <span>(optional)</span></span></label></div></LocalizedContent>;
   const common = {id, name: f.name, required: f.required, value: value || '', onChange: (e) => onChange(f.name, e.target.value)};
   return <LocalizedContent><div className={f.half ? 'co-field is-half' : 'co-field'}>
     <label htmlFor={id}>{f.label}{!f.required && f.type !== 'textarea' && !f.hint?.startsWith('Optional') && <span> (optional)</span>}</label>
@@ -70,11 +71,13 @@ export default function CheckoutFlow({offer, intake, sessionFields, payment, wha
   const set = (name, v) => setValues((s) => ({...s, [name]: v}));
   const contactFields = [
     {name: 'name', label: 'Your name', type: 'text', required: true, half: true, placeholder: 'Full name'},
-    {name: 'phone', label: 'Mobile / WhatsApp number', type: 'tel', required: true, half: true, placeholder: '+91 98xxxxxxxx'},
+    {name: 'phone', label: 'Your WhatsApp number', type: 'tel', required: true, half: true, placeholder: '+91 98xxxxxxxx', hint: 'So the team can reach you. Booking for someone else? Give your own number here; their details come in the next step.'},
     {name: 'email', label: 'Email', type: 'email', required: true, half: true, placeholder: 'For your receipt'},
     {name: 'city', label: 'City', type: 'text', required: true, half: true, placeholder: 'e.g. Delhi'},
   ];
-  const stepFields = [[...contactFields, ...(offer.kind === 'consultation' ? sessionFields : [])], intake.fields, []];
+  // Optional, recorded with the booking: the client may contact only people who agreed about new offers.
+  const consentField = {name: 'updates', label: 'Send me new courses, sessions and offers on WhatsApp or email', type: 'checkbox'};
+  const stepFields = [[...contactFields, consentField, ...(offer.kind === 'consultation' ? sessionFields : [])], intake.fields, []];
   const allFields = [...stepFields[0], ...stepFields[1]].filter((f) => f.type !== 'heading' && f.type !== 'note');
   const details = useMemo(() => Object.fromEntries(allFields.filter((f) => !contactFields.some((c) => c.name === f.name) && values[f.name]).map((f) => [f.name, show(f, values[f.name])])), [values]); // eslint-disable-line react-hooks/exhaustive-deps
 

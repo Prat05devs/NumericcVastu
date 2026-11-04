@@ -3878,5 +3878,14 @@
   "Checking your payment…": "आपके भुगतान की जांच हो रही है…",
   "Report found for": "रिपोर्ट मिली:",
   "Keep it: with this ID and your phone number you can open the report on any device at": "इसे संभालकर रखें: इस ID और अपने फ़ोन नंबर से आप किसी भी डिवाइस पर यह रिपोर्ट यहां खोल सकते हैं:",
-  "Something went wrong. Please try again.": "कुछ गड़बड़ हुई। कृपया फिर से कोशिश करें।"
+  "Something went wrong. Please try again.": "कुछ गड़बड़ हुई। कृपया फिर से कोशिश करें।",
+  "Your WhatsApp number": "आपका WhatsApp नंबर",
+  "So the team can reach you. Booking for someone else? Give your own number here; their details come in the next step.": "ताकि टीम आपसे संपर्क कर सके। किसी और के लिए बुक कर रहे हैं? यहां अपना नंबर दें; उनका विवरण अगले चरण में आएगा।",
+  "Send me new courses, sessions and offers on WhatsApp or email": "मुझे नए कोर्स, सत्र और ऑफ़र WhatsApp या ईमेल पर भेजें",
+  "So we can send you the report or help if anything goes wrong. The phone number analysed above can be anyone’s; this one is yours.": "ताकि हम आपको रिपोर्ट भेज सकें या किसी समस्या में मदद कर सकें। ऊपर विश्लेषित फ़ोन नंबर किसी का भी हो सकता है; यह नंबर आपका है।",
+  "Razorpay also sends it to you by SMS or email. With this ID and your phone number you can open the report on any device at": "Razorpay इसे आपको SMS या ईमेल से भी भेजता है। इस ID और अपने फ़ोन नंबर से आप किसी भी डिवाइस पर रिपोर्ट यहां खोल सकते हैं:",
+  "Shown after payment, and in Razorpay’s SMS or email to you. It starts with pay_.": "यह भुगतान के बाद दिखती है, और Razorpay के SMS या ईमेल में भी आती है। यह pay_ से शुरू होती है।",
+  "Your WhatsApp number, or the phone number in the report": "आपका WhatsApp नंबर, या रिपोर्ट में दिया फ़ोन नंबर",
+  "Enter your payment ID (shown after payment and sent by Razorpay by SMS or email) and the WhatsApp or phone number you used. Your report opens straight away, on any phone or computer.": "अपनी भुगतान ID (जो भुगतान के बाद दिखती है और Razorpay SMS या ईमेल से भेजता है) और उपयोग किया गया WhatsApp या फ़ोन नंबर दर्ज करें। आपकी रिपोर्ट किसी भी फ़ोन या कंप्यूटर पर तुरंत खुल जाएगी।",
+  "Please enter your WhatsApp number, for example +91 98765 43210.": "कृपया अपना WhatsApp नंबर लिखें, जैसे +91 98765 43210।"
 }

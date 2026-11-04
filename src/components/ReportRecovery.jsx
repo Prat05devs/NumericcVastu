@@ -30,8 +30,8 @@ export default function ReportRecovery({compact = false}) {
     </div> : <form onSubmit={submit}>
       <label htmlFor="nv-recover-payment">Payment ID</label>
       <input id="nv-recover-payment" value={paymentId} onChange={(e) => setPaymentId(e.target.value)} placeholder="pay_…" autoComplete="off" required aria-describedby="nv-recover-hint"/>
-      <small id="nv-recover-hint">Shown after payment, and in the SMS or email from Razorpay. It starts with pay_.</small>
-      <label htmlFor="nv-recover-phone">Phone number used for the report</label>
+      <small id="nv-recover-hint">Shown after payment, and in Razorpay’s SMS or email to you. It starts with pay_.</small>
+      <label htmlFor="nv-recover-phone">Your WhatsApp number, or the phone number in the report</label>
       <input id="nv-recover-phone" type="tel" inputMode="tel" autoComplete="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required/>
       <button className="hv-button hv-button--gold" type="submit" disabled={status.state === 'busy'}>{status.state === 'busy' ? 'Please wait…' : 'Get my report'}</button>
     </form>}

@@ -27,10 +27,12 @@ export async function POST(request) {
   const {payment, order} = found;
   const notes = order.notes || {};
   const paid = payment.status === 'captured' || order.status === 'paid';
-  if (!paid || notes.offer_id !== 'report-full' || ![digits(notes.phone), digits(payment.contact)].includes(phone)) return notFound;
   const extra = Object.fromEntries(String(notes.details || '').split(' | ').map((part) => part.split(': ')).filter((pair) => pair.length === 2));
+  // Either number works: the buyer's WhatsApp (notes.phone, Razorpay contact) or the phone analysed in the report.
+  const numbers = [notes.phone, payment.contact, extra.reportPhone].map(digits).filter(Boolean);
+  if (!paid || notes.offer_id !== 'report-full' || !numbers.includes(phone)) return notFound;
   try {
-    const inputs = reportInputs({name: notes.fullName || notes.name, dob: notes.dob, gender: notes.gender, phone: notes.phone, partnerDob: extra.partnerDob || '', relationshipStatus: extra.relationship || 'unspecified'});
+    const inputs = reportInputs({name: notes.fullName || notes.name, dob: notes.dob, gender: notes.gender, phone: extra.reportPhone || notes.phone, partnerDob: extra.partnerDob || '', relationshipStatus: extra.relationship || 'unspecified'});
     return Response.json({pass: issuePass({inputs, orderId: order.id, paymentId, currency: order.currency === 'USD' ? 'USD' : 'INR'}), paymentId, name: inputs.name});
   } catch {
     return notFound;
