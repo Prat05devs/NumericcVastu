@@ -57,7 +57,8 @@ const roleLabel = (role: string) => role.toLowerCase().replace(/_/g, ' ').replac
 
 function Brand() {
   return <Link href="/admin" className="flex items-center gap-2.5 rounded-lg px-1 no-underline">
-    <span className="grid size-[38px] shrink-0 place-items-center rounded-xl bg-gradient-to-br from-deep to-primary text-[13px] font-extrabold tracking-wide text-white shadow-[inset_0_-2px_0_var(--gold)]">NV</span>
+    {/* The NumericcVaastu mark, the same file as the main website's header. */}
+    <img src="/brand/logo-nv.webp" alt="" width={44} height={40} className="h-10 w-11 shrink-0 object-contain" />
     <span className="leading-none"><b className="block font-serif text-[19px] font-bold text-deep">NumericcVaastu</b><small className="mt-1 block text-[10.5px] font-extrabold tracking-[.16em] text-[#8c6a12] uppercase">Back office</small></span>
   </Link>;
 }
