@@ -7,7 +7,7 @@ export const RULE_SPECS: Spec[] = [
   {key: 'rule.amountPaise', label: 'Amount off (₹)', type: 'money', hint: 'For fixed discounts.'},
   {key: 'rule.maxDiscountPaise', label: 'Maximum discount (₹, optional)', type: 'money'},
   {key: 'rule.minOrderPaise', label: 'Minimum order (₹, optional)', type: 'money', hint: 'Counts only the items the discount applies to.'},
-  {key: 'rule.appliesTo.families', label: 'Only these families (comma separated: RUDRAKSHA, GEMSTONE, CRYSTAL, YANTRA)', type: 'text'},
+  {key: 'rule.appliesTo.families', label: 'Only these (comma separated, blank = all). Shop: RUDRAKSHA, GEMSTONE, CRYSTAL, YANTRA. Website: COURSE, CONSULTATION, REPORT', type: 'text'},
 ];
 /** Converts the comma list typed in the form into the array the API expects. */
 export function normaliseRule(v: Record<string, unknown>) {

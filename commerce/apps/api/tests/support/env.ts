@@ -10,6 +10,7 @@ Object.assign(process.env, {
   ENCRYPTION_KEY: process.env['TEST_ENCRYPTION_KEY'] ?? randomBytes(32).toString('base64'),
   CRON_JOB_SECRET: 'test-cron-secret-0123456789abcdefghijklmnopqrstuv',
   SITE_BOOKINGS_SECRET: 'test-site-bookings-secret-0123456789abcdefghij',
+  TEAM_EMAIL: 'team@example.test',
   CORS_ORIGINS: 'http://localhost:3000',
   APP_BASE_URL: 'http://localhost:3000',
   API_BASE_URL: 'http://localhost:4000',

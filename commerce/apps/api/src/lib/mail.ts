@@ -1,7 +1,7 @@
 import {env} from '../config/env.js';
 import {logger} from './logger.js';
 
-export type Mail = {to: string; subject: string; text: string; tag: string};
+export type Mail = {to: string; subject: string; text: string; tag: string; html?: string; replyTo?: string};
 
 /**
  * Mail adapter. "log" keeps messages in a small in-memory dev mailbox (never in production); "smtp" uses
@@ -30,5 +30,5 @@ export async function sendMail(mail: Mail): Promise<void> {
     logger.info({tag: mail.tag}, 'mail captured by log driver');
     return;
   }
-  await (await smtp()).sendMail({from: env().MAIL_FROM, to: mail.to, subject: mail.subject, text: mail.text});
+  await (await smtp()).sendMail({from: env().MAIL_FROM, to: mail.to, subject: mail.subject, text: mail.text, ...(mail.html && {html: mail.html}), ...(mail.replyTo && {replyTo: mail.replyTo})});
 }

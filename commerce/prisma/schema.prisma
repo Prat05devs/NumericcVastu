@@ -802,11 +802,19 @@ model ServiceBooking {
   status            String    @default("NEW") @db.VarChar(20) // NEW | CONTACTED | SCHEDULED | COMPLETED | CANCELLED
   contactRef        String    @map("contact_ref") @db.Text // encrypted {customer, details}
   failureReason     String?   @map("failure_reason") @db.VarChar(300)
+  couponCode        String?   @map("coupon_code") @db.VarChar(40)
+  discountMinor     BigInt    @default(0) @map("discount_minor") // amountMinor is after the discount
+  listAmountMinor   BigInt?   @map("list_amount_minor")
+  customerKey       String?   @map("customer_key") @db.Char(64) // sha256 of the WhatsApp number: per-customer coupon limits, repeat clients
+  marketingConsent  Boolean   @default(false) @map("marketing_consent")
+  mailedAt          DateTime? @map("mailed_at") @db.DateTime(3) // confirmation emails queued
   paidAt            DateTime? @map("paid_at") @db.DateTime(3)
   createdAt         DateTime  @default(now()) @map("created_at") @db.DateTime(3)
   updatedAt         DateTime  @updatedAt @map("updated_at") @db.DateTime(3)
 
   @@unique([provider, providerOrderId])
+  @@index([couponCode, paymentStatus])
+  @@index([customerKey])
   @@index([paymentStatus, createdAt])
   @@index([status, createdAt])
   @@map("service_bookings")

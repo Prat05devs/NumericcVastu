@@ -21,6 +21,9 @@ const Env = z.object({
   WEB_REVALIDATE_SECRET: z.string().min(16).optional(),
   // Shared with the main website, which reports course, consultation and report bookings to /internal/bookings.
   SITE_BOOKINGS_SECRET: z.string().min(32).optional(),
+  // Where new website bookings are announced, and where customers' replies go. Blank = no team alert.
+  TEAM_EMAIL: z.string().email().optional(),
+  SITE_URL: z.string().url().default('https://www.numericcvaastu.com'),
   // Payments: keys normally live encrypted in the back office; env values are a fallback for first setup.
   RAZORPAY_KEY_ID: z.string().optional(),
   RAZORPAY_KEY_SECRET: z.string().optional(),

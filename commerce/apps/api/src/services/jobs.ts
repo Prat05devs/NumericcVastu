@@ -10,6 +10,7 @@ import {reconcilePayment} from './payments.js';
 import {submitRefund} from './refunds.js';
 import {syncShipments} from './shipping.js';
 import type {OrderStatus} from '@sc/contracts';
+import {customerBookingMail, teamBookingMail} from './site-mail.js';
 
 /**
  * Finite, UTC, idempotent jobs (ADR-0007). Hostinger Cron runs `node dist/scripts/run-jobs.js` (or calls
@@ -113,6 +114,8 @@ async function orderMail(orderId: string, subject: (code: string) => string, bod
 }
 const site = () => env().APP_BASE_URL;
 const HANDLERS: Record<string, (payload: Record<string, unknown>) => Promise<void>> = {
+  'email.site_booking_customer': (p) => customerBookingMail(String(p['bookingId'])),
+  'email.site_booking_team': (p) => teamBookingMail(String(p['bookingId'])),
   'email.order_paid': (p) => orderMail(String(p['orderId']), (c) => `Order ${c} confirmed`, (o) => `Thank you. We have received your payment of ${formatInr(o.totalPaise)} for order ${o.publicCode}.\nTrack it at ${site()}/account/orders`, 'order_paid'),
   'email.order_shipped': (p) => orderMail(String(p['orderId']), (c) => `Order ${c} has shipped`, (o) => `Your order ${o.publicCode} is on its way. Tracking: ${String(p['courier'] ?? '')} ${String(p['trackingNo'] ?? '')}`, 'order_shipped'),
   'email.out_for_delivery': (p) => orderMail(String(p['orderId']), (c) => `Order ${c} is out for delivery`, (o) => `Your order ${o.publicCode} is out for delivery today. Track it at ${site()}/track`, 'out_for_delivery'),
