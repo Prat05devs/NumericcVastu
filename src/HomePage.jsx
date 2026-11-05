@@ -13,7 +13,8 @@ import MediaWall from './components/home/MediaWall';
 import AwardsCarousel from './components/home/AwardsCarousel';
 import ReviewCards from './components/ReviewCards';
 import StudentVideos from './components/StudentVideos';
-import {courses, consultations} from './data/offers';
+import {courses, consultations, reportOffer} from './data/offers';
+import VideoBackdrop from './components/VideoBackdrop';
 import Price from './components/Price';
 import {awards, book, heroSlides, marqueeRows, social, videos} from './data/media';
 import {getInstagramData} from './lib/instagram';
@@ -108,22 +109,30 @@ export default async function HomePage() {
 
       <HeritageBand kind="floral" className="hv-band"/>
 
-      <section className="hv-section hv-tint" aria-labelledby="hv-consult-title">
-        <div className="hv-wrap">
-          <SectionHead id="hv-consult-title" eyebrow="Consultations" title="A clear answer starts with" accent="the right question." text="Every session is with Adarshh personally. Fees shown are from the current price list and are confirmed when you book.">
-            <Link href="/consultations" className="hv-link">All {consultations.length} consultations <ArrowUpRight size={17}/></Link>
-          </SectionHead>
-          <div className="hv-services">
-            {featuredConsultations.map(({offer, Icon}) => <article key={offer.id} className="hv-service">
-              <span className="hv-service__icon"><Icon size={24}/></span>
-              <small>{offer.category}</small>
-              <h3>{offer.name}</h3>
-              <p>{offer.summary}</p>
-              <div className="hv-service__foot">
-                <strong><Price offer={offer}/></strong>
-                <Link href={`/consultations/${offer.slug}`} aria-label={`View ${offer.name}`}>View session <ArrowRight size={16}/></Link>
-              </div>
-            </article>)}
+      <section className="vb vb--consult" aria-labelledby="hv-consult-title">
+        <VideoBackdrop name="consult"/>
+        <div className="vb__shade" aria-hidden="true"/>
+        <div className="hv-wrap vb__inner">
+          <div className="vb__copy">
+            <span className="hv-eyebrow">Consultations with Adarshh</span>
+            <h2 id="hv-consult-title">A clear answer starts with <em>the right question.</em></h2>
+            <p>Every session is with Adarshh personally, in Rohini or online.</p>
+          </div>
+          <div className="vb__dock">
+            <ul className="vb-grid">
+              {featuredConsultations.map(({offer, Icon}) => <li key={offer.id}>
+                <Link className="vb-glass vb-glass--row" href={`/consultations/${offer.slug}`}>
+                  <span className="vb-glass__icon"><Icon size={20}/></span>
+                  <span className="vb-glass__text"><small>{offer.category}</small><b>{offer.name}</b></span>
+                  <strong><Price offer={offer}/></strong>
+                  <ArrowRight className="vb-glass__arrow" size={18}/>
+                </Link>
+              </li>)}
+            </ul>
+            <div className="vb__foot">
+              <Link href="/consultations" className="vb-button">All {consultations.length} consultations <ArrowUpRight size={17}/></Link>
+              <span>Fees are from the current price list and are confirmed when you book.</span>
+            </div>
           </div>
         </div>
       </section>
@@ -172,14 +181,32 @@ export default async function HomePage() {
         </ul>
       </section>
 
-      <section className="hv-section hv-cream" id="free-tools" aria-labelledby="hv-loshu-title">
-        <div className="hv-wrap">
-          <SectionHead id="hv-loshu-title" eyebrow="Two free tools" title="Explore your numbers," accent="choose your method." text="Separate free Lo Shu and Vedic numerology tools. Each reads your name, phone number and birth date, and each offers the same combined full report."/>
-          <div className="nv-free-tools">
-            <article><Compass size={28} aria-hidden="true"/><h3>Lo Shu numerology</h3><p>Your 4-9-2 grid, Kua, planes, yogs and missing numbers, with name and phone analysis.</p><Link className="hv-button hv-button--gold" href="/numerology-calculator">Open free Lo Shu tool <ArrowUpRight size={17}/></Link></article>
-            <article><Sparkles size={28} aria-hidden="true"/><h3>Vedic numerology</h3><p>Your planetary 3-1-9 kundli and number interpretations, with name and phone analysis.</p><Link className="hv-button hv-button--gold" href="/vedic-numerology-calculator">Open free Vedic tool <ArrowUpRight size={17}/></Link></article>
+      <section className="vb vb--report" id="free-tools" aria-labelledby="hv-loshu-title">
+        <VideoBackdrop name="report"/>
+        <div className="vb__shade" aria-hidden="true"/>
+        <div className="hv-wrap vb__inner">
+          <div className="vb__copy">
+            <span className="hv-eyebrow">Worked out the way Adarshh works</span>
+            <h2 id="hv-loshu-title">Your numbers, <em>read properly.</em></h2>
+            <p>Start free with the Lo Shu or Vedic tool. When you want the full picture, get the complete report as a PDF.</p>
           </div>
-          <p className="nv-tool-report-note">One full report includes both methods. Generate it from either tool; free during testing.</p>
+          <div className="vb__dock vb-tools">
+            <Link className="vb-glass vb-glass--tool" href="/numerology-calculator">
+              <Compass size={24}/><small>Free tool</small><b>Lo Shu numerology</b>
+              <span>Your 4-9-2 grid, Kua, planes and missing numbers.</span>
+              <em>Open the tool <ArrowUpRight size={16}/></em>
+            </Link>
+            <Link className="vb-glass vb-glass--tool" href="/vedic-numerology-calculator">
+              <Sparkles size={24}/><small>Free tool</small><b>Vedic numerology</b>
+              <span>Your planetary 3-1-9 kundli and number meanings.</span>
+              <em>Open the tool <ArrowUpRight size={16}/></em>
+            </Link>
+            <Link className="vb-glass vb-glass--tool vb-glass--gold" href="/numerology-calculator">
+              <BookOpen size={24}/><small>Complete report · <Price offer={reportOffer}/></small><b>Your full numerology report</b>
+              <span>Both methods, missing numbers with remedies and your Maha Dasha, in English or Hindi.</span>
+              <em>Get my report <ArrowUpRight size={16}/></em>
+            </Link>
+          </div>
         </div>
       </section>
 

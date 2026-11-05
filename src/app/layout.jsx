@@ -9,6 +9,7 @@ import '../gallery.css';
 import '../catalogue.css';
 import '../glass-cards.css';
 import '../home.css';
+import '../video-sections.css';
 import '../motion.css';
 import '../guide.css';
 import '../navigation.css';

@@ -47,8 +47,8 @@ test('homepage free tools, slideshow and video tabs',async({page})=>{
  const errors=[];page.on('pageerror',error=>errors.push(error.message));
  await page.goto('/');
  await expect(page.getByRole('heading',{level:1})).toContainText('Know your numbers');
- await expect(page.getByRole('link',{name:'Open free Lo Shu tool'})).toHaveAttribute('href','/numerology-calculator');
- await expect(page.getByRole('link',{name:'Open free Vedic tool'})).toHaveAttribute('href','/vedic-numerology-calculator');
+ await expect(page.getByRole('link',{name:/Lo Shu numerology.*Open the tool/})).toHaveAttribute('href','/numerology-calculator');
+ await expect(page.getByRole('link',{name:/Vedic numerology.*Open the tool/})).toHaveAttribute('href','/vedic-numerology-calculator');
  await expect(page.locator('.hv-stage__slide.is-active')).toHaveCount(1);
  await page.getByRole('tab',{name:/Instagram Reels/}).click();
  await expect(page.getByRole('tab',{name:/Instagram Reels/})).toHaveAttribute('aria-selected','true');
