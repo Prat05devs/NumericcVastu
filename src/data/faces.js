@@ -11,7 +11,6 @@ export const faceBoxes = {
   '/images/adarshh/adarshh-pandey-certificate-event-04.webp': [0.139, 0.28, 0.728, 0.432],
   '/images/adarshh/adarshh-pandey-certificate-event-05.webp': [0.266, 0.418, 0.612, 0.555],
   '/images/adarshh/adarshh-pandey-certificate-event-06.webp': [0.216, 0.289, 0.751, 0.469],
-  '/images/adarshh/adarshh-pandey-portrait.webp': [0.356, 0.026, 0.597, 0.378],
   '/images/adarshh/adarshh-pandey-studio-portrait.webp': [0.356, 0.051, 0.632, 0.455],
   '/images/adarshh/adarshh-pandey-with-book.webp': [0.233, 0.004, 0.47, 0.351],
   '/images/gallery/award-book-of-the-year.webp': [0.251, 0.111, 0.989, 0.728],

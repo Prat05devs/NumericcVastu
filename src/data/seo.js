@@ -258,7 +258,9 @@ export const offerSeo = {
   },
 };
 
-export const defaultImage = '/images/adarshh/adarshh-pandey-portrait.webp';
+/** Link preview for WhatsApp, Facebook, LinkedIn and X: Adarshh in the podcast studio (gallery photo, client's choice
+ *  5 November 2026), cropped to 1200 × 630 JPEG so every platform shows it. */
+export const defaultImage = {url: '/images/share/adarshh-panndey-numericcvaastu.jpg', width: 1200, height: 630, alt: 'Adarshh Panndey, numerologist and founder of NumericcVaastu, in a podcast studio', type: 'image/jpeg'};
 
 /** Next.js metadata for a page: absolute title, description, keywords, canonical link and social cards. */
 export function metadataFor(path, {title, description, keywords = [], image = defaultImage, noindex = false, type = 'website'}) {

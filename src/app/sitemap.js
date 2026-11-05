@@ -5,7 +5,7 @@ import {siteUrl} from '../lib/site';
 
 /** Date of the last substantial site-wide content update. Change it when page content changes, not on every deploy. */
 const UPDATED='2026-11-02';
-const portraits=['/images/adarshh/adarshh-pandey-portrait.webp','/images/gallery/portrait-standing.webp','/images/adarshh/adarshh-pandey-with-book.webp'].map(src=>`${siteUrl}${src}`);
+const portraits=['/images/gallery/media-podcast-studio.webp','/images/gallery/portrait-standing.webp','/images/adarshh/adarshh-pandey-with-book.webp'].map(src=>`${siteUrl}${src}`);
 
 export default function sitemap(){
   const entry=(path,priority,extra={})=>({url:`${siteUrl}${path}`,lastModified:UPDATED,changeFrequency:'monthly',priority,...extra});

@@ -37,7 +37,6 @@ export const galleryMilestones=[['25+','Awards'],['30+','Events and talks'],['30
 /** Photographs carry no captions until the owner supplies them; add `caption` to a record to show one. */
 const g=(slug,w,h,category)=>({src:`/images/gallery/${slug}.webp`,w,h,category});
 export const photos=[
- {src:'/images/adarshh/adarshh-pandey-portrait.webp',w:3464,h:3464,category:'Portraits'},
  g('award-book-of-the-year',1619,1080,'Awards'),
  g('talk-ntt-talk-show',1334,2000,'Talks & events'),
  g('talk-seminar-stage',1000,1500,'Talks & events'),
