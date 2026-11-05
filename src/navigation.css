@@ -14,10 +14,10 @@ html { scroll-padding-top: calc(var(--site-header-height, 170px) + 16px); }
 .nv-utility-links { display: flex; align-items: center; gap: 24px; flex-shrink: 0; font-size: 10px; }
 .nv-utility-links a { display: inline-flex; gap: 7px; align-items: center; min-height: 34px; }
 .nv-utility-links a:hover { color: var(--gold-soft); }
-.nv-header-main { min-height: 85px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.nv-header-main { min-height: 70px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
 .nv-header-brand { flex-shrink: 0; }
-.nv-header-brand img { width: 56px; height: 55px; }
-.nv-header-brand > span { font-size: 29px; letter-spacing: -.8px; }
+.nv-header-brand img { width: 50px; height: 49px; }
+.nv-header-brand > span { font-size: 27px; letter-spacing: -.8px; }
 .nv-header-brand small { font-size: 9px; letter-spacing: 1.15px; margin-top: 3px; }
 .nv-header-promise { padding-left: 24px; border-left: 1px solid var(--line); margin-right: auto; display: grid; gap: 4px; }
 .nv-header-promise > span { font-family: var(--font-cormorant), serif; font-size: 18px; font-style: italic; color: var(--wine); }

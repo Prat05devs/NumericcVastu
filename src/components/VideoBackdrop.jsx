@@ -9,10 +9,24 @@ import {useEffect, useRef, useState} from 'react';
  * - No controls, no pause: it is decoration, hidden from assistive technology.
  * - Sections further down the page only start downloading when they come near the screen.
  * - Visitors who ask their device for reduced motion see the still poster instead.
+ * - `fitHeader` publishes the sticky header's height so a hero can be exactly one screen tall.
  */
-export default function VideoBackdrop({name, eager = false, className = ''}) {
+export default function VideoBackdrop({name, eager = false, fitHeader = false, className = ''}) {
   const ref = useRef(null);
   const [load, setLoad] = useState(eager);
+
+  // A section that should fill exactly one screen under the sticky header needs the header's real height,
+  // which changes with the screen width; it is published as --nv-header-h.
+  useEffect(() => {
+    if (!fitHeader) return;
+    const header = document.querySelector('.nv-site-header');
+    if (!header) return;
+    const set = () => document.documentElement.style.setProperty('--nv-header-h', `${header.offsetHeight}px`);
+    set();
+    const ro = 'ResizeObserver' in window ? new ResizeObserver(set) : null;
+    ro?.observe(header);
+    return () => ro?.disconnect();
+  }, [fitHeader]);
 
   useEffect(() => {
     if (load) return;

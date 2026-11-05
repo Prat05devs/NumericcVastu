@@ -50,23 +50,30 @@
 .vb-glass--gold{border-color:rgba(231,200,115,.6);background:linear-gradient(155deg,rgba(231,200,115,.22),rgba(74,31,122,.3))}
 .vb-glass--gold small{color:var(--vb-gold)}
 
-/* courses hero: breaks out of the page column to run edge to edge under the header */
+/* courses hero: edge to edge, and exactly one screen tall under the sticky header
+   (--nv-header-h is measured by VideoBackdrop's fitHeader option; 160px is the desktop header). */
 html:has(.vb--academy){overflow-x:clip}
-.vb--academy{width:100vw;margin-left:calc(50% - 50vw);min-height:112svh}
-.vb--academy .vb__inner{padding-top:clamp(110px,18vh,190px)}
+.vb--academy{width:100vw;margin-left:calc(50% - 50vw);min-height:0;height:calc(100svh - var(--nv-header-h,160px));max-height:980px}
+.vb--academy .vb__inner{gap:28px;padding-block:clamp(36px,8vh,96px) clamp(28px,5vh,56px)}
+.vb--academy .vb__copy{max-width:780px}
+.vb--academy .vb__copy h1{font-size:clamp(40px,5vw,74px);letter-spacing:-2px}
+.vb--academy .vb__copy p{margin-top:12px}
 .vb--academy .vb__shade{background:
   linear-gradient(180deg,rgba(6,4,10,.55) 0%,rgba(6,4,10,.12) 30%,rgba(6,4,10,.12) 50%,rgba(6,4,10,.7) 74%,rgba(6,4,10,.96) 100%),
   linear-gradient(90deg,rgba(6,4,10,.78) 0%,rgba(42,16,70,.35) 45%,rgba(6,4,10,0) 75%),
   radial-gradient(130% 95% at 50% 50%,transparent 58%,rgba(0,0,0,.55) 100%)}
+@media (max-height:700px) and (min-width:701px){.vb--academy{height:auto;min-height:calc(100svh - var(--nv-header-h,160px))}}
 
 @media (max-width:1060px){
   .vb-grid,.vb-tools{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (max-width:700px){
   .vb{min-height:118svh}
-  .vb--academy{min-height:108svh}
+  .vb--academy{height:calc(100svh - var(--nv-header-h,100px));min-height:600px;max-height:none}
   .vb__inner{width:calc(100% - 32px);gap:40px;padding-block:76px 48px}
-  .vb--academy .vb__inner{padding-top:96px}
+  .vb--academy .vb__inner{padding-block:36px 24px;gap:20px}
+  .vb--academy .vb__foot span{display:none}
+  .vb--academy .vb__foot{margin-top:12px}
   .vb__copy h1{letter-spacing:-1.6px}
   .vb__copy p{font-size:15.5px}
   .vb-grid,.vb-tools{grid-template-columns:1fr;gap:10px}
