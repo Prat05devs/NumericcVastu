@@ -31,6 +31,7 @@ const SERVICES = [
   ['consult-career', 'A job, career switch or business decision'],
   ['consult-relationship', 'Two charts side by side, for a partner or spouse'],
   ['consult-business', 'Business name, founders’ numbers and launch timing'],
+  ['consult-partnership', 'Your numbers beside a business partner’s, before you sign'],
   ['consult-baby-name', 'Choosing a name for your baby'],
   ['consult-home-vastu', 'Your home’s layout, entrance and rooms'],
   ['consult-office-vastu', 'Your office or shop layout'],

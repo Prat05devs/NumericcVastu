@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {ArrowRight, ArrowUpRight, Award, Baby, BookOpen, Briefcase, Building2, CalendarDays, ChevronDown, Compass, FileText, GraduationCap, Grid2X2, HeartHandshake, House, Image, Menu, MessageCircleQuestion, Mic, Orbit, PenLine, Phone, Play, RefreshCcw, Search, ShieldCheck, Signature, Sparkles, UserRound, Watch, X, CircleHelp, ListChecks, Star} from 'lucide-react';
+import {ArrowRight, ArrowUpRight, Award, Baby, BookOpen, Briefcase, Building2, CalendarDays, ChevronDown, Compass, FileText, GraduationCap, Grid2X2, Handshake, HeartHandshake, House, Image, Menu, MessageCircleQuestion, Mic, Orbit, PenLine, Phone, Play, RefreshCcw, Search, ShieldCheck, Signature, Sparkles, UserRound, Watch, X, CircleHelp, ListChecks, Star} from 'lucide-react';
 import {navigationGroups, navigationPages} from '../data/navigation';
 import {contact} from '../data/contact';
 import {LanguageToggle, useLocale} from '../i18n/LocaleProvider';
@@ -13,7 +13,7 @@ import {OfferAnnouncement} from './SalesConversion';
 import WhatsAppIcon from './WhatsAppIcon';
 
 const DESKTOP = '(min-width: 1101px)';
-const icons = {sparkles: Sparkles, briefcase: Briefcase, heart: HeartHandshake, building: Building2, baby: Baby, pen: PenLine, phone: Phone, signature: Signature, watch: Watch, home: House, compass: Compass, grid: Grid2X2, orbit: Orbit, report: FileText, chat: MessageCircleQuestion, book: BookOpen, mic: Mic, calendar: CalendarDays, play: Play, image: Image, award: Award, user: UserRound, graduation: GraduationCap, help: CircleHelp, refresh: RefreshCcw, shield: ShieldCheck, list: ListChecks};
+const icons = {sparkles: Sparkles, briefcase: Briefcase, heart: HeartHandshake, building: Building2, handshake: Handshake, baby: Baby, pen: PenLine, phone: Phone, signature: Signature, watch: Watch, home: House, compass: Compass, grid: Grid2X2, orbit: Orbit, report: FileText, chat: MessageCircleQuestion, book: BookOpen, mic: Mic, calendar: CalendarDays, play: Play, image: Image, award: Award, user: UserRound, graduation: GraduationCap, help: CircleHelp, refresh: RefreshCcw, shield: ShieldCheck, list: ListChecks};
 const matchesPath = (path, href) => href?.startsWith('/') && !href.startsWith('/#') && path === href.split('#')[0];
 
 function NavigationItem({item, path, onNavigate, onGuide}) {

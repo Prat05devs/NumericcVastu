@@ -125,7 +125,7 @@ test('local pages, shop and Google Business Profile',async({page})=>{
  await expect(page.getByRole('heading',{level:1})).toContainText('दिल्ली में अंक ज्योतिषी');
  await page.getByRole('button',{name:'भाषा अंग्रेज़ी में बदलें'}).click();
  await page.goto('/online-numerology-consultation');
- await expect(page.locator('.loc-fees tbody tr')).toHaveCount(11);
+ await expect(page.locator('.loc-fees tbody tr')).toHaveCount(12);
  await page.goto('/');
  const shop=page.getByRole('navigation',{name:'Main navigation',exact:true}).getByRole('link',{name:'Shop',exact:true});
  if(await shop.isVisible()){await expect(shop).toHaveAttribute('href','https://numericcvaastucrystal.in/');await expect(shop).toHaveAttribute('target','_blank')}

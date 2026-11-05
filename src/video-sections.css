@@ -1,32 +1,34 @@
 /* ---------- Film sections ----------
    Silent, looping background films (components/VideoBackdrop.jsx) under a black cinematic fade.
-   Each section is taller than the screen so the film has room to be seen; the copy sits at the top,
-   compact glass cards sit at the bottom, and the middle is left open for the picture. */
-.vb{--vb-gold:#e7c873;position:relative;isolation:isolate;overflow:hidden;display:flex;min-height:128svh;background:#0a070e;color:#fff}
+   Every film section is exactly one screen tall below the sticky header (--nv-header-h, measured live by
+   VideoBackdrop's fitHeader), so the heading, the cards and the film are all in view together.
+   Copy sits at the top, compact glass cards at the bottom, and the middle is left open for the picture.
+   If a very short screen cannot hold the content, the section grows instead of cutting anything off. */
+.vb{--vb-gold:#e7c873;--vb-h:calc(100svh - var(--nv-header-h,160px));position:relative;isolation:isolate;overflow:hidden;display:flex;min-height:var(--vb-h);background:#0a070e;color:#fff}
 .vb-video{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover;pointer-events:none;background:#0a070e}
 .vb-video::-webkit-media-controls,.vb-video::-webkit-media-controls-start-playback-button{display:none!important;-webkit-appearance:none}
 .vb__shade{position:absolute;inset:0;z-index:-1;pointer-events:none;background:
-  linear-gradient(180deg,rgba(6,4,10,.94) 0%,rgba(6,4,10,.62) 20%,rgba(6,4,10,.14) 42%,rgba(6,4,10,.1) 56%,rgba(6,4,10,.66) 78%,rgba(6,4,10,.95) 100%),
+  linear-gradient(180deg,rgba(6,4,10,.9) 0%,rgba(6,4,10,.55) 24%,rgba(6,4,10,.12) 44%,rgba(6,4,10,.1) 56%,rgba(6,4,10,.62) 76%,rgba(6,4,10,.94) 100%),
   linear-gradient(90deg,rgba(42,16,70,.5) 0%,rgba(42,16,70,0) 55%),
-  radial-gradient(130% 95% at 50% 50%,transparent 58%,rgba(0,0,0,.6) 100%)}
+  radial-gradient(130% 95% at 50% 50%,transparent 60%,rgba(0,0,0,.55) 100%)}
 .vb:before{content:'';position:absolute;inset:0 0 auto;height:1px;z-index:1;background:linear-gradient(90deg,transparent,rgba(231,200,115,.6),transparent)}
-.vb__inner{position:relative;flex:0 1 auto;box-sizing:border-box;width:min(1240px,calc(100% - 64px));margin-inline:auto;display:flex;flex-direction:column;justify-content:space-between;gap:56px;padding-block:clamp(88px,12vh,140px) clamp(56px,8vh,96px)}
+.vb__inner{position:relative;flex:0 1 auto;box-sizing:border-box;width:min(1240px,calc(100% - 64px));margin-inline:auto;display:flex;flex-direction:column;justify-content:space-between;gap:28px;padding-block:clamp(32px,7vh,88px) clamp(24px,5vh,56px)}
 
-.vb__copy{max-width:620px}
-.vb .hv-eyebrow{color:var(--vb-gold);margin-bottom:16px}
+.vb__copy{max-width:640px}
+.vb .hv-eyebrow{color:var(--vb-gold);margin-bottom:14px}
 .vb .hv-eyebrow:before{background:var(--vb-gold)}
 .vb__copy h2,.vb__copy h1{color:#fff;text-shadow:0 2px 30px rgba(0,0,0,.45)}
-.vb__copy h2{font-size:clamp(34px,4vw,56px)}
-.vb__copy h1{font-size:clamp(46px,6.2vw,88px);font-weight:500;line-height:1.02;letter-spacing:-3px}
+.vb__copy h2{font-size:clamp(32px,3.6vw,52px)}
+.vb__copy h1{font-size:clamp(40px,5vw,74px);font-weight:500;line-height:1.02;letter-spacing:-2px}
 .vb__copy h1 em,.vb__copy h2 em{font-family:'NV Digits',var(--font-cormorant),serif;font-weight:500;font-size:1.18em;color:var(--vb-gold)}
-.vb__copy p{margin-top:16px;max-width:46ch;font-size:17px;line-height:1.7;color:rgba(255,255,255,.8)}
+.vb__copy p{margin-top:12px;max-width:52ch;font-size:17px;line-height:1.65;color:rgba(255,255,255,.82)}
 
 /* glass cards: frosted just enough to read, thin enough to see the film move behind */
 .vb-glass{position:relative;display:block;color:#fff;border-radius:18px;background:linear-gradient(150deg,rgba(255,255,255,.13),rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.18);-webkit-backdrop-filter:blur(12px) saturate(1.35);backdrop-filter:blur(12px) saturate(1.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 24px 48px -28px rgba(0,0,0,.75);transition:transform .35s cubic-bezier(.22,.8,.24,1),background .3s,border-color .3s}
 .vb-glass:hover{transform:translateY(-3px);background:linear-gradient(150deg,rgba(255,255,255,.2),rgba(255,255,255,.08));border-color:rgba(231,200,115,.55)}
 .vb-glass:focus-visible{outline:2px solid var(--vb-gold);outline-offset:3px}
 .vb-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.vb-glass--row{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:14px;min-height:78px;padding:14px 16px}
+.vb-glass--row{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:14px;min-height:76px;padding:12px 16px}
 .vb-glass__icon{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:rgba(231,200,115,.16);color:var(--vb-gold)}
 .vb-glass__num{font:500 30px/1 'NV Digits',var(--font-cormorant),serif;color:var(--vb-gold);min-width:34px}
 .vb-glass__text{display:grid;gap:2px;min-width:0}
@@ -35,55 +37,86 @@
 .vb-glass--row strong{font-size:15px;font-variant-numeric:tabular-nums;white-space:nowrap}
 .vb-glass__arrow{opacity:.55;transition:transform .3s,opacity .3s}
 .vb-glass:hover .vb-glass__arrow{opacity:1;transform:translateX(3px)}
-.vb__foot{display:flex;flex-wrap:wrap;align-items:center;gap:12px 22px;margin-top:18px}
-.vb__foot span{font-size:13.5px;color:rgba(255,255,255,.62)}
-.vb-button{display:inline-flex;align-items:center;gap:10px;min-height:50px;padding:12px 24px;border-radius:999px;background:#fff;color:var(--purple-deep);font-size:15px;font-weight:700;transition:background .25s,transform .25s}
+.vb__foot{display:flex;flex-wrap:wrap;align-items:center;gap:12px 22px;margin-top:16px}
+.vb__foot span{font-size:13.5px;color:rgba(255,255,255,.66)}
+.vb-button{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:12px 24px;border-radius:999px;background:#fff;color:var(--purple-deep);font-size:15px;font-weight:700;transition:background .25s,transform .25s}
 .vb-button:hover{background:#f6e7bf;transform:translateY(-2px)}
 
-/* report and tools */
+/* free tools and the report */
 .vb-tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-.vb-glass--tool{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:22px 22px 20px}
-.vb-glass--tool>svg{color:var(--vb-gold);margin-bottom:6px}
+.vb-glass--tool{display:flex;flex-direction:column;align-items:flex-start;gap:5px;padding:20px 22px 18px}
+.vb-glass--tool>svg{color:var(--vb-gold);margin-bottom:4px}
 .vb-glass--tool b{font-size:19px;font-weight:700;line-height:1.3}
-.vb-glass--tool>span{font-size:14.5px;line-height:1.6;color:rgba(255,255,255,.74)}
-.vb-glass--tool em{display:inline-flex;align-items:center;gap:6px;margin-top:auto;padding-top:12px;font-style:normal;font-size:14.5px;font-weight:700;color:var(--vb-gold)}
+.vb-glass--tool>span{font-size:14.5px;line-height:1.55;color:rgba(255,255,255,.76)}
+.vb-glass--tool em{display:inline-flex;align-items:center;gap:6px;margin-top:auto;padding-top:10px;font-style:normal;font-size:14.5px;font-weight:700;color:var(--vb-gold)}
 .vb-glass--gold{border-color:rgba(231,200,115,.6);background:linear-gradient(155deg,rgba(231,200,115,.22),rgba(74,31,122,.3))}
 .vb-glass--gold small{color:var(--vb-gold)}
 
-/* courses hero: edge to edge, and exactly one screen tall under the sticky header
-   (--nv-header-h is measured by VideoBackdrop's fitHeader option; 160px is the desktop header). */
+/* courses hero: edge to edge out of the page column */
 html:has(.vb--academy){overflow-x:clip}
-.vb--academy{width:100vw;margin-left:calc(50% - 50vw);min-height:0;height:calc(100svh - var(--nv-header-h,160px));max-height:980px}
-.vb--academy .vb__inner{gap:28px;padding-block:clamp(36px,8vh,96px) clamp(28px,5vh,56px)}
+.vb--academy{width:100vw;margin-left:calc(50% - 50vw)}
 .vb--academy .vb__copy{max-width:780px}
-.vb--academy .vb__copy h1{font-size:clamp(40px,5vw,74px);letter-spacing:-2px}
-.vb--academy .vb__copy p{margin-top:12px}
 .vb--academy .vb__shade{background:
   linear-gradient(180deg,rgba(6,4,10,.55) 0%,rgba(6,4,10,.12) 30%,rgba(6,4,10,.12) 50%,rgba(6,4,10,.7) 74%,rgba(6,4,10,.96) 100%),
   linear-gradient(90deg,rgba(6,4,10,.78) 0%,rgba(42,16,70,.35) 45%,rgba(6,4,10,0) 75%),
   radial-gradient(130% 95% at 50% 50%,transparent 58%,rgba(0,0,0,.55) 100%)}
-@media (max-height:700px) and (min-width:701px){.vb--academy{height:auto;min-height:calc(100svh - var(--nv-header-h,160px))}}
 
+/* very large screens: don't let a section turn into a cinema wall */
+@media (min-height:1100px) and (min-width:1061px){.vb{min-height:min(var(--vb-h),980px)}}
+
+/* tablets */
 @media (max-width:1060px){
-  .vb-grid,.vb-tools{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .vb__inner{width:calc(100% - 48px)}
+  .vb-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .vb-tools{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  .vb-glass--tool{padding:16px}
+  .vb-glass--tool b{font-size:17px}
+  .vb-glass--tool>span{font-size:13.5px}
 }
-@media (max-width:700px){
-  .vb{min-height:118svh}
-  .vb--academy{height:calc(100svh - var(--nv-header-h,100px));min-height:600px;max-height:none}
-  .vb__inner{width:calc(100% - 32px);gap:40px;padding-block:76px 48px}
-  .vb--academy .vb__inner{padding-block:36px 24px;gap:20px}
-  .vb--academy .vb__foot span{display:none}
-  .vb--academy .vb__foot{margin-top:12px}
-  .vb__copy h1{letter-spacing:-1.6px}
-  .vb__copy p{font-size:15.5px}
-  .vb-grid,.vb-tools{grid-template-columns:1fr;gap:10px}
-  .vb-glass--row{min-height:66px;padding:12px 14px;gap:12px}
-  .vb-glass__icon{width:36px;height:36px}
-  .vb-glass--tool{padding:18px}
+/* tablets in landscape and short laptops: keep six consultations to two rows */
+@media (max-width:1060px) and (min-width:701px) and (max-height:860px){
+  .vb-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .vb-glass--row{grid-template-columns:auto minmax(0,1fr) auto;gap:10px;padding:10px 12px}
+  .vb-glass--row .vb-glass__arrow{display:none}
+  .vb-glass__text b{font-size:14px}
   .vb-glass--tool>span{display:none}
+}
+/* phones */
+@media (max-width:700px){
+  .vb__inner{width:calc(100% - 32px);gap:20px;padding-block:32px 24px}
+  .vb__copy p{font-size:15.5px;margin-top:10px}
+  .vb__copy h1{letter-spacing:-1.4px}
+  .vb-grid,.vb-tools{grid-template-columns:1fr;gap:10px}
+  .vb-glass--row{min-height:64px;padding:10px 14px;gap:12px}
+  .vb-glass__icon{width:36px;height:36px}
+  .vb-glass__num{font-size:26px;min-width:28px}
+  .vb-glass--tool{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:2px 12px;padding:14px 16px}
+  .vb-glass--tool>svg{grid-row:span 2;margin:0}
+  .vb-glass--tool small{grid-column:2}
+  .vb-glass--tool b{grid-column:2;font-size:16px}
+  .vb-glass--tool>span{display:none}
+  .vb-glass--tool em{grid-column:3;grid-row:1 / span 2;padding:0;font-size:0;gap:0}
+  .vb-glass--tool em svg{width:18px;height:18px}
+  .vb__foot{margin-top:8px}
+  .vb__foot span{display:none}
+  .vb--consult .vb-grid li:nth-child(n+5){display:none}
   .vb__shade{background:
-    linear-gradient(180deg,rgba(6,4,10,.94) 0%,rgba(6,4,10,.5) 22%,rgba(6,4,10,.15) 40%,rgba(6,4,10,.5) 58%,rgba(6,4,10,.94) 82%),
-    radial-gradient(130% 95% at 50% 50%,transparent 58%,rgba(0,0,0,.6) 100%)}
+    linear-gradient(180deg,rgba(6,4,10,.92) 0%,rgba(6,4,10,.5) 24%,rgba(6,4,10,.12) 40%,rgba(6,4,10,.5) 56%,rgba(6,4,10,.94) 80%),
+    radial-gradient(130% 95% at 50% 50%,transparent 58%,rgba(0,0,0,.55) 100%)}
 }
 @supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){.vb-glass{background:rgba(20,12,30,.72)}}
-@media (max-width:700px){.vb--consult .vb-grid li:nth-child(n+5){display:none}}
+/* short phones (e.g. 360 × 740): a little tighter so nothing falls below the screen */
+@media (max-width:700px) and (max-height:780px){
+  .vb__inner{gap:14px;padding-block:24px 18px}
+  .vb .hv-eyebrow{margin-bottom:10px}
+  .vb__copy h2{font-size:30px}
+  .vb__copy h1{font-size:38px}
+  .vb__copy p{font-size:14.5px;line-height:1.55}
+  .vb-glass--row{min-height:56px;padding:8px 12px}
+  .vb-glass--tool{padding:11px 14px}
+  .vb-button{min-height:44px;padding:10px 20px}
+  .vb--consult .vb-grid li:nth-child(n+4){display:none}
+}
+/* floating contact buttons step aside while a film section fills the screen (set by VideoBackdrop) */
+html .wa-float,html .sg-launch{transition:opacity .35s ease,transform .35s ease,background .2s}
+html.vb-focus .wa-float,html.vb-focus .sg-launch{opacity:0;transform:translateY(14px);pointer-events:none}

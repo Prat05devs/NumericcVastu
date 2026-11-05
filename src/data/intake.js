@@ -47,6 +47,13 @@ export const intake = {
     {name: 'industry', label: 'Industry', type: 'text', required: true, placeholder: 'e.g. Real estate, apparel, tech', half: true},
     {name: 'partners', label: 'Partners’ names and dates of birth', type: 'textarea', placeholder: 'One partner per line, if any'},
     question('What decision do you need help with?')]},
+  'consult-partnership': {title: 'Details for you and your partner', fields: [...birth('your'),
+    {name: 'partnerHeading', type: 'heading', label: 'Your business partner'},
+    ...birth('their', 'partner_'),
+    {name: 'businessName', label: 'Business or brand name (current or proposed)', type: 'text', half: true, hint: 'Optional.'},
+    {name: 'partnershipStage', label: 'Where is the partnership now?', type: 'select', required: true, half: true, options: ['Considering a partner', 'About to sign or invest', 'Already partners', 'Facing disagreements', 'Planning to restructure or exit']},
+    {name: 'otherPartners', label: 'Any other partners: names and dates of birth', type: 'textarea', placeholder: 'One partner per line', hint: 'Optional.'},
+    question('What would you like to understand about the partnership?')]},
   'consult-baby-name': {title: 'Details for the baby and parents', fields: [
     {name: 'babyStatus', label: 'Has the baby been born?', type: 'select', required: true, options: ['Yes', 'Not yet (expected date below)']},
     {name: 'babyDob', label: 'Baby’s date of birth, or expected date', type: 'date', required: true, half: true},

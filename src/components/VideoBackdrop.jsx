@@ -1,14 +1,18 @@
 'use client';
 import {useEffect, useRef, useState} from 'react';
 
+/** Film sections currently filling most of the screen (shared by every VideoBackdrop on the page). */
+const inView = new Set();
+
 /**
  * A silent, endlessly looping background film. Files live in /public/videos/bg as
- * `<name>-1600.mp4` (desktop), `<name>-854.mp4` (phones) and `<name>-poster.jpg`; all are
+ * `<name>-1920.mp4` (full HD, desktop and tablets), `<name>-1280.mp4` (phones) and `<name>-poster.jpg`; all are
  * encoded without an audio track, so nothing can ever play sound.
  *
  * - No controls, no pause: it is decoration, hidden from assistive technology.
  * - Sections further down the page only start downloading when they come near the screen.
  * - Visitors who ask their device for reduced motion see the still poster instead.
+ * - While a film section fills the screen, the floating contact buttons fade out (html.vb-focus).
  * - `fitHeader` publishes the sticky header's height so a hero can be exactly one screen tall.
  */
 export default function VideoBackdrop({name, eager = false, fitHeader = false, className = ''}) {
@@ -27,6 +31,20 @@ export default function VideoBackdrop({name, eager = false, fitHeader = false, c
     ro?.observe(header);
     return () => ro?.disconnect();
   }, [fitHeader]);
+
+  // While a film section fills most of the screen, the floating WhatsApp and "Ask a question" buttons
+  // step aside (html.vb-focus) so they never sit on top of the section's cards and prices.
+  useEffect(() => {
+    const section = ref.current?.closest('.vb');
+    if (!section || !('IntersectionObserver' in window)) return;
+    const sync = () => document.documentElement.classList.toggle('vb-focus', inView.size > 0);
+    const io = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) inView.add(section); else inView.delete(section);
+      sync();
+    }, {threshold: 0.55});
+    io.observe(section);
+    return () => { io.disconnect(); inView.delete(section); sync(); };
+  }, []);
 
   useEffect(() => {
     if (load) return;
@@ -71,8 +89,8 @@ export default function VideoBackdrop({name, eager = false, fitHeader = false, c
     aria-hidden="true"
   >
     {load && <>
-      <source src={`${base}-854.mp4`} type="video/mp4" media="(max-width: 800px)"/>
-      <source src={`${base}-1600.mp4`} type="video/mp4"/>
+      <source src={`${base}-1280.mp4`} type="video/mp4" media="(max-width: 700px)"/>
+      <source src={`${base}-1920.mp4`} type="video/mp4"/>
     </>}
   </video>;
 }

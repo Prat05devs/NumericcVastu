@@ -32,6 +32,8 @@ export const testimonials=[
  {name:'Sharon Garcha',role:'Consultation feedback',summary:'Found the session informative and easy to understand.'},
 ];
 export const galleryCategories=['Portraits','With students','Awards','Talks & events','Media','Certificates'];
+/** Career milestones shown on the gallery page, supplied by the client on 5 November 2026. */
+export const galleryMilestones=[['25+','Awards'],['30+','Events and talks'],['30+','Media features'],['50+','Certificates']];
 /** Photographs carry no captions until the owner supplies them; add `caption` to a record to show one. */
 const g=(slug,w,h,category)=>({src:`/images/gallery/${slug}.webp`,w,h,category});
 export const photos=[

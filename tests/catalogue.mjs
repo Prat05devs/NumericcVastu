@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import {locations} from '../src/data/locations.js';
 import {offerCatalog,reportOffer,courses,consultations,formatPrice,getPricePaise,getActivePromotion,getCurrentCoursePromotion,assertOfferCatalog} from '../src/data/offers.ts';
 assertOfferCatalog();
-assert.equal(courses.length,3);assert.equal(consultations.length,11);
+assert.equal(courses.length,3);assert.equal(consultations.length,12);
 assert(offerCatalog.offers.every(offer=>!offer.checkoutEnabled||offer.priceVerified));
 // Every listed offering takes payment at its listed price (client approval, 4 November 2026); the Blueprint is ₹14,999.
 assert(offerCatalog.offers.every(offer=>offer.priceVerified&&offer.checkoutEnabled));

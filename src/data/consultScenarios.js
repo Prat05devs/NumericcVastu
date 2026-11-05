@@ -40,6 +40,14 @@ export const consultScenarios = {
     'Picking a date to launch, sign or open?',
     'Money coming in but never staying?',
   ],
+  'consult-partnership': [
+    'Starting a business with a friend or relative?',
+    'Bringing in a co-founder or investor?',
+    'About to sign a partnership deed?',
+    'Partners who can’t agree on anything?',
+    'Unsure who should handle money or sales?',
+    'Thinking of exiting a partnership?',
+  ],
   'consult-baby-name': [
     'Expecting a baby in the coming months?',
     'Shortlisted names but can’t pick one?',
@@ -99,4 +107,4 @@ export const consultScenarios = {
 };
 
 /** Short labels for each consultation, used by the Consultations page hero and the site guide. */
-export const consultShortNames = {'consult-blueprint':'Personal blueprint','consult-career':'Career','consult-relationship':'Relationships','consult-business':'Business','consult-baby-name':'Baby name','consult-name':'Name correction','consult-mobile':'Mobile number','consult-watch':'Wristwatch','consult-signature':'Signature','consult-home-vastu':'Home Vastu','consult-office-vastu':'Office Vastu'};
+export const consultShortNames = {'consult-blueprint':'Personal blueprint','consult-career':'Career','consult-relationship':'Relationships','consult-business':'Business','consult-partnership':'Business partners','consult-baby-name':'Baby name','consult-name':'Name correction','consult-mobile':'Mobile number','consult-watch':'Wristwatch','consult-signature':'Signature','consult-home-vastu':'Home Vastu','consult-office-vastu':'Office Vastu'};

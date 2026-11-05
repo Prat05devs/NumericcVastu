@@ -187,6 +187,15 @@ export const offerSeo = {
       ['Does the founder’s date of birth matter?', 'Yes. A business name is read against the numbers of the people running it, not on its own.'],
     ],
   },
+  'consult-partnership': {
+    title: 'Business Partnership Compatibility Numerology – Adarshh Panndey',
+    description: 'Business partner compatibility by date of birth with Adarshh Panndey: both partners’ numbers, roles, money and timing before you sign, invest or expand. Delhi or online.',
+    keywords: ['business partnership numerology', 'business partner compatibility', 'co-founder compatibility numerology', 'partnership compatibility by date of birth', 'numerology for business partners'],
+    faqs: [
+      ['What do you need from my business partner?', 'Their full name as on documents and their date of birth. Add any other partners in the booking form so all of you are read together.'],
+      ['How is this different from the Business Destiny Mapping Consultation?', 'Business Destiny Mapping looks at the business itself: its name, founder numbers and launch timing. The partnership reading compares the people running it, so you can see how you work together.'],
+    ],
+  },
   'consult-baby-name': {
     title: 'Baby Name Numerology by Date of Birth – Adarshh Panndey',
     description: 'Choose a baby name by numerology with Adarshh Panndey: name options checked against your baby’s date of birth, with the reasoning behind each spelling.',

@@ -43,7 +43,7 @@ export const navigationGroups = [
   {
     id: 'consultations', label: 'Consultations', intro: 'Personal guidance, for the question on your mind.',
     columns: [
-      {title: 'Life & decisions', links: sessions([['consult-blueprint', 'sparkles'], ['consult-career', 'briefcase'], ['consult-relationship', 'heart'], ['consult-business', 'building']])},
+      {title: 'Life & decisions', links: sessions([['consult-blueprint', 'sparkles'], ['consult-career', 'briefcase'], ['consult-relationship', 'heart'], ['consult-business', 'building'], ['consult-partnership', 'handshake']])},
       {title: 'Names & everyday numbers', links: sessions([['consult-baby-name', 'baby'], ['consult-name', 'pen'], ['consult-mobile', 'phone'], ['consult-signature', 'signature'], ['consult-watch', 'watch']])},
       {title: 'Vaastu for your space', links: sessions([['consult-home-vastu', 'home'], ['consult-office-vastu', 'building']]), extra: {label: 'How a consultation works', href: '/blog/prepare-for-a-consultation', icon: 'compass'}},
     ],

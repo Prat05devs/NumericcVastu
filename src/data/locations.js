@@ -143,7 +143,7 @@ export const locations = [
     ],
     areasTitle: 'Across Gurugram',
     areas: ['DLF Phases 1–5', 'Cyber City', 'Golf Course Road', 'Golf Course Extension Road', 'Sohna Road', 'MG Road', 'Udyog Vihar', 'Sushant Lok', 'South City', 'Palam Vihar', 'New Gurgaon', 'Manesar'],
-    offerIds: ['consult-career', 'consult-business', 'consult-office-vastu', 'consult-mobile', 'consult-relationship', 'consult-signature'],
+    offerIds: ['consult-career', 'consult-business', 'consult-partnership', 'consult-office-vastu', 'consult-mobile', 'consult-relationship'],
     faqs: [
       ['Do you have an office in Gurugram?', 'No. The office is in Rohini, Delhi. Gurugram clients consult online, visit Rohini, or book a site visit for office or home Vastu.'],
       ['Can a numerology session help with a job switch?', 'A career session gives a numerological perspective on direction and timing alongside your own planning. It does not guarantee an outcome and is not a substitute for financial or career advice.'],

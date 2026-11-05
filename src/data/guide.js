@@ -33,6 +33,7 @@ const consultKeys = {
   'consult-career': 'career job promotion salary switch interview study stream student naukri work',
   'consult-relationship': 'relationship marriage love partner compatibility couple husband wife shaadi match spouse',
   'consult-business': 'business company startup brand logo founder partner sales launch firm',
+  'consult-partnership': 'partnership partner co-founder cofounder investor business partner deed joint venture compatibility sajhedari',
   'consult-baby-name': 'baby child newborn kid name bachcha naming son daughter',
   'consult-name': 'name correction spelling change surname aadhaar pan passport naam',
   'consult-mobile': 'mobile phone number sim vip cell',

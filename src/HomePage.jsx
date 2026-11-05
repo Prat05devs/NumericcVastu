@@ -110,7 +110,7 @@ export default async function HomePage() {
       <HeritageBand kind="floral" className="hv-band"/>
 
       <section className="vb vb--consult" aria-labelledby="hv-consult-title">
-        <VideoBackdrop name="consult"/>
+        <VideoBackdrop name="consult" fitHeader/>
         <div className="vb__shade" aria-hidden="true"/>
         <div className="hv-wrap vb__inner">
           <div className="vb__copy">
@@ -182,7 +182,7 @@ export default async function HomePage() {
       </section>
 
       <section className="vb vb--report" id="free-tools" aria-labelledby="hv-loshu-title">
-        <VideoBackdrop name="report"/>
+        <VideoBackdrop name="report" fitHeader/>
         <div className="vb__shade" aria-hidden="true"/>
         <div className="hv-wrap vb__inner">
           <div className="vb__copy">
