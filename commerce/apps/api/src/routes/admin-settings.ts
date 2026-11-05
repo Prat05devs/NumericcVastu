@@ -39,7 +39,20 @@ route(r, {method: 'get', path: '/overview', access: 'STAFF:overview.read', tag: 
     C.can(role, 'reports.read') ? prisma.order.aggregate({where: {paidAt: {gte: since}}, _sum: {totalPaise: true, refundedPaise: true}, _count: true}) : null,
     C.can(role, 'marketing.write') ? prisma.affiliateCommission.aggregate({where: {status: {in: ['PENDING', 'APPROVED']}}, _sum: {amountPaise: true, reversedPaise: true}}) : null,
   ]);
+  // Website (courses, consultations, report) takings in rupees: last 30 days and a 14-day daily series for the chart.
+  const fortnight = new Date(today.getTime() - 13 * 86_400_000);
+  const [web30, reports30, webDaily] = C.can(role, 'requests.read') ? await Promise.all([
+    prisma.serviceBooking.aggregate({where: {paymentStatus: 'PAID', currency: 'INR', paidAt: {gte: since}}, _sum: {amountMinor: true}, _count: true}),
+    prisma.serviceBooking.aggregate({where: {paymentStatus: 'PAID', kind: 'report', paidAt: {gte: since}}, _sum: {amountMinor: true}, _count: true}),
+    prisma.$queryRaw<{day: Date; gross: bigint | null; n: bigint}[]>`SELECT DATE(paid_at) AS day, SUM(amount_minor) AS gross, COUNT(*) AS n FROM service_bookings WHERE payment_status='PAID' AND currency='INR' AND paid_at >= ${fortnight} GROUP BY DATE(paid_at)`,
+  ]) : [null, null, null];
+  const daily = webDaily ? Array.from({length: 14}, (_, i) => {
+    const d = new Date(fortnight.getTime() + i * 86_400_000).toISOString().slice(0, 10);
+    const row = webDaily.find((r) => new Date(r.day).toISOString().slice(0, 10) === d);
+    return {day: d, grossPaise: row?.gross ?? 0n, count: Number(row?.n ?? 0)};
+  }) : null;
   send(res, toPlain({
+    ...(web30 && reports30 && daily && {website: {paid30: web30._count, grossPaise30: web30._sum.amountMinor ?? 0n, reports30: reports30._count, reportsGross30: reports30._sum.amountMinor ?? 0n, daily}}),
     queues: {awaitingPayment: awaiting, toShip, paidReview: review, openCustomRequests: openRequests, newConsultationLeads: newLeads, newBookings, lowStockVariants: Number(lowStock[0]?.n ?? 0), deadJobs, ordersToday: todayOrders},
     ...(revenue && {last30Days: {paidOrders: revenue._count, grossPaise: revenue._sum.totalPaise ?? 0n, refundedPaise: revenue._sum.refundedPaise ?? 0n}}),
     ...(pendingCommission && {partnerCommissionOwedPaise: (pendingCommission._sum.amountPaise ?? 0n) - (pendingCommission._sum.reversedPaise ?? 0n)}),

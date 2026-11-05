@@ -149,6 +149,23 @@ route(r, {method: 'get', path: '/admin/bookings', access: 'STAFF:requests.read',
     return {...row, customerName: customer.name ?? '', email: customer.email ? maskEmail(customer.email) : '', phone: maskPhone(customer.phone)};
   })));
 });
+/** CSV of paid website customers for records; ?consent=1 keeps only people who agreed to hear about offers (audited). */
+route(r, {method: 'get', path: '/admin/bookings/export', access: 'STAFF:requests.read', tag: 'Admin requests', summary: 'Export paid website bookings as CSV (audited)'}, requireStaff('requests.read'), async (req, res) => {
+  noStore(res);
+  const consent = req.query.consent === '1';
+  const rows = await prisma.serviceBooking.findMany({where: {paymentStatus: {in: ['PAID', 'REFUNDED']}, ...(consent && {marketingConsent: true})}, orderBy: {paidAt: 'desc'}, take: 5000});
+  const cell = (v: unknown) => { const t = String(v ?? '').replace(/\r?\n/g, ' '); return /[",]/.test(t) || /^[=+\-@]/.test(t) ? `"${t.replace(/^([=+\-@])/, "'$1").replace(/"/g, '""')}"` : t; };
+  const head = ['Paid on', 'Booking', 'Type', 'Amount', 'Currency', 'Coupon', 'Payment status', 'Follow-up', 'Name', 'WhatsApp', 'Email', 'City', 'Agreed to offers', 'Payment ID'];
+  const lines = rows.map((b) => {
+    const {customer} = contactOf(b.contactRef);
+    return [b.paidAt?.toISOString().slice(0, 10), b.offerName, b.kind, (Number(b.amountMinor) / 100).toFixed(2), b.currency, b.couponCode, b.paymentStatus, b.status, customer.name, customer.phone, customer.email, customer.city, b.marketingConsent ? 'Yes' : 'No', b.providerPaymentId].map(cell).join(',');
+  });
+  await audit(prisma, auditCtx(req, res), 'booking.export', 'service_booking', consent ? 'consented' : 'all', {count: rows.length});
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition', `attachment; filename="numericcvaastu-${consent ? 'opted-in-customers' : 'website-bookings'}-${new Date().toISOString().slice(0, 10)}.csv"`);
+  res.send('\uFEFF' + [head.join(','), ...lines].join('\r\n'));
+});
+
 route(r, {method: 'get', path: '/admin/bookings/:id', access: 'STAFF:requests.read', tag: 'Admin requests', summary: 'Open a booking with contact and intake details (audited)'}, requireStaff('requests.read'), async (req, res) => {
   noStore(res);
   const booking = await prisma.serviceBooking.findUnique({where: {id: param(req, 'id')}});
@@ -157,6 +174,29 @@ route(r, {method: 'get', path: '/admin/bookings/:id', access: 'STAFF:requests.re
   const {contactRef, ...row} = booking;
   send(res, toPlain({...row, ...contactOf(contactRef)}));
 });
+/**
+ * Report PDF links for staff (download for a customer, send on WhatsApp). Uses the link saved with the booking; for
+ * older bookings, asks the website to rebuild it from Razorpay's record of the payment, then saves it.
+ */
+route(r, {method: 'get', path: '/admin/bookings/:id/report', access: 'STAFF:requests.read', tag: 'Admin requests', summary: 'Report PDF links for a paid report booking (audited)'}, requireStaff('requests.read'), async (req, res) => {
+  noStore(res);
+  const booking = await prisma.serviceBooking.findUnique({where: {id: param(req, 'id')}});
+  if (!booking || booking.kind !== 'report') throw notFound('Report booking');
+  if (booking.paymentStatus !== 'PAID' && booking.paymentStatus !== 'REFUNDED') throw new AppError('CONFLICT', 409, 'This report has not been paid.');
+  const stored = JSON.parse(decrypt(booking.contactRef)) as {customer: Record<string, string>; details: Record<string, string>; links?: Record<string, string>};
+  let link = stored.links?.report;
+  if (!link && booking.providerPaymentId && env().SITE_BOOKINGS_SECRET) {
+    const r2 = await fetch(`${env().SITE_URL}/api/report/staff-link`, {method: 'POST', headers: {'Content-Type': 'application/json', Authorization: `Bearer ${env().SITE_BOOKINGS_SECRET}`}, body: JSON.stringify({paymentId: booking.providerPaymentId}), signal: AbortSignal.timeout(20000)}).catch(() => null);
+    link = r2?.ok ? ((await r2.json()) as {link?: string}).link : undefined;
+    if (link) await prisma.serviceBooking.update({where: {id: booking.id}, data: {contactRef: encrypt(JSON.stringify({...stored, links: {...(stored.links ?? {}), report: link}}))}});
+  }
+  if (!link) throw new AppError('SERVICE_UNAVAILABLE', 503, 'The report link could not be prepared. Try again in a minute.');
+  await audit(prisma, auditCtx(req, res), 'booking.report_link', 'service_booking', booking.id, {});
+  const pass = new URL(link).searchParams.get('pass') ?? '';
+  const pdf = (lang: string, download: boolean) => `${env().SITE_URL}/api/report/pdf?pass=${encodeURIComponent(pass)}&lang=${lang}${download ? '&download=1' : ''}`;
+  send(res, {view: {en: pdf('en', false), hi: pdf('hi', false)}, download: {en: pdf('en', true), hi: pdf('hi', true)}, customerLink: link});
+});
+
 const Status = z.object({status: z.enum(['NEW', 'CONTACTED', 'SCHEDULED', 'COMPLETED', 'CANCELLED'])});
 route(r, {method: 'patch', path: '/admin/bookings/:id', access: 'STAFF:requests.write', tag: 'Admin requests', summary: 'Update a booking’s follow-up status', body: Status}, requireStaff('requests.write'), async (req, res) => {
   const {status} = parse(Status, req.body);

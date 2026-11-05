@@ -43,7 +43,7 @@ export function Action({label, method = 'POST', path, body, confirm: confirmText
 export function Table<T>({rows, cols, empty = 'Nothing here yet.'}: {rows: T[] | null | undefined; cols: [string, (r: T) => React.ReactNode][]; empty?: string}) {
   if (!rows) return null;
   if (!rows.length) return <p className="muted">{empty}</p>;
-  return <div className="tablewrap"><table className="data"><thead><tr>{cols.map(([h]) => <th key={h}>{h}</th>)}</tr></thead><tbody>{rows.map((r, i) => <tr key={i}>{cols.map(([h, f]) => <td key={h}>{f(r)}</td>)}</tr>)}</tbody></table></div>;
+  return <div className="tablewrap"><table className="data"><thead><tr>{cols.map(([h]) => <th key={h}>{h}</th>)}</tr></thead><tbody>{rows.map((r, i) => <tr key={i}>{cols.map(([h, f]) => <td key={h} data-label={h}>{f(r)}</td>)}</tr>)}</tbody></table></div>;
 }
 
 // ── Schema-driven forms: settings groups and editors are declared as field specs and rendered by one component.
