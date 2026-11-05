@@ -30,7 +30,8 @@ export default async function handler(req, res) {
     }
     const file = `NumericcVaastu-Report-${access.inputs.name.replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'Report'}-${locale === 'hi' ? 'Hindi' : 'English'}.pdf`;
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `inline; filename="${file}"`);
+    // ?download=1 (back office) saves the file; otherwise it opens in the browser's PDF viewer.
+    res.setHeader('Content-Disposition', `${req.query.download === '1' ? 'attachment' : 'inline'}; filename="${file}"`);
     res.setHeader('Content-Length', pdf.length);
     return res.status(200).send(pdf);
   } catch (error) {
