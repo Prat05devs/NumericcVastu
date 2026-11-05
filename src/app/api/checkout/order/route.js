@@ -11,7 +11,7 @@ export async function POST(request) {
   if (!customer.name || !/^\S+@\S+\.\S+$/.test(customer.email) || !/^\+?[0-9 ]{10,15}$/.test(customer.phone)) return Response.json({error: 'Please check your name, email and phone number.'}, {status: 400});
   const details = Object.fromEntries(Object.entries(body?.details || {}).slice(0, 40).map(([k, v]) => [clean(k, 40), clean(v)]));
   try {
-    return Response.json(await createOrder({offerId: clean(body?.offerId, 60), currency: requestCurrency(request.headers), customer, details}));
+    return Response.json(await createOrder({offerId: clean(body?.offerId, 60), currency: requestCurrency(request.headers), customer, details, couponCode: clean(body?.couponCode, 40)}));
   } catch (error) {
     return Response.json({error: error.message || 'Could not start the payment.'}, {status: error.status || 500});
   }

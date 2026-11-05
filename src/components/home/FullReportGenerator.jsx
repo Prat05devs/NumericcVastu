@@ -6,6 +6,7 @@ import Link from 'next/link';
 import {ArrowUpRight, FileText, Lock, ShieldCheck} from 'lucide-react';
 import Price from '../Price';
 import ReportRecovery from '../ReportRecovery';
+import CouponBox from '../CouponBox';
 import {reportOffer} from '../../data/offers';
 import {reportStyles} from '../../lib/reportStyles';
 import {useCurrency} from '../../lib/useCurrency';
@@ -38,6 +39,7 @@ export default function FullReportGenerator({chart, gender, readingHref}) {
   const [email, setEmail] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
   const [updates, setUpdates] = useState(false);
+  const [coupon, setCoupon] = useState(null);
   const whatsappOk = /^\+?[0-9 ]{10,15}$/.test(whatsapp.trim());
   const partnerProblem = partnerDobProblem(partnerDob);
   const fmt = (iso) => new Date(`${iso}T00:00:00`).toLocaleDateString('en-IN', {day: 'numeric', month: 'long', year: 'numeric'});
@@ -57,7 +59,7 @@ export default function FullReportGenerator({chart, gender, readingHref}) {
     setStatus({state: 'busy', message: 'Opening secure payment…'});
     try {
       await loadRazorpay();
-      const res = await fetch('/api/report/order', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({...inputs, email, whatsapp: whatsapp.trim(), updates})});
+      const res = await fetch('/api/report/order', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({...inputs, email, whatsapp: whatsapp.trim(), updates, couponCode: coupon?.code})});
       const order = await res.json();
       if (!res.ok) throw new Error(order.error || 'Could not start the payment.');
       const rzp = new window.Razorpay({
@@ -113,8 +115,9 @@ export default function FullReportGenerator({chart, gender, readingHref}) {
         <div><dt>Phone number analysed</dt><dd translate="no">{phone}</dd></div>
         <div><dt>Second person</dt><dd>{partnerDob && !partnerProblem ? <>Born {fmt(partnerDob)}</> : 'None'}</dd></div>
       </dl><small>To change the name, date of birth or phone, edit the calculator above and choose Show my numbers again.</small></div>}
-      <p className="fr-price"><b><Price offer={reportOffer}/></b> · one-time payment</p>
-      <button className="hv-button hv-button--gold" type="submit" disabled={!name || !phone || !whatsappOk || !!partnerProblem || status.state === 'busy'}><Lock size={18}/> {status.state === 'busy' ? 'Please wait…' : `Pay ${currency === 'USD' ? '$10' : '₹399'} and get my report`}</button>
+      <CouponBox offerId="report-full" phone={whatsapp} applied={coupon} onChange={setCoupon}/>
+      {!coupon && <p className="fr-price"><b><Price offer={reportOffer}/></b> · one-time payment</p>}
+      <button className="hv-button hv-button--gold" type="submit" disabled={!name || !phone || !whatsappOk || !!partnerProblem || status.state === 'busy'}><Lock size={18}/> {status.state === 'busy' ? 'Please wait…' : coupon ? `Pay ${coupon.total} and get my report` : `Pay ${currency === 'USD' ? '$10' : '₹399'} and get my report`}</button>
       <p className="fr-status"><ShieldCheck size={16} aria-hidden="true"/> Secure payment by Razorpay. Your report opens straight after payment.</p>
     </form>}
     {status.message && <p className={status.state === 'error' ? 'fr-error' : 'fr-status'} role={status.state === 'error' ? 'alert' : 'status'}>{status.message}</p>}

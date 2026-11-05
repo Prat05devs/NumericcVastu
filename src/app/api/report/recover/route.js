@@ -1,5 +1,6 @@
 import {fetchPaymentWithOrder} from '../../../../lib/razorpay';
-import {issuePass, reportInputs} from '../../../../lib/report/access';
+import {issuePass} from '../../../../lib/report/access';
+import {inputsFromOrder} from '../../../../lib/report/fromOrder';
 
 /**
  * "Already paid?" — reissues the report pass from Razorpay's own record, for a buyer on another device or after the
@@ -27,12 +28,11 @@ export async function POST(request) {
   const {payment, order} = found;
   const notes = order.notes || {};
   const paid = payment.status === 'captured' || order.status === 'paid';
-  const extra = Object.fromEntries(String(notes.details || '').split(' | ').map((part) => part.split(': ')).filter((pair) => pair.length === 2));
-  // Either number works: the buyer's WhatsApp (notes.phone, Razorpay contact) or the phone analysed in the report.
-  const numbers = [notes.phone, payment.contact, extra.reportPhone].map(digits).filter(Boolean);
-  if (!paid || notes.offer_id !== 'report-full' || !numbers.includes(phone)) return notFound;
+  if (!paid || notes.offer_id !== 'report-full') return notFound;
   try {
-    const inputs = reportInputs({name: notes.fullName || notes.name, dob: notes.dob, gender: notes.gender, phone: extra.reportPhone || notes.phone, partnerDob: extra.partnerDob || '', relationshipStatus: extra.relationship || 'unspecified'});
+    const {inputs, numbers} = inputsFromOrder(order);
+    // Either number works: the buyer's WhatsApp (notes, Razorpay contact) or the phone analysed in the report.
+    if (![...numbers, digits(payment.contact)].includes(phone)) return notFound;
     return Response.json({pass: issuePass({inputs, orderId: order.id, paymentId, currency: order.currency === 'USD' ? 'USD' : 'INR'}), paymentId, name: inputs.name});
   } catch {
     return notFound;

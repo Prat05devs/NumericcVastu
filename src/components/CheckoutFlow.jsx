@@ -1,4 +1,5 @@
 'use client';
+import CouponBox from './CouponBox';
 import LocalizedContent from '../i18n/LocalizedContent';
 
 import {useEffect, useMemo, useRef, useState} from 'react';
@@ -7,7 +8,7 @@ import {ArrowLeft, ArrowRight, Check, CreditCard, Lock, Pencil, ShieldCheck} fro
 import WhatsAppIcon from './WhatsAppIcon';
 import {whatsappUrl} from '../lib/whatsapp';
 
-const STEPS = ['Your details', 'Reading details', 'Review & pay'];
+const stepsFor = (kind) => ['Your details', kind === 'course' ? 'Enrolment details' : 'Reading details', 'Review & pay'];
 const today = () => new Date().toISOString().slice(0, 10);
 const tomorrow = () => new Date(Date.now() + 86400000).toISOString().slice(0, 10);
 const fmtDate = (iso) => (iso ? new Date(`${iso}T00:00:00`).toLocaleDateString('en-IN', {day: 'numeric', month: 'short', year: 'numeric'}) : '');
@@ -39,10 +40,13 @@ function Field({f, value, onChange}) {
  * the PayPal order is created and captured on the server, which checks the amount before confirming.
  */
 export default function CheckoutFlow({offer, intake, sessionFields, payment, whatsapp, termsHref}) {
+  const STEPS = stepsFor(offer.kind);
   const storeKey = `nv-checkout-${offer.id}`;
   const [step, setStep] = useState(0);
   const [values, setValues] = useState({});
   const [agreed, setAgreed] = useState(false);
+  const [coupon, setCoupon] = useState(null);
+  const payLabel = coupon?.total || offer.priceLabel;
   const [status, setStatus] = useState({state: 'idle', message: ''});
   const panel = useRef(null);
   const [ready, setReady] = useState(false);
@@ -99,7 +103,7 @@ export default function CheckoutFlow({offer, intake, sessionFields, payment, wha
   };
 
   function done({paymentId, orderId, verified}) {
-    try { sessionStorage.setItem('nv-last-booking', JSON.stringify({offer: offer.name, kind: offer.kind, price: offer.priceLabel, paymentId, orderId, verified, message: summaryText(paymentId)})); sessionStorage.removeItem(storeKey); } catch {}
+    try { sessionStorage.setItem('nv-last-booking', JSON.stringify({offer: offer.name, kind: offer.kind, price: coupon?.total || offer.priceLabel, paymentId, orderId, verified, message: summaryText(paymentId)})); sessionStorage.removeItem(storeKey); } catch {}
     window.location.href = `/checkout/success?status=${verified ? 'paid' : 'check'}`;
   }
 
@@ -144,7 +148,7 @@ export default function CheckoutFlow({offer, intake, sessionFields, payment, wha
     setStatus({state: 'busy', message: 'Opening secure payment…'});
     try {
       if (!window.Razorpay) await new Promise((resolve, reject) => { const s = document.createElement('script'); s.src = 'https://checkout.razorpay.com/v1/checkout.js'; s.onload = resolve; s.onerror = () => reject(new Error('Could not load Razorpay. Check your connection and try again.')); document.body.appendChild(s); });
-      const res = await fetch('/api/checkout/order', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({offerId: offer.id, customer: {name: values.name, email: values.email, phone: values.phone, city: values.city}, details})});
+      const res = await fetch('/api/checkout/order', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({offerId: offer.id, customer: {name: values.name, email: values.email, phone: values.phone, city: values.city}, details, couponCode: coupon?.code})});
       const order = await res.json();
       if (!res.ok) throw new Error(order.error || 'Could not start the payment.');
       const rzp = new window.Razorpay({
@@ -193,10 +197,11 @@ export default function CheckoutFlow({offer, intake, sessionFields, payment, wha
           <dl>{stepFields[s].filter((f) => values[f.name] && f.type !== 'heading' && f.type !== 'note').map((f) => <div key={f.name}><dt>{f.label}</dt><dd>{show(f, values[f.name])}</dd></div>)}</dl>
         </section>)}
       </div>
+      {razorpay.enabled && <CouponBox offerId={offer.id} phone={values.phone} applied={coupon} onChange={setCoupon}/>}
       <label className="co-agree"><input type="checkbox" checked={agreed} onChange={(e) => { setAgreed(e.target.checked); if (e.target.checked) setStatus({state: 'idle', message: ''}); }}/> <span>I agree to the <Link href={termsHref.terms} target="_blank">terms</Link>, <Link href={termsHref.refund} target="_blank">refund policy</Link> and <Link href={termsHref.disclaimer} target="_blank">disclaimer</Link>, and understand that numerology offers guidance, not guaranteed outcomes.</span></label>
       {status.message && <p className={status.state === 'error' ? 'co-msg is-error' : 'co-msg'} role="status">{status.message}</p>}
       {paypal?.enabled && <div className="co-paypal" ref={paypalBox}/>}
-      {razorpay.enabled && <button type="button" className={paypal?.enabled ? 'hv-button co-pay' : 'hv-button hv-button--gold co-pay'} onClick={pay} disabled={status.state === 'busy'}><Lock size={18}/> {status.state === 'busy' ? 'Please wait…' : usd ? `Pay ${offer.priceLabel} by card` : `Pay ${offer.priceLabel} securely`}</button>}
+      {razorpay.enabled && <button type="button" className={paypal?.enabled ? 'hv-button co-pay' : 'hv-button hv-button--gold co-pay'} onClick={pay} disabled={status.state === 'busy'}><Lock size={18}/> {status.state === 'busy' ? 'Please wait…' : usd ? `Pay ${payLabel} by card` : `Pay ${payLabel} securely`}</button>}
       {!razorpay.enabled && !paypal?.enabled && <div className="co-offline">
           <p><b>{usd ? 'Online payment in US dollars is being set up.' : razorpay.reason}</b> Send this booking to Adarshh on WhatsApp and the team will confirm your slot and share a payment link.</p>
           <a className="hv-button hv-button--whatsapp co-pay" href={agreed ? whatsappUrl(whatsapp, summaryText()) : undefined} onClick={(e) => { if (!agreed) { e.preventDefault(); setStatus({state: 'error', message: 'Please accept the terms to continue.'}); } }} target="_blank" rel="noopener noreferrer"><WhatsAppIcon size={20}/> Confirm booking on WhatsApp</a>

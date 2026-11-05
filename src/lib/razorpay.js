@@ -3,6 +3,7 @@ import {createHmac, timingSafeEqual} from 'node:crypto';
 import {after} from 'next/server';
 import {offerCatalog, reportOffer, getPrice, formatPrice} from '../data/offers';
 import {bookingOffer, recordBooking} from './bookings';
+import {customerKey, quoteCoupon} from './coupons';
 
 /**
  * Razorpay Standard Checkout, server side. Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in the Vercel
@@ -44,16 +45,22 @@ function toNotes(offer, customer, details) {
   return notes;
 }
 
-export async function createOrder({offerId, currency, customer, details}) {
+export async function createOrder({offerId, currency, customer, details, couponCode}) {
   const offer = findOffer(offerId);
   const state = onlinePayment(offer, currency);
   if (!state.enabled) throw Object.assign(new Error(state.reason), {status: 409});
-  const amount = getPrice(offer, currency);
+  const listAmount = getPrice(offer, currency);
+  // A coupon is re-checked here, at the moment of payment, whatever the browser showed earlier.
+  const coupon = couponCode ? await quoteCoupon({code: couponCode, offer, currency, amountMinor: listAmount, phone: customer.phone}) : null;
+  if (coupon && !coupon.valid) throw Object.assign(new Error(coupon.message), {status: 409});
+  const amount = coupon?.valid ? coupon.finalMinor : listAmount;
   const receipt = `nv_${offer.id}_${Date.now().toString(36)}`.slice(0, 40);
+  const notes = toNotes(offer, customer, details);
+  if (coupon?.valid) { notes.coupon = coupon.code; notes.discount = String(coupon.discountMinor / 100); }
   const res = await fetch('https://api.razorpay.com/v1/orders', {
     method: 'POST',
     headers: {'Content-Type': 'application/json', Authorization: `Basic ${Buffer.from(`${keyId()}:${keySecret()}`).toString('base64')}`},
-    body: JSON.stringify({amount, currency, receipt, notes: toNotes(offer, customer, details)}),
+    body: JSON.stringify({amount, currency, receipt, notes}),
   });
   const data = await res.json();
   if (!res.ok) {
@@ -62,8 +69,11 @@ export async function createOrder({offerId, currency, customer, details}) {
     throw Object.assign(new Error('Online payment is temporarily unavailable. Please try again shortly, or send your booking on WhatsApp.'), {status: 502});
   }
   // Recorded after the response so a sleeping API app never delays the payment window.
-  after(() => recordBooking({...bookingOffer(offer, currency, amount), provider: 'razorpay', environment: state.mode, providerOrderId: data.id, paymentStatus: 'CREATED', customer, details}));
-  return {orderId: data.id, amount, currency, keyId: keyId(), offerName: offer.name, priceLabel: formatPrice(offer, undefined, currency), mode: state.mode};
+  after(() => recordBooking({...bookingOffer(offer, currency, amount), provider: 'razorpay', environment: state.mode, providerOrderId: data.id, paymentStatus: 'CREATED', customer, details,
+    listAmountMinor: listAmount, ...(coupon?.valid && {couponCode: coupon.code, discountMinor: coupon.discountMinor}),
+    ...(customerKey(customer.phone) && {customerKey: customerKey(customer.phone)}), marketingConsent: details?.updates === 'Yes'}));
+  const fmt = (minor) => new Intl.NumberFormat(currency === 'INR' ? 'en-IN' : 'en-US', {style: 'currency', currency, maximumFractionDigits: 0}).format(minor / 100);
+  return {orderId: data.id, amount, currency, keyId: keyId(), offerName: offer.name, priceLabel: fmt(amount), listPriceLabel: formatPrice(offer, undefined, currency), coupon: coupon?.valid ? {code: coupon.code, discountLabel: fmt(coupon.discountMinor)} : null, mode: state.mode};
 }
 
 /** A payment and its order straight from Razorpay, for recovering a paid report on another device. */

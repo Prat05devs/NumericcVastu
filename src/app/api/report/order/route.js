@@ -15,6 +15,7 @@ export async function POST(request) {
     const order = await createOrder({
       offerId: 'report-full', currency: requestCurrency(request.headers),
       customer: {name: inputs.name, email: /^\S+@\S+\.\S+$/.test(email) ? email : '', phone: whatsapp, city: ''},
+      couponCode: body?.couponCode,
       details: {fullName: inputs.name, dob: inputs.dob, gender: inputs.gender || 'not given', reportPhone: inputs.phone, partnerDob: inputs.partnerDob, relationship: inputs.relationshipStatus, updates: body?.updates ? 'Yes' : 'No'},
     });
     return Response.json({...order, binding: bindOrder(order.orderId, inputs)});

@@ -2,6 +2,7 @@ import {after} from 'next/server';
 import {paymentMode, verifySignature} from '../../../../lib/razorpay';
 import {recordBooking} from '../../../../lib/bookings';
 import {checkBinding, issuePass, reportInputs} from '../../../../lib/report/access';
+import {reportLink} from '../../../../lib/report/fromOrder';
 
 /** After Razorpay's checkout succeeds: verify the payment signature and the order binding, then issue the report pass. */
 export async function POST(request) {
@@ -13,8 +14,9 @@ export async function POST(request) {
     if (!verifySignature({orderId, paymentId, signature: body?.razorpay_signature}) || !checkBinding(orderId, inputs, body?.binding)) {
       return Response.json({error: 'We could not confirm this payment. If money was taken, contact us with your payment ID and we will send your report.'}, {status: 400});
     }
-    after(() => recordBooking({environment: paymentMode() === 'test' ? 'test' : 'live', providerOrderId: orderId, providerPaymentId: paymentId, paymentStatus: 'PAID'}));
-    return Response.json({pass: issuePass({inputs, orderId, paymentId, currency: body?.currency === 'USD' ? 'USD' : 'INR'}), paymentId});
+    const pass = issuePass({inputs, orderId, paymentId, currency: body?.currency === 'USD' ? 'USD' : 'INR'});
+    after(() => recordBooking({environment: paymentMode() === 'test' ? 'test' : 'live', providerOrderId: orderId, providerPaymentId: paymentId, paymentStatus: 'PAID', reportUrl: reportLink(pass)}));
+    return Response.json({pass, paymentId});
   } catch (error) {
     return Response.json({error: error.message || 'Could not confirm the payment.'}, {status: error.status || 500});
   }

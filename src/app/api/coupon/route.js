@@ -1,0 +1,18 @@
+import {findOffer, onlinePayment} from '../../../lib/razorpay';
+import {getPrice} from '../../../data/offers';
+import {requestCurrency} from '../../../lib/currency';
+import {quoteCoupon} from '../../../lib/coupons';
+
+/** Shows the buyer what a coupon does before paying. The order route checks it again at payment. */
+export async function POST(request) {
+  let body;
+  try { body = await request.json(); } catch { return Response.json({valid: false, message: 'Invalid request.'}, {status: 400}); }
+  const offer = findOffer(String(body?.offerId || ''));
+  const currency = requestCurrency(request.headers);
+  if (!offer || !onlinePayment(offer, currency).enabled) return Response.json({valid: false, message: 'Coupons apply to online payment only.'});
+  const amountMinor = getPrice(offer, currency);
+  const quote = await quoteCoupon({code: body?.code, offer, currency, amountMinor, phone: body?.phone});
+  if (!quote?.valid) return Response.json({valid: false, message: quote?.message || 'Enter a coupon code.'});
+  const fmt = (minor) => new Intl.NumberFormat(currency === 'INR' ? 'en-IN' : 'en-US', {style: 'currency', currency, maximumFractionDigits: 0}).format(minor / 100);
+  return Response.json({valid: true, code: quote.code, description: quote.description, list: fmt(amountMinor), discount: fmt(quote.discountMinor), total: fmt(quote.finalMinor)});
+}

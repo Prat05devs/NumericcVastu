@@ -92,15 +92,12 @@ export const intake = {
     {name: 'propertyCity', label: 'City', type: 'text', required: true, half: true},
     {name: 'floorPlan', label: 'Do you have a floor plan?', type: 'select', required: true, half: true, options: ['Yes, I’ll share it on WhatsApp', 'No, I need help drawing one']},
     question('What would you like to improve at work?')]},
-  course: {title: 'About you as a learner', fields: [
-    {name: 'fullName', label: 'Full name, as it should appear on your certificate', type: 'text', required: true},
-    {name: 'dob', label: 'Date of birth', type: 'date', required: true, half: true, hint: 'Used in class exercises on your own chart.'},
-    {name: 'pob', label: 'Place of birth', type: 'text', half: true, placeholder: 'City'},
-    {name: 'occupation', label: 'Current work or study', type: 'text', required: true, half: true},
+  // A course enrolment needs no birth details: only what the team needs to enrol and place the learner.
+  course: {title: 'About your enrolment', fields: [
+    {name: 'fullName', label: 'Name for your certificate', type: 'text', required: true, hint: 'Exactly as it should be printed.'},
     {name: 'level', label: 'Your numerology knowledge', type: 'select', required: true, half: true, options: ['Complete beginner', 'I know the basics', 'Already practising']},
-    {name: 'batch', label: 'Batch preference', type: 'select', required: true, half: true, options: ['Weekdays', 'Weekends', 'Either']},
     {name: 'language', label: 'Preferred teaching language', type: 'select', required: true, half: true, options: ['Hindi', 'English', 'Either']},
-    {name: 'goal', label: 'What do you want from the course?', type: 'select', required: true, options: ['Understand numerology for myself', 'Start consulting professionally', 'Add numerology to my current practice', 'Build a personal brand as a numerologist']},
+    {name: 'batch', label: 'Batch preference', type: 'select', half: true, options: ['Weekdays', 'Weekends', 'Either']},
     {name: 'question', label: 'Anything you’d like to ask before you start?', type: 'textarea', placeholder: 'Optional'},
   ]},
 };

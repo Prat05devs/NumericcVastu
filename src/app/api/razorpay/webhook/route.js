@@ -1,4 +1,6 @@
-import {findOffer, paymentMode, verifyWebhook, summariseEvent} from '../../../../lib/razorpay';
+import {fetchPaymentWithOrder, findOffer, paymentMode, verifyWebhook, summariseEvent} from '../../../../lib/razorpay';
+import {reportLinkFromOrder} from '../../../../lib/report/fromOrder';
+import {customerKey} from '../../../../lib/coupons';
 import {recordBooking} from '../../../../lib/bookings';
 import {notifyBooking} from '../../../../lib/notify';
 
@@ -39,7 +41,9 @@ export async function POST(request) {
   // Only website offers: the crystal shop's orders on the same Razorpay account are recorded by the shop itself.
   const offer = findOffer(summary.offerId);
   if (status && summary.orderId && offer) {
-    const {offer: _o, offer_id: _id, name: _n, phone: _p, email: _e, city: _c, ...details} = summary.details || {};
+    const {offer: _o, offer_id: _id, name: _n, phone: _p, email: _e, city: _c, coupon, discount, ...details} = summary.details || {};
+    // A report bought by someone who closed the tab still gets its link in the confirmation email.
+    const reportUrl = status === 'PAID' && offer.kind === 'report' && summary.paymentId ? reportLinkFromOrder((await fetchPaymentWithOrder(summary.paymentId))?.order, summary.paymentId) : null;
     await recordBooking({
       offerId: offer.id, offerName: offer.name, kind: offer.kind,
       currency: summary.currency === 'USD' ? 'USD' : 'INR', amountMinor: Math.round(summary.amount * 100),
@@ -47,6 +51,9 @@ export async function POST(request) {
       ...(summary.paymentId && {providerPaymentId: summary.paymentId}), paymentStatus: status,
       ...(status === 'FAILED' && summary.error && {failureReason: summary.error.slice(0, 300)}),
       customer: summary.customer, details: Object.fromEntries(Object.entries(details).map(([k, v]) => [k, String(v)])),
+      ...(coupon && {couponCode: String(coupon), discountMinor: Math.round(Number(discount || 0) * 100)}),
+      ...(customerKey(summary.customer.phone) && {customerKey: customerKey(summary.customer.phone)}),
+      ...(reportUrl && {reportUrl}),
     });
   }
   return Response.json({ok: true});
