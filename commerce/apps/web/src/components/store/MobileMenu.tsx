@@ -27,8 +27,16 @@ export function MobileMenu() {
           <div className="sheet left" role="dialog" aria-modal="true" aria-label="Menu">
             <div className="sheet-head"><b>Shop</b><button className="x" onClick={() => setOpen(false)} aria-label="Close menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M6 6l12 12M18 6 6 18" /></svg></button></div>
             <form action="/search" role="search" className="search-pill" style={{display: 'flex'}}><label className="sr" htmlFor="m-q">Search the shop</label><input id="m-q" name="q" placeholder="Search stones, beads…" /></form>
-            <nav className="mnav" aria-label="Shop by category">
-              {NAV.map((n) => <Link key={n.href} href={n.href}>{n.label}<small>{n.note}</small></Link>)}
+            <nav className="mmenu" aria-label="Shop by category" onClick={(e) => { if ((e.target as HTMLElement).closest('a')) setOpen(false); }}>
+              {NAV.map((n) => n.columns ? (
+                <details key={n.href}>
+                  <summary><span>{n.label}<small>{n.note}</small></span></summary>
+                  <div className="mmenu-body">
+                    {n.columns.map((c) => <div key={c.title}><h4>{c.title}</h4>{c.links.map((l) => <Link key={l.label} href={l.href}>{l.label}{l.note && <small>{l.note}</small>}</Link>)}</div>)}
+                    <Link className="lnk" href={n.href}>Shop all {n.label.toLowerCase()} →</Link>
+                  </div>
+                </details>
+              ) : <Link key={n.href} className="mmenu-top" href={n.href}><span>{n.label}<small>{n.note}</small></span></Link>)}
             </nav>
             <div className="row" style={{marginTop: 8}}><Link className="btn light sm" href="/wishlist">Wishlist</Link><Link className="btn light sm" href="/account">Account</Link><Link className="btn light sm" href="/guides">Guides</Link></div>
           </div>
