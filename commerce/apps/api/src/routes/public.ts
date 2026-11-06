@@ -246,6 +246,44 @@ route(r, {method: 'get', path: '/campaigns/active', access: 'PUBLIC', tag: 'Cont
   publicCache(res, 60);
   send(res, rows.map((c) => ({slug: c.slug, name: c.name, startsAt: c.startsAt, endsAt: c.endsAt, theme: c.themeJson})));
 });
+const FAMILY_LABEL: Record<string, string> = {RUDRAKSHA: 'Rudraksha', GEMSTONE: 'Gemstones', CRYSTAL: 'Crystals', YANTRA: 'Yantras', WATCH: 'Wristwatches'};
+const rupees = (paise: bigint) => `₹${(paise / 100n).toLocaleString('en-IN')}`;
+/** Plain-language headline and terms for a coupon, built from its rules (so staff never have to write them twice). */
+function offerCopy(d: {type: string; value: bigint; capPaise: bigint | null; minOrderPaise: bigint | null; endsAt: Date | null; limitPerCustomer: number | null; combinable: boolean; description: string}, families: string[]) {
+  const off = d.type === 'PERCENT' ? `${Number(d.value) / 100}% off` : `${rupees(d.value)} off`;
+  const scope = families.length ? ` ${families.map((f) => FAMILY_LABEL[f] ?? f).join(' and ')}` : '';
+  const auto = `${off}${scope ? ` all${scope}` : ''}${d.capPaise && d.type === 'PERCENT' ? `, up to ${rupees(d.capPaise)}` : ''}${d.minOrderPaise ? ` when you spend ${rupees(d.minOrderPaise)}` : ''}`;
+  const terms = [
+    families.length ? `${families.map((f) => FAMILY_LABEL[f] ?? f).join(' and ')} only.` : null,
+    d.minOrderPaise ? `Minimum order ${rupees(d.minOrderPaise)}.` : null,
+    d.capPaise && d.type === 'PERCENT' ? `Saves up to ${rupees(d.capPaise)}.` : null,
+    d.endsAt ? `Till ${d.endsAt.toLocaleDateString('en-IN', {day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata'})}.` : null,
+    d.limitPerCustomer === 1 ? 'Once per customer.' : null,
+    d.combinable ? null : 'Not on top of sale prices.',
+  ].filter(Boolean).join(' ');
+  return {title: d.description.trim() || auto[0]!.toUpperCase() + auto.slice(1), terms};
+}
+route(r, {method: 'get', path: '/offers', access: 'PUBLIC', tag: 'Content', summary: 'Coupons staff chose to advertise in the offers bar (never partner-link codes)'}, browseLimit, async (req, res) => {
+  const storefrontId = await storefrontOf(req);
+  const now = new Date();
+  const rows = await prisma.discount.findMany({where: {active: true, code: {not: null}, AND: [{OR: [{startsAt: null}, {startsAt: {lte: now}}]}, {OR: [{endsAt: null}, {endsAt: {gt: now}}]}]}, orderBy: {createdAt: 'desc'}, take: 100});
+  const offers = rows.flatMap((d) => {
+    const e = (d.eligibleRulesJson ?? {}) as {families?: string[]; storefronts?: string[]; lockedToLink?: boolean; showInOffers?: boolean};
+    if (e.showInOffers !== true || e.lockedToLink) return [];
+    if (e.storefronts?.length && !e.storefronts.includes(storefrontId)) return [];
+    if (d.limitTotal !== null && d.redeemedCount >= d.limitTotal) return [];
+    return [{code: d.code!, ...offerCopy(d, e.families ?? []), families: e.families ?? [], endsAt: d.endsAt}];
+  }).slice(0, 12);
+  publicCache(res, 60);
+  send(res, offers);
+});
+route(r, {method: 'post', path: '/newsletter', access: 'PUBLIC', tag: 'Content', summary: 'Join the newsletter (explicit opt-in; same response whether new or existing)', body: C.NewsletterJoin}, formLimit, async (req, res) => {
+  const b = parse(C.NewsletterJoin, req.body);
+  const email = b.email.trim().toLowerCase();
+  await prisma.newsletterSubscriber.upsert({where: {email}, create: {id: ulid(), email, source: b.source, consentVersion: b.consentVersion}, update: {unsubscribedAt: null, consentVersion: b.consentVersion}});
+  noStore(res);
+  send(res, {message: 'Thank you. You are on the list.'});
+});
 route(r, {method: 'get', path: '/media/*key', access: 'PUBLIC', tag: 'Content', summary: 'Local-driver media (production uses object storage / CDN)'}, async (req, res) => {
   if (env().STORAGE_DRIVER !== 'local') throw notFound();
   const key = ([] as string[]).concat((req.params as Record<string, string | string[]>)['key'] ?? []).join('/');

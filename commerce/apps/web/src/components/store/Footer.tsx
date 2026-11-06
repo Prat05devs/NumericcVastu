@@ -1,17 +1,21 @@
 import Link from 'next/link';
+import {SHOP} from './ui';
 
 export function Footer() {
   return (
-    <footer className="site">
-      <div className="wrap cols">
+    <footer className="ftr">
+      <div className="w cols">
         <div>
-          <strong>NumericcVaastu Crystal</strong>
-          <p className="small muted">Products chosen with numerology and Vastu guidance by Adarshh Panndey. Traditional, belief-based guidance — no guaranteed outcomes.</p>
+          <Link className="logo" href="/" style={{textAlign: 'left', display: 'inline-block'}}><b>NumericcVaastu</b><small>Crystal</small></Link>
+          <p style={{marginTop: 16}}>Rudraksha, gemstones, crystals and yantras, described honestly and chosen with guidance from Adarshh Panndey. Prices include GST and delivery.</p>
+          <p style={{marginTop: 12}}><a href={`https://wa.me/${SHOP.whatsapp}`} target="_blank" rel="noopener noreferrer">WhatsApp {SHOP.phone}</a><a href={`mailto:${SHOP.email}`}>{SHOP.email}</a></p>
         </div>
-        <div><strong>Shop</strong><ul><li><Link href="/rudraksha">Rudraksha</Link></li><li><Link href="/gemstones">Gemstones</Link></li><li><Link href="/crystals">Crystals</Link></li><li><Link href="/yantras">Yantras</Link></li><li><Link href="/custom-wristwatch">Custom wristwatch</Link></li></ul></div>
-        <div><strong>Help</strong><ul><li><Link href="/track">Track your order</Link></li><li><Link href="/certificates/verify">Verify a lab report</Link></li><li><Link href="/consultation">Ask for guidance</Link></li><li><Link href="/partner">Partner programme</Link></li></ul></div>
-        <div><strong>Policies</strong><ul><li><Link href="/policies/shipping-policy">Shipping</Link></li><li><Link href="/policies/returns-policy">Returns &amp; refunds</Link></li><li><Link href="/policies/privacy-policy">Privacy</Link></li><li><Link href="/policies/terms">Terms</Link></li></ul></div>
+        <div><h3>Shop</h3><Link href="/rudraksha">Rudraksha</Link><Link href="/gemstones">Gemstones</Link><Link href="/crystals">Crystals</Link><Link href="/crystals?attr_product_form=bracelet">Bracelets</Link><Link href="/yantras">Yantras</Link><Link href="/custom-wristwatch">Custom wristwatch</Link></div>
+        <div><h3>Help</h3><Link href="/policies/shipping-policy">Delivery</Link><Link href="/policies/returns-policy">Returns</Link><Link href="/consultation">Ask for guidance</Link><Link href="/guides">Guides</Link><Link href="/account">Your orders</Link></div>
+        <div><h3>NumericcVaastu</h3><a href={`${SHOP.main}/consultations`}>Consultations</a><a href={`${SHOP.main}/courses`}>Courses</a><a href={`${SHOP.main}/numerology-calculator`}>Free calculator</a><a href={`${SHOP.main}/about`}>About Adarshh</a></div>
       </div>
+      <div className="wordmark" aria-hidden="true">Numericc Crystals</div>
+      <div className="legal"><div className="w"><span>© {new Date().getFullYear()} NumericcVaastu Training &amp; Consultancy LLP</span><span><Link href="/policies/privacy-policy">Privacy</Link> · <Link href="/policies/terms">Terms</Link> · <Link href="/policies/returns-policy">Refunds</Link></span></div></div>
     </footer>
   );
 }

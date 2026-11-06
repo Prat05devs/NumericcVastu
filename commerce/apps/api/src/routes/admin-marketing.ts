@@ -19,17 +19,18 @@ const staff = requireStaff;
 const ruleToWire = (rule: z.infer<typeof C.DiscountRuleIn>) => toPlain(rule) as object;
 
 // ───────────── Coupons (discounts)
-function discountData(b: z.infer<typeof C.CouponUpsert>, lockedToLink?: boolean) {
+function discountData(b: z.infer<typeof C.CouponUpsert>, lockedToLink?: boolean, showInOffers?: boolean) {
   if (b.rule.type === 'NONE') throw new AppError('VALIDATION_FAILED', 422, 'A coupon needs a percentage or a fixed amount.');
   const value = b.rule.type === 'PERCENT' ? BigInt(b.rule.percentBp ?? 0) : BigInt(b.rule.amountPaise ?? '0');
   if (value <= 0n) throw new AppError('VALIDATION_FAILED', 422, 'Discount value must be positive.');
   return {
     code: b.code, description: b.description, type: b.rule.type, value, capPaise: b.rule.maxDiscountPaise ? BigInt(b.rule.maxDiscountPaise) : null, minOrderPaise: b.rule.minOrderPaise ? BigInt(b.rule.minOrderPaise) : null,
     startsAt: b.startsAt ? new Date(b.startsAt) : null, endsAt: b.endsAt ? new Date(b.endsAt) : null, limitTotal: b.limitTotal ?? null, limitPerCustomer: b.limitPerCustomer ?? null,
-    eligibleRulesJson: {families: b.rule.appliesTo.families, productIds: b.rule.appliesTo.productIds, storefronts: b.storefronts, ...(lockedToLink !== undefined && {lockedToLink})}, combinable: b.combinable, active: b.active,
+    eligibleRulesJson: {families: b.rule.appliesTo.families, productIds: b.rule.appliesTo.productIds, storefronts: b.storefronts, ...(lockedToLink !== undefined && {lockedToLink}), ...(showInOffers !== undefined && {showInOffers})}, combinable: b.combinable, active: b.active,
   };
 }
-const CouponIn = C.CouponUpsert.extend({lockedToLink: z.boolean().optional()});
+/** showInOffers: advertise the code in the crystal shop's running offers bar (never applies to partner-link codes). */
+const CouponIn = C.CouponUpsert.extend({lockedToLink: z.boolean().optional(), showInOffers: z.boolean().optional()});
 route(r, {method: 'get', path: '/discounts', access: 'STAFF:marketing.write', tag: 'Admin marketing', summary: 'Coupons with usage'}, staff('marketing.write'), async (_req, res) => {
   noStore(res);
   const rows = await prisma.discount.findMany({orderBy: {createdAt: 'desc'}, include: {affiliateLinks: {select: {code: true, affiliate: {select: {name: true}}}}, _count: {select: {redemptions: {where: {status: 'REDEEMED'}}}}}});
@@ -38,16 +39,27 @@ route(r, {method: 'get', path: '/discounts', access: 'STAFF:marketing.write', ta
 route(r, {method: 'post', path: '/discounts', access: 'STAFF:marketing.write', tag: 'Admin marketing', summary: 'Create a coupon', body: CouponIn}, staff('marketing.write'), async (req, res) => {
   const b = parse(CouponIn, req.body);
   const id = ulid();
-  try { await prisma.discount.create({data: {id, ...discountData(b, b.lockedToLink ?? false), createdBy: staffOf(res).user.id}}); } catch (e) { if (isUniqueViolation(e)) throw new AppError('CONFLICT', 409, 'That code already exists.'); throw e; }
+  try { await prisma.discount.create({data: {id, ...discountData(b, b.lockedToLink ?? false, b.showInOffers ?? false), createdBy: staffOf(res).user.id}}); } catch (e) { if (isUniqueViolation(e)) throw new AppError('CONFLICT', 409, 'That code already exists.'); throw e; }
   await audit(prisma, auditCtx(req, res), 'discount.create', 'discount', id, {code: b.code, rule: b.rule});
   send(res, {id}, 201);
 });
 route(r, {method: 'put', path: '/discounts/:id', access: 'STAFF:marketing.write', tag: 'Admin marketing', summary: 'Replace a coupon (optimistic version)', body: CouponIn.extend({version: z.number().int().min(0)}), idempotent: false}, staff('marketing.write'), async (req, res) => {
   const b = parse(CouponIn.extend({version: z.number().int().min(0)}), req.body);
-  const n = await prisma.discount.updateMany({where: {id: param(req, 'id'), version: b.version}, data: {...discountData(b, b.lockedToLink), version: {increment: 1}}}).catch((e) => { if (isUniqueViolation(e)) throw new AppError('CONFLICT', 409, 'That code already exists.'); throw e; });
+  const n = await prisma.discount.updateMany({where: {id: param(req, 'id'), version: b.version}, data: {...discountData(b, b.lockedToLink, b.showInOffers), version: {increment: 1}}}).catch((e) => { if (isUniqueViolation(e)) throw new AppError('CONFLICT', 409, 'That code already exists.'); throw e; });
   if (n.count !== 1) throw new AppError('STALE_VERSION', 409, 'This coupon changed since you opened it. Reload.');
   await audit(prisma, auditCtx(req, res), 'discount.update', 'discount', param(req, 'id'), {code: b.code, rule: b.rule, active: b.active});
   send(res, {id: param(req, 'id'), version: b.version + 1});
+});
+
+// ───────────── Newsletter (crystal shop sign-ups)
+route(r, {method: 'get', path: '/newsletter/export', access: 'STAFF:marketing.write', tag: 'Admin marketing', summary: 'CSV of active newsletter subscribers'}, staff('marketing.write'), async (_req, res) => {
+  noStore(res);
+  const rows = await prisma.newsletterSubscriber.findMany({where: {unsubscribedAt: null}, orderBy: {createdAt: 'desc'}});
+  const cell = (v: string) => (/[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v);
+  const csv = ['email,source,subscribed_at', ...rows.map((s) => [s.email, s.source, s.createdAt.toISOString()].map(cell).join(','))].join('\n');
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition', `attachment; filename="newsletter-${new Date().toISOString().slice(0, 10)}.csv"`);
+  res.send(csv);
 });
 
 // ───────────── Festive / sale campaigns (automatic discount + site decoration)

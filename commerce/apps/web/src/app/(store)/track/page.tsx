@@ -16,7 +16,7 @@ export default function TrackPage() {
   return (
     <div className="wrap" style={{marginTop: '2rem', maxWidth: 720}}>
       <h1>Track your order</h1>
-      <form className="card" onSubmit={submit}>
+      <form className="card pad" onSubmit={submit}>
         <div className="field"><label htmlFor="code">Order number</label><input id="code" placeholder="NVC-XXXXXXXX" value={orderCode} onChange={(e) => setCode(e.target.value)} required /></div>
         <div className="field"><label htmlFor="em">Email used at checkout</label><input id="em" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required /></div>
         {error && <p className="err" role="alert">{error}</p>}

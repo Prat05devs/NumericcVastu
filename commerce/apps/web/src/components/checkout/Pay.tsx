@@ -21,7 +21,7 @@ function loadScript(src: string) {
  * Payment step. The browser only opens the provider's window; whether the order is paid is decided by the API
  * (verified webhook or server-to-server check). After the popup we ask the API to sync and show its answer.
  */
-export function Pay({orderId, token, totalPaise, onDone}: {orderId: string; token: string | null; totalPaise: string; onDone: () => void}) {
+export function Pay({orderId, token, totalPaise, onDone, autoStart = false}: {orderId: string; token: string | null; totalPaise: string; onDone: () => void; autoStart?: boolean}) {
   const [options, setOptions] = useState<Option[] | null>(null);
   const [checkout, setCheckout] = useState<Checkout | null>(null);
   const [busy, setBusy] = useState(false);
@@ -29,9 +29,17 @@ export function Pay({orderId, token, totalPaise, onDone}: {orderId: string; toke
   const paypalRef = useRef<HTMLDivElement>(null);
   const keys = useRef<Record<string, string>>({});
 
+  const started = useRef(false);
   useEffect(() => {
     void call<Option[]>('GET', `/orders/${orderId}/payment-options`, undefined, tokenHeader(token)).then((r) => setOptions(r.ok ? r.data : []));
   }, [orderId, token]);
+  // Straight from checkout: open Razorpay at once when it is the only way to pay (customers already pressed “Pay”).
+  useEffect(() => {
+    if (!autoStart || started.current || !options || options.length !== 1 || options[0]!.provider !== 'razorpay') return;
+    started.current = true;
+    void start('razorpay');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoStart, options]);
 
   async function sync() {
     setBusy(true);
@@ -51,7 +59,7 @@ export function Pay({orderId, token, totalPaise, onDone}: {orderId: string; toke
     try {
       if (c.provider === 'razorpay') {
         await loadScript('https://checkout.razorpay.com/v1/checkout.js');
-        new window.Razorpay!({key: c.keyId, order_id: c.orderId, amount: c.amount, currency: c.currency, name: 'NumericcVaastu Crystal', description: c.description, prefill: c.prefill, theme: {color: '#4b2a7b'}, handler: () => void sync(), modal: {ondismiss: () => void sync()}}).open();
+        new window.Razorpay!({key: c.keyId, order_id: c.orderId, amount: c.amount, currency: c.currency, name: 'NumericcVaastu Crystal', description: c.description, prefill: c.prefill, theme: {color: '#2b211b'}, handler: () => void sync(), modal: {ondismiss: () => void sync()}}).open();
       } else if (c.provider === 'paypal') {
         await loadScript(`https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(c.clientId!)}&currency=${c.currency}&intent=capture`);
         if (paypalRef.current) {
@@ -68,25 +76,25 @@ export function Pay({orderId, token, totalPaise, onDone}: {orderId: string; toke
     await sync();
   }
 
-  if (!options) return <p>Loading payment options…</p>;
-  if (!options.length) return <div className="alert warn">Online payment is not available right now. Your order is saved — please contact us and quote your order number.</div>;
+  if (!options) return <p className="muted">Loading payment options…</p>;
+  if (!options.length) return <p className="note warn">Online payment isn’t available right now. Your order is saved: please WhatsApp us on +91 98701 97315 and quote your order number.</p>;
   return (
-    <div className="stack">
-      <h2>Pay {inr(totalPaise)}</h2>
+    <div style={{display: 'grid', gap: 12}}>
       {options.map((o) => (
-        <div key={o.provider} className="card row spread">
-          <div><strong>{o.label}</strong>{o.provider === 'paypal' && o.charge && <div className="small muted">Charged as {usd(o.charge.amountMinor)} USD at ₹{o.charge.exchangeRate} per USD. Your bank may add its own conversion fee.</div>}</div>
-          <button className="btn" disabled={busy} onClick={() => start(o.provider)}>{busy ? 'Please wait…' : o.provider === 'paypal' ? 'Pay with PayPal' : 'Pay now'}</button>
+        <div key={o.provider} className="radio" style={{flexWrap: 'wrap'}}>
+          <span className="dot" aria-hidden="true" />
+          <span style={{flex: 1, minWidth: 180}}><b>{o.label}</b>{o.provider === 'paypal' && o.charge ? <span>Charged as {usd(o.charge.amountMinor)} USD at ₹{o.charge.exchangeRate} per USD. Your bank may add a conversion fee.</span> : <span>UPI, cards, net banking and wallets</span>}</span>
+          <button className="btn sm" disabled={busy} onClick={() => start(o.provider)}>{busy ? 'Please wait…' : o.provider === 'paypal' ? 'Pay with PayPal' : `Pay ${inr(totalPaise)}`}</button>
         </div>
       ))}
       <div ref={paypalRef} />
       {checkout?.provider === 'mock' && checkout.simulator && (
-        <div className="alert info">
-          <strong>Payment simulator (development only).</strong> No money moves.
-          <div className="row" style={{marginTop: '.5rem'}}><button className="btn small" onClick={() => simulate('success')}>Simulate success</button><button className="btn small ghost" onClick={() => simulate('failure')}>Simulate failure</button></div>
+        <div className="note info">
+          <b>Payment simulator (development only).</b> No money moves.
+          <div className="row" style={{marginTop: 8}}><button className="btn sm" onClick={() => simulate('success')}>Simulate success</button><button className="btn light sm" onClick={() => simulate('failure')}>Simulate failure</button></div>
         </div>
       )}
-      {error && <p className="err" role="alert">{error}</p>}
+      {error && <p className="note bad" role="alert">{error}</p>}
     </div>
   );
 }

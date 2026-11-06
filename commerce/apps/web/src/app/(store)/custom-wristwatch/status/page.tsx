@@ -36,7 +36,7 @@ function RequestStatusInner() {
     <div className="wrap" style={{marginTop: '2rem', maxWidth: 760}}>
       <h1>Your wristwatch request</h1>
       {!req && (
-        <form className="card" onSubmit={(e) => { e.preventDefault(); void load(); }}>
+        <form className="card pad" onSubmit={(e) => { e.preventDefault(); void load(); }}>
           <div className="field"><label htmlFor="ref">Reference</label><input id="ref" value={ref} onChange={(e) => setRef(e.target.value)} placeholder="NVW-…" required /></div>
           <div className="field"><label htmlFor="tok">Access code (from your email link)</label><input id="tok" value={token} onChange={(e) => setToken(e.target.value)} /></div>
           <button className="btn">View</button>
@@ -49,7 +49,7 @@ function RequestStatusInner() {
           {req.notes && <div className="alert info">{req.notes}</div>}
           {req.quotes.length === 0 && <p className="muted">We are reviewing your request. You will receive an email when your quotation is ready.</p>}
           {req.quotes.map((q) => (
-            <div key={q.version} className="card stack">
+            <div key={q.version} className="card pad stack">
               <div className="row spread"><h2>Quotation v{q.version}</h2><span className="badge">{label(q.status)}</span></div>
               <table className="data"><tbody>{q.items.map((i, n) => <tr key={n}><td>{i.description} × {i.qty}</td><td>{inr((BigInt(i.unitPaise) * BigInt(i.qty)).toString())}</td><td className="small muted">tax {inr(i.taxPaise)}</td></tr>)}</tbody></table>
               <p><strong>Total {inr(q.totalPaise)}</strong> · valid until {date(q.expiresAt)}</p>

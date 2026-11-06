@@ -1090,3 +1090,15 @@ model OtpChallenge {
   @@index([email, createdAt])
   @@map("otp_challenges")
 }
+
+/// Crystal shop newsletter sign-ups (explicit opt-in). Unsubscribing keeps the row with unsubscribedAt set.
+model NewsletterSubscriber {
+  id             String    @id @db.Char(26)
+  email          String    @unique @db.VarChar(254)
+  source         String    @db.VarChar(20)
+  consentVersion String    @map("consent_version") @db.VarChar(20)
+  createdAt      DateTime  @default(now()) @map("created_at") @db.DateTime(3)
+  unsubscribedAt DateTime? @map("unsubscribed_at") @db.DateTime(3)
+
+  @@map("newsletter_subscribers")
+}

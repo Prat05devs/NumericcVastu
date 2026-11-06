@@ -28,7 +28,7 @@ export default function CustomWatch() {
       <section>
         <h1>Numerology wristwatch, made to order</h1>
         <p>Tell us what you would like. We review it, then send a written quotation with price, timeline and terms. Nothing is charged until you accept a quotation.</p>
-        <form onSubmit={submit} className="card">
+        <form onSubmit={submit} className="card pad">
           <div className="field"><label htmlFor="n">Name</label><input id="n" value={f.name} onChange={set('name')} required /></div>
           <div className="field"><label htmlFor="e">Email</label><input id="e" type="email" value={f.email} onChange={set('email')} required /></div>
           <div className="field"><label htmlFor="p">Mobile</label><input id="p" inputMode="numeric" value={f.phone} onChange={set('phone')} required /></div>
@@ -41,7 +41,7 @@ export default function CustomWatch() {
           <button className="btn" disabled={!f.consent}>Send request</button>
         </form>
       </section>
-      <aside className="card"><h2>How it works</h2><ol><li>Send your request.</li><li>We review and send a quotation.</li><li>Accept and pay online.</li><li>We make and ship your watch.</li></ol><p className="small muted">Numerology guidance is traditional and belief-based; it does not guarantee any outcome.</p></aside>
+      <aside className="card pad"><h2>How it works</h2><ol><li>Send your request.</li><li>We review and send a quotation.</li><li>Accept and pay online.</li><li>We make and ship your watch.</li></ol><p className="small muted">Numerology guidance is traditional and belief-based; it does not guarantee any outcome.</p></aside>
     </div>
   );
 }

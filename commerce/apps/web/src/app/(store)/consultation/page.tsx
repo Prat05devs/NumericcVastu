@@ -20,7 +20,7 @@ export default function Consultation() {
       <h1>Ask for guidance</h1>
       <p>Not sure which rudraksha, gemstone, crystal or yantra suits you? Tell us a little and we will reply.</p>
       {opts && !opts.topics.length ? <div className="alert info">{opts.note}</div> : (
-        <form className="card" onSubmit={send}>
+        <form className="card pad" onSubmit={send}>
           <div className="field"><label htmlFor="t">Topic</label><select id="t" value={f.topic} onChange={(e) => setF({...f, topic: e.target.value})} required><option value="">Choose…</option>{opts?.topics.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}</select></div>
           <div className="field"><label htmlFor="n">Name</label><input id="n" value={f.name} onChange={(e) => setF({...f, name: e.target.value})} required /></div>
           <div className="field"><label htmlFor="e">Email</label><input id="e" type="email" value={f.email} onChange={(e) => setF({...f, email: e.target.value})} required /></div>

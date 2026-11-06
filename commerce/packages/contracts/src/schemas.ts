@@ -30,6 +30,8 @@ export const Meta = z.object({requestId: z.string(), serverTime: IsoDate.optiona
 
 // ---------- Auth
 export const OtpRequest = z.object({email: z.string().trim().toLowerCase().email().max(254)});
+/** Newsletter opt-in from the crystal shop (homepage, footer). consentVersion records the wording the person agreed to. */
+export const NewsletterJoin = z.object({email: z.string().trim().toLowerCase().email().max(254), source: z.enum(['home', 'footer', 'checkout']).default('home'), consentVersion: z.string().min(1).max(20)});
 export const OtpVerify = z.object({email: z.string().trim().toLowerCase().email().max(254), code: z.string().regex(/^\d{6}$/)});
 export const StaffLogin = z.object({email: z.string().trim().toLowerCase().email(), password: z.string().min(1).max(200), totp: z.string().regex(/^\d{6}$/).optional()});
 export const ProfilePatch = z.object({name: trimmed(120).optional(), phone: z.string().regex(/^[6-9]\d{9}$/).optional()});

@@ -13,7 +13,7 @@ export function Tracking({t, orderId, token}: {t: TrackingView; orderId?: string
         {t.steps.map((s) => <li key={s.key} className={s.done ? 'done' : ''}><span className="dot" aria-hidden /> <span>{s.label}{s.at ? <span className="small muted"> · {dateTime(s.at)}</span> : null}</span></li>)}
       </ol>
       {t.shipments.map((s) => (
-        <div key={s.trackingNo} className="card">
+        <div key={s.trackingNo} className="card pad">
           <div className="row spread"><strong>{s.courier} · {s.trackingNo}</strong><span className="badge">{label(s.status)}</span></div>
           {s.expectedBy && !s.deliveredAt && <p className="small">Expected by {date(s.expectedBy)}</p>}
           {s.trackingUrl && <p><a href={s.trackingUrl} target="_blank" rel="noopener noreferrer">Track on the courier’s website ↗</a></p>}
@@ -39,7 +39,7 @@ function Feedback({orderId, token}: {orderId: string; token: string | null}) {
   }
   if (state === 'sent') return <p className="ok">Thank you — your feedback helps us choose better delivery partners.</p>;
   return (
-    <form className="card stack" onSubmit={send}>
+    <form className="card pad stack" onSubmit={send}>
       <h3>How was the delivery?</h3>
       <div role="radiogroup" aria-label="Rating" className="row">{[1, 2, 3, 4, 5].map((n) => <button key={n} type="button" className={`btn small ${rating >= n ? 'gold' : 'ghost'}`} aria-pressed={rating === n} onClick={() => setRating(n)}>{n}★</button>)}</div>
       <div className="row"><span>Arrived on time?</span><button type="button" className={`btn small ${onTime === true ? '' : 'ghost'}`} onClick={() => setOnTime(true)}>Yes</button><button type="button" className={`btn small ${onTime === false ? '' : 'ghost'}`} onClick={() => setOnTime(false)}>No</button></div>

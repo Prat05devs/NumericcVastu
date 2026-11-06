@@ -21,7 +21,7 @@ function VerifyInner() {
       <form className="row" onSubmit={(e) => { e.preventDefault(); void check(); }}><input aria-label="Report number" value={no} onChange={(e) => setNo(e.target.value)} placeholder="Report number" required style={{flex: 1}} /><button className="btn">Verify</button></form>
       {err && <p className="err" role="alert" style={{marginTop: '1rem'}}>{err}</p>}
       {cert && (
-        <div className="card" style={{marginTop: '1rem'}}>
+        <div className="card pad" style={{marginTop: '1rem'}}>
           {cert.isDemo && <p className="badge demo">Demo record</p>}
           <p><strong>{cert.issuer}</strong> — {cert.reportType} no. {cert.reportNo}{cert.issuedOn ? `, issued ${date(cert.issuedOn)}` : ''}</p>
           <p>For: <Link href={`/products/${cert.product.slug}`}>{cert.product.title}</Link> (SKU {cert.sku})</p>
