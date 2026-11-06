@@ -3970,5 +3970,13 @@
   "How is this different from the Business Destiny Mapping Consultation?": "यह बिज़नेस डेस्टिनी मैपिंग कंसल्टेशन से कैसे अलग है?",
   "Business Destiny Mapping looks at the business itself: its name, founder numbers and launch timing. The partnership reading compares the people running it, so you can see how you work together.": "बिज़नेस डेस्टिनी मैपिंग स्वयं व्यापार को देखती है: उसका नाम, संस्थापकों के अंक और शुरुआत का समय। साझेदारी रीडिंग व्यापार चलाने वाले लोगों की तुलना करती है, ताकि आप देख सकें कि आप साथ में कैसे काम करते हैं।",
   "Events and talks": "कार्यक्रम और व्याख्यान",
-  "Media features": "मीडिया में"
+  "Media features": "मीडिया में",
+  "{name}: {off} all {web}": "{name}: सभी {web} पर {off}",
+  "{n}% off": "{n}% की छूट",
+  "courses, consultations and the ₹399 report": "कोर्स, परामर्श और ₹399 रिपोर्ट",
+  "Ends {date} · {days} days left": "{date} को समाप्त · {days} दिन बाकी",
+  "Last day: ends {date}": "आखिरी दिन: {date} को समाप्त",
+  "The sale is on at our crystal shop too: rudraksha, gemstones and crystals": "हमारी क्रिस्टल शॉप पर भी सेल चल रही है: रुद्राक्ष, रत्न और क्रिस्टल",
+  "Book a consultation at the sale price": "सेल कीमत पर परामर्श बुक करें",
+  "SALE": "सेल"
 }

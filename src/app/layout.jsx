@@ -26,6 +26,8 @@ import {currencyScript} from '../lib/currency';
 import {pageMetadata} from '../data/seo';
 import {siteUrl, jsonLdHtml} from '../lib/site';
 import {siteGraph} from '../lib/schema';
+import {getWebsiteSales} from '../lib/sale';
+import {SaleProvider} from '../components/SaleProvider';
 
 /**
  * Fonts are downloaded at build time and served from this site (no request to Google while a page loads), with fallback
@@ -55,6 +57,8 @@ export const metadata = {
   },
 };
 export const viewport = { themeColor: '#4A1F7A' };
-export default function RootLayout({ children }) {
-  return <html lang="en" className={fontVariables} data-scroll-behavior="smooth" suppressHydrationWarning><head><script dangerouslySetInnerHTML={{__html:currencyScript}}/><link rel="preload" href="/fonts/manrope-latin-variable.woff2" as="font" type="font/woff2" crossOrigin="anonymous"/></head><body><LocaleProvider><SiteHeader/><ViewTransition default="nv-page">{children}</ViewTransition><Ambient/><SiteGuide entries={guideEntries()} prices={guidePrices()}/><CurrencyPreview/><script type="application/ld+json" dangerouslySetInnerHTML={jsonLdHtml(siteGraph())}/></LocaleProvider></body></html>;
+export default async function RootLayout({ children }) {
+  // Running sales (back office → Sales & festive themes) reach every price and the top strip; refreshed each minute.
+  const sales = await getWebsiteSales();
+  return <html lang="en" className={fontVariables} data-scroll-behavior="smooth" suppressHydrationWarning><head><script dangerouslySetInnerHTML={{__html:currencyScript}}/><link rel="preload" href="/fonts/manrope-latin-variable.woff2" as="font" type="font/woff2" crossOrigin="anonymous"/></head><body><LocaleProvider><SaleProvider sales={sales}><SiteHeader/><ViewTransition default="nv-page">{children}</ViewTransition><Ambient/><SiteGuide entries={guideEntries()} prices={guidePrices()}/><CurrencyPreview/><script type="application/ld+json" dangerouslySetInnerHTML={jsonLdHtml(siteGraph())}/></SaleProvider></LocaleProvider></body></html>;
 }

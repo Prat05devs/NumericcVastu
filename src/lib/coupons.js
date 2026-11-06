@@ -27,7 +27,7 @@ export async function quoteCoupon({code, offer, currency, amountMinor, phone}) {
     const body = await res.json().catch(() => ({}));
     if (!res.ok) return {valid: false, message: 'We could not check this code just now. Please try again.'};
     const q = body.data || {};
-    return q.valid ? {valid: true, code: q.code, description: q.description || '', discountMinor: Number(q.discountMinor), finalMinor: Number(q.finalMinor)} : {valid: false, message: q.message || 'This code is not valid.'};
+    return q.valid ? {valid: true, code: q.code, description: q.description || '', sale: q.sale ? {name: q.sale.name, discountMinor: Number(q.sale.discountMinor)} : null, couponDiscountMinor: Number(q.couponDiscountMinor ?? q.discountMinor), discountMinor: Number(q.discountMinor), finalMinor: Number(q.finalMinor)} : {valid: false, message: q.message || 'This code is not valid.'};
   } catch {
     return {valid: false, message: 'We could not check this code just now. Please try again.'};
   }

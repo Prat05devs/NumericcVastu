@@ -103,15 +103,64 @@ route(r, {method: 'post', path: '/internal/bookings', access: 'INTERNAL', tag: '
  * website when "Where it works" includes it (no restriction = everywhere) and, if it names families, one of them is
  * COURSE, CONSULTATION or REPORT for the item being bought. Coupons locked to a partner link are not typed in.
  */
-const Quote = z.object({code: text(40).min(1), offerKind: z.enum(['course', 'consultation', 'report']), amountMinor: z.union([z.number().int().positive(), z.string().regex(/^\d{1,12}$/)]), currency: z.enum(['INR', 'USD']), customerKey: z.string().regex(/^[a-f0-9]{64}$/).optional()});
-route(r, {method: 'post', path: '/internal/coupons/quote', access: 'INTERNAL', tag: 'Operations', summary: 'Price a coupon for a website booking (Bearer SITE_BOOKINGS_SECRET)', body: Quote}, async (req, res) => {
+const Quote = z.object({code: text(40).optional(), offerKind: z.enum(['course', 'consultation', 'report']), amountMinor: z.union([z.number().int().positive(), z.string().regex(/^\d{1,12}$/)]), currency: z.enum(['INR', 'USD']), customerKey: z.string().regex(/^[a-f0-9]{64}$/).optional()});
+/** Rule shared by coupons and sale campaigns. */
+type SaleRule = {type?: string; percentBp?: number; amountPaise?: string; maxDiscountPaise?: string; minOrderPaise?: string; appliesTo?: {families?: string[]}};
+/** Discount a rule gives on one website price: whole rupees, capped, minimum order in INR; fixed amounts are INR-only. */
+function ruleDiscount(rule: SaleRule, amount: bigint, currency: 'INR' | 'USD'): bigint {
+  if (currency === 'INR' && rule.minOrderPaise && amount < BigInt(rule.minOrderPaise)) return 0n;
+  let d = 0n;
+  if (rule.type === 'PERCENT' && rule.percentBp) {
+    d = (amount * BigInt(rule.percentBp)) / 10_000n;
+    if (currency === 'INR') d = (d / 100n) * 100n;
+    if (currency === 'INR' && rule.maxDiscountPaise && d > BigInt(rule.maxDiscountPaise)) d = BigInt(rule.maxDiscountPaise);
+  } else if (rule.type === 'FIXED' && rule.amountPaise && currency === 'INR') d = BigInt(rule.amountPaise);
+  return d > 0n ? d : 0n;
+}
+/** Sale campaigns running now that reach the website (storefronts blank or 'website'), optionally for one kind. */
+async function websiteSales(kind?: string) {
+  const now = new Date();
+  const rows = await prisma.campaign.findMany({where: {active: true, startsAt: {lte: now}, endsAt: {gt: now}}, orderBy: {priority: 'desc'}});
+  return rows.filter((c) => {
+    const fronts = (c.storefronts ?? []) as string[];
+    const fam = ((c.ruleJson as SaleRule)?.appliesTo?.families ?? []).map((f) => f.toUpperCase());
+    const reachesSite = !fronts.length || fronts.includes('website');
+    const siteFamilies = fam.filter((f) => ['COURSE', 'CONSULTATION', 'REPORT'].includes(f));
+    if (!reachesSite || (fam.length && !siteFamilies.length)) return false;
+    return !kind || !fam.length || fam.includes(kind.toUpperCase());
+  });
+}
+const FLOOR = 100n; // Razorpay's smallest charge is ₹1 / $1: nothing becomes free through checkout.
+
+route(r, {method: 'get', path: '/site/sale', access: 'PUBLIC', tag: 'Content', summary: 'Sale campaigns running on the website (for price display and the announcement strip)'}, async (_req, res) => {
+  const sales = await websiteSales();
+  res.setHeader('Cache-Control', 'public, max-age=30');
+  send(res, sales.map((c) => {
+    const rule = c.ruleJson as SaleRule;
+    const theme = (c.themeJson ?? {}) as {bannerText?: string; showCountdown?: boolean};
+    return {name: c.name, endsAt: c.endsAt, startsAt: c.startsAt, priority: c.priority, rule: {type: rule.type, percentBp: rule.percentBp ?? null, amountPaise: rule.amountPaise ?? null, maxDiscountPaise: rule.maxDiscountPaise ?? null, minOrderPaise: rule.minOrderPaise ?? null, families: (rule.appliesTo?.families ?? []).map((f) => f.toUpperCase())}, bannerText: theme.bannerText ?? '', showCountdown: Boolean(theme.showCountdown)};
+  }));
+});
+
+route(r, {method: 'post', path: '/internal/coupons/quote', access: 'INTERNAL', tag: 'Operations', summary: 'Price a website booking: running sale plus an optional coupon (Bearer SITE_BOOKINGS_SECRET)', body: Quote}, async (req, res) => {
   noStore(res);
   const secret = env().SITE_BOOKINGS_SECRET;
   if (!secret || !safeEqual(req.get('Authorization') ?? '', `Bearer ${secret}`)) throw new AppError('UNAUTHENTICATED', 401, 'Unauthorized.');
   const q = parse(Quote, req.body);
   const amount = BigInt(q.amountMinor);
   const invalid = (message: string) => send(res, {valid: false, message});
-  const d = await prisma.discount.findUnique({where: {code: q.code.trim().toUpperCase()}});
+  // The best running sale for this kind of booking applies automatically.
+  let sale: {name: string; discount: bigint} | null = null;
+  for (const c of await websiteSales(q.offerKind)) {
+    const d = ruleDiscount(c.ruleJson as SaleRule, amount, q.currency);
+    if (d > 0n && (!sale || d > sale.discount)) sale = {name: c.name, discount: d};
+  }
+  if (sale && amount - sale.discount < FLOOR) sale.discount = amount - FLOOR;
+  const afterSale = amount - (sale?.discount ?? 0n);
+  const code = q.code?.trim().toUpperCase();
+  if (!code) return send(res, toPlain({valid: true, code: null, description: '', sale: sale && {name: sale.name, discountMinor: sale.discount}, couponDiscountMinor: 0n, discountMinor: sale?.discount ?? 0n, finalMinor: afterSale}));
+
+  const d = await prisma.discount.findUnique({where: {code}});
   const now = new Date();
   if (!d || !d.active || (d.startsAt && d.startsAt > now) || (d.endsAt && d.endsAt < now)) return invalid('This code is not valid or has expired.');
   const rules = (d.eligibleRulesJson ?? {}) as {families?: string[]; storefronts?: string[]; lockedToLink?: boolean};
@@ -120,21 +169,13 @@ route(r, {method: 'post', path: '/internal/coupons/quote', access: 'INTERNAL', t
   if (rules.families?.length && !rules.families.includes(q.offerKind.toUpperCase())) return invalid(`This code does not apply to ${q.offerKind === 'report' ? 'the report' : `${q.offerKind}s`}.`);
   if (d.limitTotal && d.redeemedCount >= d.limitTotal) return invalid('This code has been fully used.');
   if (d.limitPerCustomer && q.customerKey && (await prisma.serviceBooking.count({where: {couponCode: d.code, customerKey: q.customerKey, paymentStatus: 'PAID'}})) >= d.limitPerCustomer) return invalid('You have already used this code.');
-  if (q.currency === 'INR' && d.minOrderPaise && amount < d.minOrderPaise) return invalid(`This code needs a minimum of ₹${(Number(d.minOrderPaise) / 100).toLocaleString('en-IN')}.`);
-  let discount: bigint;
-  if (d.type === 'PERCENT') {
-    discount = (amount * d.value) / 10_000n;
-    if (q.currency === 'INR') discount = (discount / 100n) * 100n; // whole rupees, as the shop does
-    if (q.currency === 'INR' && d.capPaise && discount > d.capPaise) discount = d.capPaise;
-  } else {
-    if (q.currency !== 'INR') return invalid('This code works for payments in rupees.');
-    discount = d.value;
-  }
-  // Razorpay's smallest charge is ₹1 / $1; a coupon can never make a booking free through checkout.
-  const floor = 100n;
-  if (amount - discount < floor) discount = amount - floor;
+  if (sale && !d.combinable) return invalid(`The price already includes the ${sale.name}, so this code can’t be added on top.`);
+  if (q.currency === 'INR' && d.minOrderPaise && afterSale < d.minOrderPaise) return invalid(`This code needs a minimum of ₹${(Number(d.minOrderPaise) / 100).toLocaleString('en-IN')}.`);
+  if (d.type !== 'PERCENT' && q.currency !== 'INR') return invalid('This code works for payments in rupees.');
+  let discount = ruleDiscount({type: d.type, percentBp: d.type === 'PERCENT' ? Number(d.value) : undefined, amountPaise: d.type === 'FIXED' ? d.value.toString() : undefined, maxDiscountPaise: d.capPaise?.toString()}, afterSale, q.currency);
+  if (afterSale - discount < FLOOR) discount = afterSale - FLOOR;
   if (discount <= 0n) return invalid('This code does not reduce this price.');
-  send(res, toPlain({valid: true, code: d.code, description: d.description, discountMinor: discount, finalMinor: amount - discount}));
+  send(res, toPlain({valid: true, code: d.code, description: d.description, sale: sale && {name: sale.name, discountMinor: sale.discount}, couponDiscountMinor: discount, discountMinor: (sale?.discount ?? 0n) + discount, finalMinor: afterSale - discount}));
 });
 
 const contactOf = (ref: string) => JSON.parse(decrypt(ref)) as {customer: Record<string, string>; details: Record<string, string>};

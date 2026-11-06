@@ -181,3 +181,20 @@ html[lang=hi] .nv-header-promise > span, html[lang=hi] .nv-menu-footer > span { 
   .nv-navigation-scrim { animation: none; }
   .nv-site-header *, .nv-site-header *::after { transition: none !important; }
 }
+
+/* Running sale strip in the top bar (components/SalesConversion.jsx) */
+.sale-strip { flex: 1; min-width: 0; overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent); }
+.sale-strip__track { display: flex; width: max-content; animation: nv-sale-run 42s linear infinite; }
+.sale-strip:hover .sale-strip__track, .sale-strip:focus-within .sale-strip__track { animation-play-state: paused; }
+.sale-strip__set { display: flex; }
+.sale-strip__item { display: inline-flex; align-items: center; gap: 8px; padding: 0 26px; white-space: nowrap; font-size: 12.5px; font-weight: 600; color: #fff; text-decoration: none; border-right: 1px solid rgba(255,255,255,.18); }
+a.sale-strip__item:hover { color: var(--gold); }
+.sale-strip__tag { font-size: 10px; font-weight: 800; letter-spacing: .14em; color: var(--purple-deep); background: var(--gold); border-radius: 4px; padding: 2px 6px; }
+.sale-strip__dot { font-style: normal; color: var(--gold); }
+@keyframes nv-sale-run { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .sale-strip__track { animation: none; } .sale-strip { overflow-x: auto; mask-image: none; } .sale-strip__set + .sale-strip__set { display: none; } }
+/* sale prices */
+.nv-price-was { opacity: .55; font-weight: 500; margin-right: 2px; }
+.nv-price-sale { color: inherit; }
+.co-summary__sale { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; font-weight: 700; color: #1d7a4d; margin-top: 8px; }
+.co-summary__sale s { color: var(--muted); font-weight: 500; margin-right: 6px; }

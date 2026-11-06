@@ -6,7 +6,9 @@ import {notFound} from 'next/navigation';
 import {Check, Clock, ShieldCheck} from 'lucide-react';
 import {SiteFooter} from '../../components/SiteChrome';
 import CheckoutFlow from '../../components/CheckoutFlow';
-import {offerCatalog, formatPrice} from '../../data/offers';
+import {offerCatalog, formatPrice, getPrice} from '../../data/offers';
+import {getWebsiteSales} from '../../lib/sale';
+import {bestSale, money} from '../../lib/saleMath';
 import {intakeFor, sessionFields} from '../../data/intake';
 import {contact} from '../../data/contact';
 import {onlinePayment} from '../../lib/razorpay';
@@ -21,7 +23,9 @@ export default async function Page({searchParams}) {
   if (!found) notFound();
   // Rupees in India, dollars elsewhere; decided on the server so the amount shown is the amount charged.
   const currency = requestCurrency(await headers());
-  const offer = {id: found.id, kind: found.kind, name: found.name, summary: found.summary, priceLabel: formatPrice(found, undefined, currency), inclusions: found.inclusions, href: `/${found.kind === 'course' ? 'courses' : 'consultations'}/${found.slug}`};
+  // A running sale is shown here exactly as it will be charged (same arithmetic as the payment route).
+  const sale = bestSale(await getWebsiteSales(), found, getPrice(found, currency), currency);
+  const offer = {id: found.id, kind: found.kind, name: found.name, summary: found.summary, priceLabel: sale ? money(sale.finalMinor, currency) : formatPrice(found, undefined, currency), listPriceLabel: formatPrice(found, undefined, currency), sale: sale ? {name: sale.sale.name, discountLabel: money(sale.discountMinor, currency)} : null, inclusions: found.inclusions, href: `/${found.kind === 'course' ? 'courses' : 'consultations'}/${found.slug}`};
   const payment = {currency, razorpay: onlinePayment(found, currency), paypal: currency === 'USD' ? paypalPayment(found) : null};
   return <LocalizedContent><>
     <main id="main" className="hv co-page">
@@ -35,6 +39,7 @@ export default async function Page({searchParams}) {
           <h2>{offer.name}</h2>
           <p>{offer.summary}</p>
           <ul>{offer.inclusions.slice(0, 5).map((i) => <li key={i}><Check size={16}/>{i}</li>)}</ul>
+          {offer.sale && <div className="co-summary__sale"><span>{offer.sale.name}</span><span><s>{offer.listPriceLabel}</s> −{offer.sale.discountLabel}</span></div>}
           <div className="co-summary__total"><span>Amount payable</span><strong>{offer.priceLabel}</strong></div>
           <p className="co-summary__fine">{found.priceVerified ? 'Fee confirmed by NumericcVaastu.' : offerCatalog.priceNote}</p>
           <ul className="co-summary__next">

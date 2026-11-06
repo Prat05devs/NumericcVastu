@@ -1,6 +1,8 @@
 import 'server-only';
 import {canCheckout, formatPrice, getPrice} from '../data/offers';
 import {findOffer} from './razorpay';
+import {getWebsiteSales} from './sale';
+import {bestSale} from './saleMath';
 
 /**
  * PayPal Checkout (Orders v2) for visitors outside India, who pay in US dollars. Set PAYPAL_CLIENT_ID and
@@ -40,9 +42,13 @@ export async function createPaypalOrder(offerId) {
   const offer = findOffer(offerId);
   const state = paypalPayment(offer);
   if (!state.enabled) throw Object.assign(new Error(state.reason), {status: 409});
+  // A running sale applies to dollar payments too; the expected amount travels with the order (custom_id) so the
+  // capture is checked against exactly what was offered, even if the sale ends while the visitor is paying.
+  const list = getPrice(offer, 'USD');
+  const cents = list - (bestSale(await getWebsiteSales(), offer, list, 'USD')?.discountMinor || 0);
   const order = await call('/v2/checkout/orders', {
     intent: 'CAPTURE',
-    purchase_units: [{reference_id: offer.id, custom_id: offer.id, description: offer.name.slice(0, 127), amount: {currency_code: 'USD', value: dollars(getPrice(offer, 'USD'))}}],
+    purchase_units: [{reference_id: offer.id, custom_id: `${offer.id}|${cents}`, description: offer.name.slice(0, 127), amount: {currency_code: 'USD', value: dollars(cents)}}],
     application_context: {brand_name: 'NumericcVaastu', shipping_preference: 'NO_SHIPPING', user_action: 'PAY_NOW'},
   });
   return {orderId: order.id};
@@ -53,8 +59,11 @@ export async function capturePaypalOrder(orderId) {
   if (!/^[A-Z0-9]{8,40}$/.test(orderId)) throw Object.assign(new Error('Invalid order.'), {status: 400});
   const data = await call(`/v2/checkout/orders/${orderId}/capture`);
   const capture = data.purchase_units?.[0]?.payments?.captures?.[0];
-  const offer = findOffer(capture?.custom_id || data.purchase_units?.[0]?.reference_id);
-  const verified = Boolean(offer && data.status === 'COMPLETED' && capture?.status === 'COMPLETED' && capture.amount?.currency_code === 'USD' && capture.amount.value === dollars(getPrice(offer, 'USD')));
+  const [offerId, expected] = String(capture?.custom_id || data.purchase_units?.[0]?.reference_id || '').split('|');
+  const offer = findOffer(offerId);
+  const expectedCents = /^\d+$/.test(expected || '') ? Number(expected) : offer ? getPrice(offer, 'USD') : 0;
+  // The order (and its custom_id) is created only by this server, so the expected amount can be trusted; it can never exceed the list price.
+  const verified = Boolean(offer && expectedCents > 0 && expectedCents <= getPrice(offer, 'USD') && data.status === 'COMPLETED' && capture?.status === 'COMPLETED' && capture.amount?.currency_code === 'USD' && capture.amount.value === dollars(expectedCents));
   if (!verified) console.error('PayPal capture needs checking', orderId, data.status, capture?.status, capture?.amount);
   return {verified, captureId: capture?.id || '', offer, amount: capture?.amount?.value || '', priceLabel: offer ? formatPrice(offer, undefined, 'USD') : '', payerEmail: data.payer?.email_address || ''};
 }

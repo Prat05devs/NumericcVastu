@@ -14,5 +14,6 @@ export async function POST(request) {
   const quote = await quoteCoupon({code: body?.code, offer, currency, amountMinor, phone: body?.phone});
   if (!quote?.valid) return Response.json({valid: false, message: quote?.message || 'Enter a coupon code.'});
   const fmt = (minor) => new Intl.NumberFormat(currency === 'INR' ? 'en-IN' : 'en-US', {style: 'currency', currency, maximumFractionDigits: 0}).format(minor / 100);
-  return Response.json({valid: true, code: quote.code, description: quote.description, list: fmt(amountMinor), discount: fmt(quote.discountMinor), total: fmt(quote.finalMinor)});
+  // The code's own saving is shown; the total also includes any running sale.
+  return Response.json({valid: true, code: quote.code, description: quote.description, list: fmt(amountMinor), discount: fmt(quote.couponDiscountMinor), total: fmt(quote.finalMinor), sale: quote.sale ? {name: quote.sale.name, discount: fmt(quote.sale.discountMinor)} : null});
 }
