@@ -64,6 +64,7 @@ export const navigationGroups = [
     id: 'tools', label: 'Free tools & reports', intro: 'A little self-discovery starts with your numbers.',
     columns: [
       {title: 'Free calculators', links: [
+        {label: 'Daily horoscope & panchang', description: 'Today by number and rashi, vrat days ahead.', href: '/horoscope', icon: 'sparkles', badge: 'Daily'},
         {label: 'Lo Shu grid calculator', description: 'Your grid, Kua, planes and yogs.', href: '/numerology-calculator', icon: 'grid', badge: 'Free'},
         {label: 'Vedic kundli calculator', description: 'Your planetary grid and number reading.', href: '/vedic-numerology-calculator', icon: 'orbit', badge: 'Free'},
       ]},

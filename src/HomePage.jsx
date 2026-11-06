@@ -15,6 +15,8 @@ import ReviewCards from './components/ReviewCards';
 import StudentVideos from './components/StudentVideos';
 import {courses, consultations, reportOffer} from './data/offers';
 import VideoBackdrop from './components/VideoBackdrop';
+import TodayTeaser from './components/home/TodayTeaser';
+import {dailyGuide} from './lib/daily';
 import Price from './components/Price';
 import {awards, book, heroSlides, marqueeRows, social, videos} from './data/media';
 import {getInstagramData} from './lib/instagram';
@@ -60,7 +62,7 @@ function SectionHead({eyebrow, title, accent, text, id, children, center = false
 
 export default async function HomePage() {
   // Follower counts refresh from Instagram every five days when the API is configured (lib/instagram.js).
-  const {stats, instagramProfile} = await getInstagramData();
+  const [{stats, instagramProfile}, guide] = await Promise.all([getInstagramData(), dailyGuide()]);
   return <LocalizedContent><>
     <main id="main" className="hv">
       <section className="hv-hero" aria-labelledby="hv-hero-title">
@@ -92,6 +94,8 @@ export default async function HomePage() {
         </div>
         <WorkMarquee rows={marqueeRows}/>
       </section>
+
+      <TodayTeaser guide={guide}/>
 
       <section className="hv-section hv-wrap" aria-labelledby="hv-paths-title">
         <SectionHead id="hv-paths-title" eyebrow="Two ways to begin" title="Where would you" accent="like to start?" center/>

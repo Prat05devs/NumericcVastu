@@ -4,7 +4,12 @@
 body:has(.cs){background:#fbf7f1}
 .cs{
   --ivory:#fbf7f1;--cream:#f5ede2;--sand:#ecdfcd;--taupe:#cdb79b;--clay:#a8714f;--espresso:#2b211b;--brown:#5e4433;--muted:#7a6a5d;
-  --gold:#b98a3e;--gold-soft:#e8d3a6;--line:#e6d9c7;--white:#fffdf9;--ok:#2f7a4f;--ok-bg:#e9f5ec;--bad:#a8322d;--bad-bg:#fbeceb;--warn:#8a5a00;--warn-bg:#fff3dc;
+  --gold:#b98a3e;--gold-soft:#e8d3a6;
+  /* Grape Cotton Candy: Royal Plum, Soft Periwinkle, Bubblegum Tint. Accent only; ivory stays the canvas. */
+  --plum:#76335C;--plum-deep:#4f1f3d;--peri:#A592EE;--bubble:#FE86AA;
+  --grad:linear-gradient(125deg,#76335C 0%,#A592EE 55%,#FE86AA 100%);
+  --grad-soft:linear-gradient(135deg,#f3ecfb 0%,#fbeff3 60%,#fdf3ea 100%);
+  --grad-text:linear-gradient(100deg,#76335C 0%,#9a5fd0 55%,#e26b93 100%);--line:#e6d9c7;--white:#fffdf9;--ok:#2f7a4f;--ok-bg:#e9f5ec;--bad:#a8322d;--bad-bg:#fbeceb;--warn:#8a5a00;--warn-bg:#fff3dc;
   --display:var(--font-display),'Noto Serif Display',Georgia,serif;--body:var(--font-body),'Lora',Georgia,'Times New Roman',serif;
   color-scheme:light;background:var(--ivory);color:var(--espresso);font:16px/1.6 var(--body);min-height:100vh;display:flex;flex-direction:column;overflow-x:clip
 }
@@ -545,3 +550,105 @@ body:has(.cs){background:#fbf7f1}
 .cs .legal a{display:inline;padding:0;font-size:12.5px;color:var(--muted)}
 .cs .ftr p a{display:block}
 .cs .sheet{color:var(--espresso);font-weight:400;letter-spacing:0;font-size:15px}
+
+/* ════════════ Grape Cotton Candy layer: hierarchy, contrast, type and space (applied over the base) ════════════ */
+.cs :focus-visible{outline-color:var(--peri)}
+.cs ::selection{background:#f1d9ff;color:var(--plum-deep)}
+/* 1 · hierarchy: two-tone headings, the second line carries the gradient */
+.cs .disp{font-weight:600;letter-spacing:-.02em}
+.cs .disp em{font-style:normal;font-weight:500;background:var(--grad-text);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cs .eyebrow{color:var(--plum);letter-spacing:.22em}
+.cs .eyebrow .no{display:inline-block;margin-right:10px;padding-right:10px;border-right:1px solid rgba(118,51,92,.3);color:var(--peri);font-weight:800}
+.cs .head{margin-bottom:34px}
+.cs .head p{color:var(--brown);font-size:15.5px}
+.cs .lnk{border-bottom:0;background:linear-gradient(90deg,var(--plum),var(--bubble)) 0 100%/100% 1.5px no-repeat;padding-bottom:3px;transition:background-size .35s}
+.cs .lnk:hover{background-size:0 1.5px;background-position:100% 100%}
+/* 2 · contrast: primary actions in plum, special moments in the gradient */
+.cs .btn{background:var(--plum);border-color:var(--plum);color:#fff;box-shadow:0 10px 24px -14px rgba(118,51,92,.7)}
+.cs .btn:hover{background:var(--plum-deep);border-color:var(--plum-deep)}
+.cs .btn.light{background:var(--white);color:var(--plum-deep);border-color:#e6d6ef;box-shadow:none}
+.cs .btn.light:hover{background:#f7f0fb}
+.cs .btn.gold{background:var(--grad);border-color:transparent;background-size:160% 100%;transition:background-position .5s,transform .2s}
+.cs .btn.gold:hover{background-position:100% 0}
+.cs .pill.dark{background:var(--plum);border-color:var(--plum)}
+.cs .tk-tag{background:var(--bubble);color:#3b1430}
+.cs .ticker{background:linear-gradient(90deg,#3a1630 0%,#5a2747 50%,#3a1630 100%)}
+.cs .copy{border-color:var(--bubble)}.cs .copy span{background:var(--bubble);color:#3b1430}
+.cs .copy.big span{background:var(--plum);color:#fff}
+.cs .ic .n{background:var(--bubble);color:#3b1430}
+/* header accents */
+.cs .logo small{color:var(--plum)}
+.cs .logo small::before,.cs .logo small::after{background:linear-gradient(90deg,var(--peri),var(--bubble))}
+.cs .mnav-link::after{background:var(--grad);height:2px}
+.cs .mnav-col h3{color:var(--plum)}
+.cs .mnav-list a:hover{color:var(--plum)}
+.cs .mnav-list.grid a:hover{border-color:var(--peri);box-shadow:0 10px 22px -16px rgba(118,51,92,.6)}
+.cs .mnav-feature{background:var(--grad-soft);border:1px solid #efe2f3}
+.cs .search-pill:focus-within{border-color:var(--peri);box-shadow:0 0 0 4px rgba(165,146,238,.18)}
+/* 5 · break the pattern: two deliberately different hero panels */
+.cs .panel.p1 .bg{background:var(--grad)}
+.cs .panel.p1::after{background:linear-gradient(180deg,rgba(59,20,48,0) 40%,rgba(59,20,48,.45) 100%)}
+.cs .panel.p1 .disp{font-size:clamp(46px,5.4vw,82px);line-height:.98;letter-spacing:-.03em}
+.cs .panel.p1 .bg .art{width:min(92%,640px);height:64%;margin-top:2%;filter:drop-shadow(0 30px 40px rgba(59,20,48,.35))}
+.cs .panel.p1 .btn{background:#fff;border-color:#fff;color:var(--plum-deep);box-shadow:0 14px 30px -16px rgba(0,0,0,.45)}
+.cs .panel.p1 .btn:hover{background:#fbeff6}
+.cs .panel.p2{color:var(--espresso)}
+.cs .panel.p2 .bg{background:var(--grad-soft)}
+.cs .panel.p2::after{background:none}
+.cs .panel.p2 .disp{color:var(--espresso);text-shadow:none}
+.cs .panel.p2 p{color:var(--brown)}
+.cs .panel.p2 .eyebrow{color:var(--plum)}
+.cs .panel.p2 .btn{background:var(--plum);border-color:var(--plum);color:#fff}
+.cs .trust{border-color:#ecdff1;box-shadow:0 24px 50px -40px rgba(118,51,92,.5)}
+.cs .trust svg{color:var(--peri)}
+/* cards: quiet by default, a periwinkle lift on hover */
+.cs .pc{transition:transform .3s,box-shadow .3s,border-color .3s}
+.cs .pc:hover{border-color:#e4d6f7;box-shadow:0 26px 46px -30px rgba(118,51,92,.55)}
+.cs .pc .m .price{color:var(--plum-deep)}
+.cs .cat .ring{background:var(--grad-soft);border-color:#efe2f3}
+.cs .cat:hover .ring{box-shadow:0 22px 40px -26px rgba(118,51,92,.6)}
+/* 4 · room to breathe */
+.cs .section{padding-top:104px}
+.cs .curve{margin-top:104px;background:linear-gradient(180deg,var(--ivory),#f7eef7)}
+.cs .arc .pic{background:var(--grad-soft)}
+/* finder: soft panel, the number in the gradient */
+.cs .finder .intro{background:var(--grad-soft);border:1px solid #efe2f3}
+.cs .result .num>b{background:var(--grad-text);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cs .pick .pic{background:var(--grad-soft)}
+/* 2 · don't play it safe: the wristwatch banner and the newsletter go full colour */
+.cs .wbanner{background:var(--grad);color:#fff;margin-top:104px}
+.cs .wbanner .eyebrow{color:#ffe1ec}
+.cs .wbanner .disp{color:#fff}
+.cs .wbanner .disp em{background:none;color:#ffd6e5;-webkit-text-fill-color:#ffd6e5}
+.cs .wbanner p{color:rgba(255,255,255,.88)}
+.cs .wbanner .btn{background:#fff;border-color:#fff;color:var(--plum-deep)}
+.cs .wbanner .plinth{background:rgba(255,255,255,.28);box-shadow:inset 0 -6px 0 rgba(255,255,255,.18)}
+.cs .stripes{background:repeating-linear-gradient(90deg,transparent 0 46px,rgba(255,255,255,.12) 46px 50px)}
+.cs .join{background:var(--grad);border:0;color:#fff;margin-top:104px}
+.cs .join .eyebrow{color:#ffe1ec}
+.cs .join .disp{color:#fff}
+.cs .join .disp em{background:none;color:#ffd6e5;-webkit-text-fill-color:#ffd6e5}
+.cs .join p{color:rgba(255,255,255,.88)}
+.cs .join input[type=email]{background:rgba(255,255,255,.95);border-color:transparent}
+.cs .join .btn{background:var(--plum-deep);border-color:var(--plum-deep)}
+.cs .join .note.ok{background:rgba(255,255,255,.95)}
+.cs .post .pic{background:var(--grad-soft)}
+.cs .post .t span{color:var(--plum)}
+/* listing, product, cart, checkout accents */
+.cs .chips .pill.on{background:var(--plum);border-color:var(--plum)}
+.cs .tick input:checked{background:var(--plum);border-color:var(--plum)}
+.cs .sw button[aria-pressed=true]{border-color:var(--plum);box-shadow:inset 0 0 0 1px var(--plum)}
+.cs .numbox{background:var(--grad-soft);border:1px solid #efe2f3}
+.cs .assure svg{color:var(--peri)}
+.cs .main-img,.cs .line .pic,.cs .mini-line .pic,.cs .drawer-line .pic,.cs .empty .pic{background:var(--grad-soft)}
+.cs .step h3 i{background:var(--plum)}
+.cs .radio{border-color:var(--plum);box-shadow:inset 0 0 0 1px var(--plum)}
+.cs .radio .dot{border-color:var(--plum)}
+.cs .tl.now i{background:var(--bubble);box-shadow:0 0 0 5px #fde3ec}
+.cs .side-nav [aria-current=page]{border-color:#e4d6f7}
+.cs .okmark{background:#f1eafc;color:var(--plum)}
+/* footer: the wordmark picks up the gradient, softly */
+.cs .ftr{background:linear-gradient(180deg,#f3e8e8 0%,#efe3ee 100%)}
+.cs .ftr h3{color:var(--plum)}
+.cs .wordmark{background:linear-gradient(100deg,rgba(118,51,92,.28),rgba(165,146,238,.32),rgba(254,134,170,.32));-webkit-background-clip:text;background-clip:text;color:transparent}
+.cs .legal{background:transparent;border-color:#e2cfe0}

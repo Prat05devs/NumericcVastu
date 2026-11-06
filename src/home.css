@@ -1362,3 +1362,60 @@ body:has(.sticky-buy.is-shown) .wa-float{bottom:calc(86px + env(safe-area-inset-
 
 /* Coupon box: checkout and report (components/CouponBox.jsx) */
 .nv-coupon{margin:16px 0;max-width:520px}.nv-coupon label{display:block;font-weight:700;margin-bottom:6px}.nv-coupon__row{display:flex;gap:10px}.nv-coupon__row input{flex:1;min-width:0;min-height:48px;border:1.5px solid #d8c8ee;border-radius:12px;padding:10px 14px;font:inherit;letter-spacing:1px;text-transform:uppercase;background:#fff;color:#241b2f}.nv-coupon__row .hv-button{min-height:48px}.nv-coupon__error{color:#9c2134;font-weight:600;margin:8px 0 0}.nv-coupon.is-applied{padding:14px 16px;border-radius:12px;background:#eef8f1;border:1.5px solid #b9dfc6}.nv-coupon.is-applied p{margin:0 0 8px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}.nv-coupon dl{display:grid;grid-template-columns:auto auto;justify-content:space-between;gap:4px 18px;margin:0 0 8px;max-width:320px}.nv-coupon dl>div{display:contents}.nv-coupon dt{color:#5e5869}.nv-coupon dd{margin:0;text-align:right;font-weight:700}.nv-coupon .is-total dt,.nv-coupon .is-total dd{color:#241b2f;font-size:1.1em}
+
+/* Today teaser (components/home/TodayTeaser.jsx): one screen at most, Grape Cotton Candy */
+.tt{--plum:#76335C;--peri:#A592EE;--bubble:#FE86AA;padding-block:clamp(40px,7vh,72px);background:linear-gradient(135deg,#f3ecfb 0%,#fbeff3 60%,#fdf6ee 100%)}
+.tt__grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:22px;align-items:stretch}
+.tt__today{display:grid;gap:14px;align-content:start;padding:clamp(22px,3.4vh,34px) 30px;border-radius:28px;color:#fff;text-decoration:none;background:linear-gradient(125deg,#76335C 0%,#A592EE 58%,#FE86AA 100%);box-shadow:0 30px 60px -36px rgba(118,51,92,.7);transition:transform .3s}
+.tt__today:hover{transform:translateY(-3px)}
+.tt__eyebrow{font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#ffe3ee}
+.tt__today h2{color:#fff;font-size:clamp(28px,3vw,40px);line-height:1.08;letter-spacing:-1px}
+.tt__today h2 em{color:#ffd9e7}
+.tt__num{display:flex;align-items:center;gap:16px}
+.tt__num b{font:600 clamp(68px,9vh,100px)/.8 'NV Digits',var(--font-cormorant),serif;color:#fff}
+.tt__num span{display:grid;font-weight:700;font-size:16px}
+.tt__num small{font-weight:400;font-size:13.5px;color:rgba(255,255,255,.85)}
+.tt__pan{margin:0;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tt__pan>div{padding:10px 14px;border-radius:16px;background:rgba(255,255,255,.16);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.25)}
+.tt__pan dt{font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#ffe3ee}
+.tt__pan dd{margin:2px 0 0;font-weight:700;font-size:14.5px;display:grid}
+.tt__pan dd small{font-weight:500;font-size:12px;color:rgba(255,255,255,.82)}
+.tt__side{display:grid;gap:16px;align-content:start;padding:clamp(20px,3vh,30px) 26px;border-radius:28px;background:#fff;border:1px solid #ece2f1}
+.tt__side h3{font-size:13px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#76335C;margin-bottom:10px}
+.tt__nums{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:6px}
+.tt__nums a{display:grid;justify-items:center;padding:8px 2px;border-radius:14px;border:1px solid #ece2f1;background:#faf6fd;text-decoration:none;transition:transform .2s,background .2s,color .2s}
+.tt__nums a:hover{background:linear-gradient(125deg,#76335C,#A592EE);color:#fff;transform:translateY(-2px)}
+.tt__nums b{font:600 24px/1 'NV Digits',var(--font-cormorant),serif;color:inherit}
+.tt__nums small{font-size:9.5px;color:#8a7c95}
+.tt__nums a:hover small{color:#ffe3ee}
+.tt__rashi{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:13.5px;font-weight:700;color:#76335C}
+.tt__events{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.tt__events li{display:flex;gap:12px;align-items:center}
+.tt__date{display:grid;justify-items:center;min-width:46px;padding:5px 0;border-radius:12px;background:#f5eefa;color:#76335C;font-size:11px;font-weight:800;text-transform:uppercase}
+.tt__date b{font:600 20px/1 'NV Digits',var(--font-cormorant),serif}
+.tt__events li>span:last-child{display:grid;font-weight:700;font-size:14.5px}
+.tt__events small{font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#8a7c95}
+.tt__cta{justify-self:start;background:#76335C}
+@media (max-width:900px){.tt__nums{grid-template-columns:repeat(5,minmax(0,1fr))}.tt__pan{grid-template-columns:1fr}.tt__num small{display:none}}
+@media (max-width:700px){.tt__grid{grid-template-columns:1fr;gap:12px}.tt__nums{grid-template-columns:repeat(9,minmax(0,1fr));gap:4px}.tt__pan{grid-template-columns:1fr 1fr}}
+@media (max-width:620px){
+  .tt__today{padding:20px}.tt__side{padding:18px}
+  .tt__pan{gap:8px}.tt__pan>div{padding:8px 10px}
+  .tt__nums small{display:none}
+  .tt{padding-block:24px}
+  .tt__today{gap:10px}
+  .tt__today h2{font-size:26px}
+  .tt__num b{font-size:60px}
+  .tt__side>div:has(.tt__events){display:none}
+  .tt__side{gap:12px}
+  .tt__nums a{padding:7px 0}
+  .tt__nums b{font-size:20px}
+  .tt__pan dd{font-size:13.5px}
+  .tt__pan dd small{display:none}
+}
+/* exactly one screen below the sticky header (--nv-header-h is measured live), content centred */
+.tt{min-height:calc(100svh - var(--nv-header-h,160px));display:flex;align-items:center;box-sizing:border-box}
+.tt>.tt__grid{flex:1;max-width:min(1240px,calc(100% - 64px))}
+.tt__today,.tt__side{align-content:center}
+@media (min-height:760px) and (min-width:901px){.tt__today{gap:20px}.tt__side{gap:22px}.tt__pan dd{font-size:15.5px}}
+@media (max-width:700px){.tt>.tt__grid{max-width:calc(100% - 32px)}}

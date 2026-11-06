@@ -13,6 +13,7 @@ import {enqueue} from '../lib/outbox.js';
 import {transaction} from '../lib/tx.js';
 import {runOutbox} from '../services/jobs.js';
 import {logger} from '../lib/logger.js';
+import {getSetting} from '../lib/settings.js';
 
 /**
  * Bookings from the main website: courses, consultations and the paid numerology report. The site owns the
@@ -131,6 +132,13 @@ async function websiteSales(kind?: string) {
   });
 }
 const FLOOR = 100n; // Razorpay's smallest charge is ₹1 / $1: nothing becomes free through checkout.
+
+route(r, {method: 'get', path: '/site/events', access: 'PUBLIC', tag: 'Content', summary: 'NumericcVaastu events for the website calendar (back office → Settings → Website events)'}, async (_req, res) => {
+  const today = new Date(Date.now() + 5.5 * 3600_000).toISOString().slice(0, 10);
+  const s = await getSetting('siteEvents');
+  res.setHeader('Cache-Control', 'public, max-age=60');
+  send(res, (s?.events ?? []).filter((e) => e.date >= today).sort((a, b) => a.date.localeCompare(b.date)));
+});
 
 route(r, {method: 'get', path: '/site/sale', access: 'PUBLIC', tag: 'Content', summary: 'Sale campaigns running on the website (for price display and the announcement strip)'}, async (_req, res) => {
   const sales = await websiteSales();

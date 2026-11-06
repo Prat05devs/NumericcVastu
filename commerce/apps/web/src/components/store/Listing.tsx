@@ -66,7 +66,7 @@ export async function Listing({category, collection, search, basePath, title, in
   return (
     <div className="w">
       <div className="crumbs"><Link href="/">Home</Link> / <b>{title}</b></div>
-      <div className="lhead"><span className="eyebrow">{eyebrow ?? `${title} · ${items.length}${next ? '+' : ''} piece${items.length === 1 ? '' : 's'}`}</span><h1 className="disp">{title}</h1>{(intro || cat?.intro) && <p>{intro ?? cat?.intro}</p>}</div>
+      <div className="lhead"><span className="eyebrow">{eyebrow ?? `${title} · ${items.length}${next ? '+' : ''} piece${items.length === 1 ? '' : 's'}`}</span><h1 className="disp">{title.split(' ').length > 1 ? <>{title.split(' ').slice(0, -1).join(' ')} <em>{title.split(' ').at(-1)}</em></> : <em>{title}</em>}</h1>{(intro || cat?.intro) && <p>{intro ?? cat?.intro}</p>}</div>
       {chipFilter && (
         <nav className="chips" aria-label={chipFilter.label}>
           <Link className={`pill${chipOn.length ? '' : ' on'}`} href={linkWith(chipKey, null)}>All</Link>

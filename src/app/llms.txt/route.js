@@ -56,6 +56,7 @@ export async function GET() {
     ...locations.map((l) => `- [${l.seo.title.split(' – ')[0]}](${url(`/${l.slug}`)}): ${l.seo.description}`),
     '',
     '## Free tools',
+    `- [Daily horoscope and panchang](${url('/horoscope')}): updated every day. Today’s numerology reading for numbers 1–9 and Vedic (Chandra gochar) reading for all 12 rashis; today’s tithi, nakshatra, Moon sign, sunrise, sunset, Rahu Kaal and Abhijit muhurat for New Delhi; and the next 30 days of Ekadashi, Purnima, Amavasya, Pradosh, Sankashti Chaturthi, festivals and NumericcVaastu events.`,
     `- [Lo Shu grid calculator](${url('/numerology-calculator')}): Mulank, Bhagyank, Kua number and directions, missing numbers, name number and mobile number compatibility from a date of birth.`,
     `- [Vedic numerology calculator](${url('/vedic-numerology-calculator')}): Vedic numerology kundli, planetary grid and a combined full report.`,
     '',

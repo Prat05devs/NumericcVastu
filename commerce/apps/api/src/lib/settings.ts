@@ -13,6 +13,8 @@ export const ConsultationSettings = z.object({topics: z.array(z.object({id: z.en
 export const CatalogueSettings = z.object({allowDemoPublish: z.boolean(), lowStockThreshold: z.number().int().min(0).max(1000)});
 export const PaymentModeSetting = z.object({mode: z.enum(['mock', 'test', 'live']), changedBy: z.string().nullable(), changedAt: z.string().nullable()});
 export const AiSettings = z.record(z.string(), z.object({model: z.string().max(120).nullable(), enabled: z.boolean()}));
+/** NumericcVaastu's own events (workshops, live sessions, batches) for the website's daily guide calendar. */
+export const SiteEventsSettings = z.object({events: z.array(z.object({date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date as YYYY-MM-DD'), title: z.string().trim().min(2).max(90), time: z.string().max(40).optional(), detail: z.string().max(200).optional(), link: z.string().max(300).optional()})).max(40)});
 export const NavigationSettings = z.object({highlights: z.array(z.object({label: z.string().max(60), href: z.string().max(200)})).max(8)});
 
 export const SETTINGS = {
@@ -25,6 +27,7 @@ export const SETTINGS = {
   'payments.mode': PaymentModeSetting,
   ai: AiSettings,
   navigation: NavigationSettings,
+  siteEvents: SiteEventsSettings,
   affiliates: AffiliateSettings,
   international: InternationalSettings,
 } as const;
@@ -36,6 +39,7 @@ const DEFAULTS: {[K in SettingKey]?: SettingValue<K>} = {
   'payments.mode': {mode: 'mock', changedBy: null, changedAt: null},
   ai: {},
   navigation: {highlights: []},
+  siteEvents: {events: []},
 };
 
 export async function getSetting<K extends SettingKey>(key: K, db: Tx | typeof prisma = prisma): Promise<SettingValue<K> | null> {

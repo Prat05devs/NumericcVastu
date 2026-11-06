@@ -17,6 +17,7 @@ export default function sitemap(){
     ...consultations.map(x=>entry(`/consultations/${x.slug}`,0.8)),
     entry('/courses',0.9),
     ...courses.map(x=>entry(`/courses/${x.slug}`,0.8)),
+    entry('/horoscope',0.9,{changeFrequency:'daily',lastModified:new Date()}),
     entry('/numerology-calculator',0.8),
     entry('/vedic-numerology-calculator',0.8),
     entry('/book-consultation',0.7),

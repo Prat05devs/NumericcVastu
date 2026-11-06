@@ -37,7 +37,7 @@ export default async function Home() {
         <Link className="panel p2" href="#finder">
           <div className="bg"><Art name="hero-crystals" /></div>
           <span className="eyebrow">Not sure what suits you?</span>
-          <h2 className="disp">Find your stone<br />by your number</h2>
+          <h2 className="disp">Find your stone<br /><em>by your number</em></h2>
           <p>Enter your date of birth to see the stones traditionally linked with your Mulank, then shop them in one tap.</p>
           <span className="btn">Find my stone <Arrow /></span>
         </Link>
@@ -52,13 +52,13 @@ export default async function Home() {
         </div>
 
         <section className="section" aria-labelledby="fam-h">
-          <div className="head"><div><span className="eyebrow">Shop by family</span><h2 className="disp" id="fam-h">Find what you are looking for</h2></div><Link className="lnk" href="/shop">See everything →</Link></div>
+          <div className="head"><div><span className="eyebrow"><span className="no">01</span>Shop by family</span><h2 className="disp" id="fam-h">Find what you<br /><em>are looking for</em></h2></div><Link className="lnk" href="/shop">See everything →</Link></div>
           <div className="cats">{FAMILIES.map(([t, s, href, art]) => <Link key={t} className="cat" href={href}><span className="ring pic"><Art name={art} /></span><b>{t}</b><span>{s}</span></Link>)}</div>
         </section>
 
         {newest === null ? <section className="section"><Unavailable /></section> : edit.length > 0 && (
           <section className="section" aria-labelledby="edit-h">
-            <div className="head"><div><span className="eyebrow">New arrivals</span><h2 className="disp" id="edit-h">This week’s edit</h2></div><Link className="lnk" href="/shop?sort=newest">View all →</Link></div>
+            <div className="head"><div><span className="eyebrow"><span className="no">02</span>New arrivals</span><h2 className="disp" id="edit-h">This week’s <em>edit</em></h2></div><Link className="lnk" href="/shop?sort=newest">View all →</Link></div>
             <div className="edit">{edit.map((p, i) => <ProductCard key={p.id} p={p} tall={i === 0 && edit.length >= 5} eager={i < 2} />)}</div>
           </section>
         )}
@@ -67,7 +67,7 @@ export default async function Home() {
       <section className="curve" aria-labelledby="curve-h">
         <div className="w">
           <span className="eyebrow">Worn with intention</span>
-          <h2 className="disp" id="curve-h">Small rituals,<br />carried every day</h2>
+          <h2 className="disp" id="curve-h">Small rituals,<br /><em>carried every day</em></h2>
           <p>Bracelets and pendants chosen for what they mean to you, made to wear daily and described without exaggeration.</p>
           <Link className="btn light" href="/crystals?attr_product_form=bracelet">Discover the collection <Arrow /></Link>
         </div>
@@ -78,27 +78,27 @@ export default async function Home() {
         <section className="section" id="finder" aria-labelledby="finder-h"><MulankFinder mainSite={SHOP.main} /></section>
 
         <section className="wbanner" aria-labelledby="banner-h">
-          <div className="wcopy"><span className="eyebrow">Made to order</span><h2 className="disp" id="banner-h">A wristwatch,<br />aligned to your numbers</h2><p>Dial colour, strap and the day you begin wearing it are chosen from your birth chart. Quoted for you before anything is made.</p><Link className="btn" href="/custom-wristwatch">Request a quote <Arrow /></Link></div>
+          <div className="wcopy"><span className="eyebrow"><span className="no">04</span>Made to order</span><h2 className="disp" id="banner-h">A wristwatch,<br /><em>aligned to your numbers</em></h2><p>Dial colour, strap and the day you begin wearing it are chosen from your birth chart. Quoted for you before anything is made.</p><Link className="btn" href="/custom-wristwatch">Request a quote <Arrow /></Link></div>
           <div className="art-wrap"><div className="stripes" /><div className="plinth" /><Art name="watch-big" /></div>
         </section>
 
         {best.length > 0 && (
           <section className="section" aria-labelledby="best-h">
-            <div className="head"><div><span className="eyebrow">Most loved</span><h2 className="disp" id="best-h">Best sellers</h2></div><Link className="lnk" href="/shop">Shop all →</Link></div>
+            <div className="head"><div><span className="eyebrow"><span className="no">05</span>Most loved</span><h2 className="disp" id="best-h">Best <em>sellers</em></h2></div><Link className="lnk" href="/shop">Shop all →</Link></div>
             <div className="grid4">{best.map((p) => <ProductCard key={p.id} p={p} />)}</div>
           </section>
         )}
 
         {guides?.data.length ? (
           <section className="section" aria-labelledby="journal-h">
-            <div className="head"><div><span className="eyebrow">Guides</span><h2 className="disp" id="journal-h">Before you buy</h2></div><Link className="lnk" href="/guides">All guides →</Link></div>
+            <div className="head"><div><span className="eyebrow"><span className="no">06</span>Guides</span><h2 className="disp" id="journal-h">Before <em>you buy</em></h2></div><Link className="lnk" href="/guides">All guides →</Link></div>
             <div className="journal">{guides.data.slice(0, 3).map((g, i) => <Link key={g.slug} className="post" href={`/guides/${g.slug}`}><Pic art={['rudraksha', 'gem-yellow', 'cluster'][i % 3]!} /><span className="t"><span>Guide</span><b>{g.title}</b></span></Link>)}</div>
           </section>
         ) : null}
 
         <section className="join" aria-labelledby="join-h">
           <span className="eyebrow">Stay close</span>
-          <h2 className="disp" id="join-h">First look at new pieces</h2>
+          <h2 className="disp" id="join-h">First look at<br /><em>new pieces</em></h2>
           <p>New arrivals, festival offers and Adarshh’s guides, about twice a month. No spam; leave any time.</p>
           <JoinForm />
         </section>

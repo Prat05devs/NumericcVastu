@@ -26,7 +26,7 @@ export function MulankFinder({mainSite}: {mainSite: string}) {
   return (
     <div className="finder">
       <div className="intro">
-        <div><span className="eyebrow">Numerology guide</span><h2 className="disp" id="finder-h">Which stone suits<br />your number?</h2><p>Your Mulank is the total of the day you were born. Each number is traditionally linked with a planet, a gemstone and supportive crystals.</p></div>
+        <div><span className="eyebrow"><span className="no">03</span>Numerology guide</span><h2 className="disp" id="finder-h">Which stone suits<br /><em>your number?</em></h2><p>Your Mulank is the total of the day you were born. Each number is traditionally linked with a planet, a gemstone and supportive crystals.</p></div>
         <form onSubmit={(e) => { e.preventDefault(); if (dob) setDay(Number(dob.slice(8, 10))); }}>
           <label htmlFor="dob">Your date of birth</label>
           <input id="dob" type="date" value={dob} max={today()} onChange={(e) => setDob(e.target.value)} required />

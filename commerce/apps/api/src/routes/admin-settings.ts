@@ -86,7 +86,7 @@ route(r, {method: 'get', path: '/audit', access: 'STAFF:audit.read', tag: 'Admin
 
 // ───────────── Settings (tax, shipping, returns, invoice, consultation, catalogue, navigation, partner programme)
 const OPTIONAL: SettingKey[] = ['international'];
-const EDITABLE: SettingKey[] = ['tax', 'shipping', 'returns', 'invoice', 'consultation', 'catalogue', 'navigation', 'affiliates', 'international'];
+const EDITABLE: SettingKey[] = ['tax', 'shipping', 'returns', 'invoice', 'consultation', 'catalogue', 'navigation', 'affiliates', 'international', 'siteEvents'];
 route(r, {method: 'get', path: '/settings', access: 'STAFF:settings.read', tag: 'Admin settings', summary: 'All configuration; secrets shown only as set/last-4'}, staff('settings.read'), async (_req, res) => {
   noStore(res);
   const values: Record<string, unknown> = {};
