@@ -14,11 +14,17 @@ const body = Lora({subsets: ['latin'], weight: ['400', '500', '600', '700'], sty
 const MESSAGES = ['Delivery included across India · prepaid orders', 'Every piece listed with its origin, size and treatment', 'Guided by Adarshh Panndey · numerology and Vaastu'];
 
 export default async function StoreLayout({children}: {children: React.ReactNode}) {
-  const offers = (await apiGet<Offer[]>('/offers', {revalidate: 60, tags: ['catalogue', 'campaign']}))?.data ?? [];
+  const [offerRes, campaignRes] = await Promise.all([
+    apiGet<Offer[]>('/offers', {revalidate: 60, tags: ['catalogue', 'campaign']}),
+    apiGet<{name: string; endsAt: string; theme: {bannerText?: string; showCountdown?: boolean}}[]>('/campaigns/active', {revalidate: 60, tags: ['campaign']}),
+  ]);
+  const offers = offerRes?.data ?? [];
+  // A running sale (back office → Sales & festive themes) leads the bar with its banner text and end date.
+  const sales = (campaignRes?.data ?? []).filter((c) => c.theme?.bannerText).map((c) => `${c.theme.bannerText}${c.theme.showCountdown ? ` · ends ${new Date(c.endsAt).toLocaleDateString('en-IN', {day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata'})}` : ''}`);
   return (
     <div className={`cs ${display.variable} ${body.variable}`}>
       <CouponCapture />
-      <Ticker offers={offers} messages={MESSAGES} />
+      <Ticker offers={offers} messages={MESSAGES} lead={sales} />
       <Header />
       <main id="content">{children}</main>
       <Footer />

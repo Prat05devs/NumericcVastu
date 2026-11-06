@@ -7,15 +7,17 @@ import {dateTime} from '@/lib/format';
 
 type C = {id: string; name: string; slug: string; startsAt: string; endsAt: string; priority: number; active: boolean; storefronts: string[]; ruleJson: Record<string, unknown>; themeJson: Record<string, unknown>};
 const SPECS: Spec[] = [
-  {key: 'name', label: 'Name', type: 'text'}, {key: 'slug', label: 'Slug', type: 'text'},
+  {key: 'name', label: 'Name', type: 'text'}, {key: 'slug', label: 'Short ID (optional: made from the name, e.g. deepawali-sale-2026)', type: 'text'},
   {key: 'startsAt', label: 'Starts', type: 'datetime'}, {key: 'endsAt', label: 'Ends', type: 'datetime'}, {key: 'priority', label: 'Priority (higher wins ties)', type: 'number'},
   ...RULE_SPECS,
-  {key: 'theme.bannerText', label: 'Banner text (top of every page)', type: 'text'}, {key: 'theme.bannerLink', label: 'Banner link', type: 'text'}, {key: 'theme.badge', label: 'Product badge', type: 'text'},
+  {key: 'theme.bannerText', label: 'Banner text (shown first in the crystal shop’s offers bar)', type: 'text'}, {key: 'theme.bannerLink', label: 'Banner link', type: 'text'}, {key: 'theme.badge', label: 'Product badge (up to 30 letters, e.g. Deepawali −10%)', type: 'text'},
   {key: 'theme.decoration', label: 'Decoration', type: 'select', options: [['diyas', 'Diwali diyas'], ['rangoli', 'Rangoli'], ['marigold', 'Marigold garland'], ['stars', 'Stars'], ['none', 'None']]},
   {key: 'theme.colors.accent', label: 'Accent colour (#RRGGBB)', type: 'text'}, {key: 'theme.showCountdown', label: 'Show countdown to the end', type: 'bool'}, {key: 'active', label: 'Active', type: 'bool'},
 ];
 const toForm = (c: C) => ({name: c.name, slug: c.slug, startsAt: c.startsAt, endsAt: c.endsAt, priority: c.priority, rule: {...c.ruleJson, appliesTo: {families: ((c.ruleJson['appliesTo'] as {families?: string[]})?.families ?? []).join(', ')}}, theme: c.themeJson, active: c.active});
-const payload = (v: Record<string, unknown>) => ({...v, rule: normaliseRule(v), storefronts: []});
+/** A safe short ID: lowercase letters, numbers and hyphens, made from the name when left blank. */
+const slugify = (t: string) => t.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
+const payload = (v: Record<string, unknown>) => ({...v, slug: slugify(String(v['slug'] || v['name'] || '')) || `sale-${Date.now()}`, rule: normaliseRule(v), storefronts: []});
 
 export default function Campaigns() {
   const {data, error, loading, reload} = useResource<C[]>('/admin/campaigns');

@@ -3,6 +3,9 @@ import {useCallback, useEffect, useRef, useState} from 'react';
 import {call, newKey, type Result} from '@/lib/client';
 import {paiseToRupees, rupeesToPaise} from '@/lib/format';
 
+/** ISO time → the value a datetime-local input expects, in the viewer's own time zone. */
+const localInput = (iso: string) => { const d = new Date(iso); if (Number.isNaN(d.getTime())) return ''; const p = (n: number) => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`; };
+
 /** Loads an admin resource and exposes reload; errors are shown inline, never swallowed. */
 export function useResource<T>(path: string | null) {
   const [data, setData] = useState<T | null>(null);
@@ -72,7 +75,9 @@ function Input({spec, value, onChange, id}: {spec: Spec; value: unknown; onChang
     case 'select': return <select id={id} value={String(value ?? '')} onChange={(e) => onChange(e.target.value)}><option value="">—</option>{spec.options.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select>;
     case 'money': return <input id={id} inputMode="decimal" placeholder="₹" defaultValue={paiseToRupees(value as string | null)} onBlur={(e) => onChange(e.target.value.trim() === '' ? (spec.nullable ? null : undefined) : rupeesToPaise(e.target.value) ?? value)} />;
     case 'percent': return <input id={id} inputMode="decimal" placeholder="%" defaultValue={value === undefined || value === null ? '' : String(Number(value) / 100)} onBlur={(e) => onChange(e.target.value === '' ? null : Math.round(Number(e.target.value) * 100))} />;
-    case 'datetime': return <input id={id} type="datetime-local" value={value ? new Date(String(value)).toISOString().slice(0, 16) : ''} onChange={(e) => onChange(e.target.value ? new Date(e.target.value).toISOString() : null)} />;
+    // Shown and typed in the browser's own time (IST for the team); stored as UTC. Showing the UTC value here used to
+    // shift the time by 5½ hours on every edit.
+    case 'datetime': return <input id={id} type="datetime-local" value={value ? localInput(String(value)) : ''} onChange={(e) => onChange(e.target.value ? new Date(e.target.value).toISOString() : null)} />;
     case 'map': {
       const entries = Object.entries((value as Obj) ?? {});
       return <div className="rows">{entries.map(([k, v], i) => (

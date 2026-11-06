@@ -3,7 +3,7 @@ import {useEffect, useState} from 'react';
 
 /** One advertised coupon (from GET /offers) or a plain message. */
 export type Offer = {code: string; title: string; terms: string; families?: string[]};
-type Item = {title: string; code?: string};
+type Item = {title: string; code?: string; sale?: boolean};
 
 export function CopyCode({code, big = false}: {code: string; big?: boolean}) {
   const [done, setDone] = useState(false);
@@ -41,9 +41,9 @@ export function OffersSheet({offers, onClose}: {offers: Offer[]; onClose: () => 
  * The running offers bar at the top of every page: active codes staff chose to advertise (back office → Coupons →
  * “Show in the offers bar”), plus standing messages. Moves right to left in a loop; pauses on hover or focus.
  */
-export function Ticker({offers, messages}: {offers: Offer[]; messages: string[]}) {
+export function Ticker({offers, messages, lead = []}: {offers: Offer[]; messages: string[]; lead?: string[]}) {
   const [open, setOpen] = useState(false);
-  const items: Item[] = [];
+  const items: Item[] = lead.map((title) => ({title, sale: true}));
   const plain = [...messages];
   for (const o of offers) { items.push({title: o.title, code: o.code}); if (plain.length) items.push({title: plain.shift()!}); }
   items.push(...plain.map((m) => ({title: m})));
@@ -53,7 +53,7 @@ export function Ticker({offers, messages}: {offers: Offer[]; messages: string[]}
     <div className="tk-set" aria-hidden={dup || undefined}>
       {set.map((it, i) => (
         <span className="tk-item" key={i}>
-          {it.code ? <span className="tk-tag">OFFER</span> : <span className="tk-dot">✦</span>}
+          {it.code ? <span className="tk-tag">OFFER</span> : it.sale ? <span className="tk-tag">SALE</span> : <span className="tk-dot">✦</span>}
           {it.title}
           {it.code && (dup ? <span className="copy">{it.code}<span>Copy</span></span> : <CopyCode code={it.code} />)}
         </span>
