@@ -49,7 +49,6 @@ export const metadata = {
   creator: 'Adarshh Panndey',
   publisher: 'NumericcVaastu Training and Consultancy LLP',
   category: 'Numerology and Vastu',
-  icons: { icon: '/images/logo-nv.png' },
   // Search Console and Bing Webmaster Tools ownership, set in the hosting environment (see .env.example).
   verification: {
     ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION && {google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION}),
