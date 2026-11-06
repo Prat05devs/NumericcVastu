@@ -92,7 +92,7 @@ function Input({spec, value, onChange, id}: {spec: Spec; value: unknown; onChang
       const rows = (value as Obj[]) ?? [];
       return <div className="rows">{rows.map((row, i) => (
         <div key={i} className="rowedit">
-          {spec.fields.map((f) => <div key={f.key}><label htmlFor={`${id}-${i}-${f.key}`}>{f.label}</label><Input spec={f} id={`${id}-${i}-${f.key}`} value={get(row, f.key)} onChange={(v) => onChange(rows.map((r, j) => (j === i ? set(r, f.key, v) : r)))} /></div>)}
+          {spec.fields.map((f) => <div key={f.key}><label htmlFor={`${id}-${i}-${f.key}`}>{f.label}</label><Input spec={f} id={`${id}-${i}-${f.key}`} value={get(row, f.key)} onChange={(v) => onChange(rows.map((r, j) => (j === i ? set(r, f.key, v) : r)))} />{f.hint && i === 0 && <div className="hint">{f.hint}</div>}</div>)}
           <button type="button" className="btn small ghost" onClick={() => onChange(rows.filter((_, j) => j !== i))}>Remove</button>
         </div>
       ))}<button type="button" className="btn small ghost" onClick={() => onChange([...rows, {}])}>{spec.addLabel ?? 'Add row'}</button></div>;

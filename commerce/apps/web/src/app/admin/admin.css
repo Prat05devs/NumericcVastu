@@ -187,3 +187,6 @@
 @media (prefers-reduced-motion: reduce) { .nva-side { transition: none; } }
 .nva .alert.bad { background: var(--nv-bad-bg); border-color: #f5c9d0; color: var(--nv-bad); }
 .nva .ok { color: var(--nv-ok); }
+
+/* Field help (Hinglish): readable, close to its field. */
+.field > .hint, .rowedit .hint { color: #5a5266; font-size: 13px; line-height: 1.5; margin-top: 6px; max-width: 75ch; }
