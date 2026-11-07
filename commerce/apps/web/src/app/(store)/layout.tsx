@@ -5,6 +5,7 @@ import {Footer} from '@/components/store/Footer';
 import {CouponCapture} from '@/components/store/CouponCapture';
 import {CartDrawer} from '@/components/store/CartDrawer';
 import {Ticker, type Offer} from '@/components/store/Ticker';
+import {Renovation} from '@/components/store/Renovation';
 import './store.css';
 
 const display = Noto_Serif_Display({subsets: ['latin'], weight: ['400', '500', '600', '700'], style: ['normal', 'italic'], variable: '--font-display', display: 'swap'});
@@ -14,6 +15,8 @@ const body = Lora({subsets: ['latin'], weight: ['400', '500', '600', '700'], sty
 const MESSAGES = ['Delivery included across India · prepaid orders', 'Every piece listed with its origin, size and treatment', 'Guided by Adarshh Panndey · numerology and Vaastu'];
 
 export default async function StoreLayout({children}: {children: React.ReactNode}) {
+  // Until the shop is ready (set STORE_OPEN=true on the shop app), every shop page shows the renovation notice.
+  if (process.env.STORE_OPEN !== 'true') return <div className={`cs ${display.variable} ${body.variable}`}><Renovation /></div>;
   const [offerRes, campaignRes] = await Promise.all([
     apiGet<Offer[]>('/offers', {revalidate: 60, tags: ['catalogue', 'campaign']}),
     apiGet<{name: string; endsAt: string; theme: {bannerText?: string; showCountdown?: boolean}}[]>('/campaigns/active', {revalidate: 60, tags: ['campaign']}),

@@ -652,3 +652,21 @@ body:has(.cs){background:#fbf7f1}
 .cs .ftr h3{color:var(--plum)}
 .cs .wordmark{background:linear-gradient(100deg,rgba(118,51,92,.28),rgba(165,146,238,.32),rgba(254,134,170,.32));-webkit-background-clip:text;background-clip:text;color:transparent}
 .cs .legal{background:transparent;border-color:#e2cfe0}
+
+/* Renovation notice */
+.cs .reno{min-height:100vh;display:grid;place-items:center;padding:40px 20px;background:radial-gradient(70% 60% at 80% 10%,rgba(165,146,238,.35),transparent 60%),radial-gradient(60% 60% at 10% 90%,rgba(254,134,170,.3),transparent 60%),var(--ivory);position:relative;overflow:hidden}
+.cs .reno__art{position:absolute;inset:0;pointer-events:none}
+.cs .reno__art .art{position:absolute;width:220px;height:220px;opacity:.5}
+.cs .reno__art .art:nth-child(1){left:6%;top:10%;transform:rotate(-8deg)}
+.cs .reno__art .art:nth-child(2){right:8%;bottom:12%;width:200px}
+.cs .reno__art .art:nth-child(3){right:14%;top:8%;width:120px}
+.cs .reno__card{position:relative;width:min(640px,100%);text-align:center;padding:48px 36px;border-radius:32px;background:rgba(255,253,249,.82);backdrop-filter:blur(14px);border:1px solid #efe2f3;box-shadow:0 40px 80px -50px rgba(118,51,92,.6)}
+.cs .reno .disp{font-size:clamp(36px,5vw,58px);margin:12px 0 16px}
+.cs .reno p{color:var(--brown);max-width:48ch;margin:0 auto}
+.cs .reno__sub{margin-top:22px!important;font-weight:700;color:var(--plum-deep)!important}
+.cs .reno .join{margin:12px 0 0;padding:0;background:none;color:inherit}
+.cs .reno .join input[type=email]{background:#fff;border:1px solid var(--taupe)}
+.cs .reno .join .btn{background:var(--plum);border-color:var(--plum)}
+.cs .reno__links{justify-content:center;margin-top:24px}
+.cs .reno__links svg{width:16px;height:16px}
+@media (max-width:620px){.cs .reno__card{padding:34px 20px}.cs .reno__art .art{width:120px;height:120px}}

@@ -14,7 +14,7 @@ const quote = (body: Record<string, unknown>) => new Client().init().then((c) =>
 afterAll(async () => { await prisma.campaign.updateMany({where: {slug: {in: created}}, data: {active: false}}); });
 
 describe('a sale campaign on the website', () => {
-  it('discounts courses, consultations and the report, shows on /site/sale, and stacks only combinable coupons', async () => {
+  it('discounts courses and consultations (not the report unless listed), shows on /site/sale, and stacks only combinable coupons', async () => {
     const owner = await staff('OWNER');
     const sale = campaign('Deepawali Sale', []);
     created.push(sale.slug);
@@ -24,21 +24,23 @@ describe('a sale campaign on the website', () => {
     const list = (await shop.get('/site/sale')).body.data as {name: string; rule: {percentBp: number}; bannerText: string}[];
     expect(list.find((s) => s.name === 'Deepawali Sale')).toMatchObject({rule: {percentBp: 1500}, bannerText: 'Deepawali Sale banner'});
 
-    // ₹399 report: 15% is ₹59.85 → whole rupees ₹59 → ₹340.
-    const report = await quote({offerKind: 'report', amountMinor: 39900, currency: 'INR'});
-    expect(report.body.data).toMatchObject({valid: true, code: null, sale: {name: 'Deepawali Sale', discountMinor: '5900'}, discountMinor: '5900', finalMinor: '34000'});
-    // $10 report: 15% → $8.50.
-    expect((await quote({offerKind: 'report', amountMinor: 1000, currency: 'USD'})).body.data).toMatchObject({finalMinor: '850'});
+    // ₹7,500 consultation: 15% → ₹6,375.
+    const consult = await quote({offerKind: 'consultation', amountMinor: 750000, currency: 'INR'});
+    expect(consult.body.data).toMatchObject({valid: true, code: null, sale: {name: 'Deepawali Sale', discountMinor: '112500'}, discountMinor: '112500', finalMinor: '637500'});
+    // $180 consultation: 15% → $153.
+    expect((await quote({offerKind: 'consultation', amountMinor: 18000, currency: 'USD'})).body.data).toMatchObject({finalMinor: '15300'});
+    // A blank list does not reach the report: it keeps its own price unless REPORT is listed.
+    expect((await quote({offerKind: 'report', amountMinor: 39900, currency: 'INR'})).body.data).toMatchObject({valid: true, sale: null, finalMinor: '39900'});
     expect((await quote({offerKind: 'course', amountMinor: 2999900, currency: 'INR'})).body.data.finalMinor).toBe('2550000');
 
     const tag = ulid().slice(-6);
     expect((await owner.post('/admin/discounts', {code: `SOLO${tag}`, description: '', rule: {type: 'PERCENT', percentBp: 1000, appliesTo: {families: [], productIds: []}}, storefronts: ['website'], combinable: false, active: true})).status).toBe(201);
     expect((await owner.post('/admin/discounts', {code: `PLUS${tag}`, description: '', rule: {type: 'FIXED', amountPaise: '1000', appliesTo: {families: [], productIds: []}}, storefronts: ['website'], combinable: true, active: true})).status).toBe(201);
-    const solo = await quote({code: `SOLO${tag}`, offerKind: 'report', amountMinor: 39900, currency: 'INR'});
+    const solo = await quote({code: `SOLO${tag}`, offerKind: 'consultation', amountMinor: 750000, currency: 'INR'});
     expect(solo.body.data).toMatchObject({valid: false});
     expect(solo.body.data.message).toContain('Deepawali Sale');
-    // Combinable ₹10 off on top of the sale price: 34000 − 1000.
-    expect((await quote({code: `PLUS${tag}`, offerKind: 'report', amountMinor: 39900, currency: 'INR'})).body.data).toMatchObject({valid: true, couponDiscountMinor: '1000', discountMinor: '6900', finalMinor: '33000'});
+    // Combinable ₹10 off on top of the sale price: 637500 − 1000.
+    expect((await quote({code: `PLUS${tag}`, offerKind: 'consultation', amountMinor: 750000, currency: 'INR'})).body.data).toMatchObject({valid: true, couponDiscountMinor: '1000', discountMinor: '113500', finalMinor: '636500'});
   });
 
   it('leaves the website alone when the sale is for crystal families only', async () => {

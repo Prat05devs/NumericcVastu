@@ -5,6 +5,7 @@ import {useEffect, useState} from 'react';
 import Link from 'next/link';
 import {ArrowUpRight, FileText, Lock, ShieldCheck} from 'lucide-react';
 import Price from '../Price';
+import PromoBadge from '../PromoBadge';
 import ReportRecovery from '../ReportRecovery';
 import CouponBox from '../CouponBox';
 import {reportOffer} from '../../data/offers';
@@ -116,7 +117,7 @@ export default function FullReportGenerator({chart, gender, readingHref}) {
         <div><dt>Second person</dt><dd>{partnerDob && !partnerProblem ? <>Born {fmt(partnerDob)}</> : 'None'}</dd></div>
       </dl><small>To change the name, date of birth or phone, edit the calculator above and choose Show my numbers again.</small></div>}
       <CouponBox offerId="report-full" phone={whatsapp} applied={coupon} onChange={setCoupon}/>
-      {!coupon && <p className="fr-price"><b><Price offer={reportOffer}/></b> · one-time payment</p>}
+      {!coupon && <p className="fr-price"><PromoBadge offer={reportOffer}/><b><Price offer={reportOffer}/></b> · one-time payment</p>}
       <button className="hv-button hv-button--gold" type="submit" disabled={!name || !phone || !whatsappOk || !!partnerProblem || status.state === 'busy'}><Lock size={18}/> {status.state === 'busy' ? 'Please wait…' : coupon ? `Pay ${coupon.total} and get my report` : `Pay ${currency === 'USD' ? '$10' : '₹399'} and get my report`}</button>
       <p className="fr-status"><ShieldCheck size={16} aria-hidden="true"/> Secure payment by Razorpay. Your report opens straight after payment.</p>
     </form>}

@@ -128,7 +128,8 @@ async function websiteSales(kind?: string) {
     const reachesSite = !fronts.length || fronts.includes('website');
     const siteFamilies = fam.filter((f) => ['COURSE', 'CONSULTATION', 'REPORT'].includes(f));
     if (!reachesSite || (fam.length && !siteFamilies.length)) return false;
-    return !kind || !fam.length || fam.includes(kind.toUpperCase());
+    // A blank list means courses and consultations; the report joins a sale only when REPORT is listed.
+    return !kind || (fam.length ? fam.includes(kind.toUpperCase()) : kind !== 'report');
   });
 }
 const FLOOR = 100n; // Razorpay's smallest charge is ₹1 / $1: nothing becomes free through checkout.

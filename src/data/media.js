@@ -12,6 +12,8 @@ export const social = {
   instagram: process.env.NEXT_PUBLIC_INSTAGRAM_URL || 'https://www.instagram.com/numerologybyaadarshh/',
   youtube: process.env.NEXT_PUBLIC_YOUTUBE_URL || 'https://www.youtube.com/@Numerologistadarshpandey',
   linkedin: process.env.NEXT_PUBLIC_LINKEDIN_URL || 'https://www.linkedin.com/in/adarshh-panndey-23075987/',
+  /** Adarshh's Facebook page or profile. Paste the link here (or set NEXT_PUBLIC_FACEBOOK_URL); the footer icon appears once it is set. */
+  facebook: process.env.NEXT_PUBLIC_FACEBOOK_URL || '',
   whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_URL || `https://wa.me/${contact.whatsapp}?text=` + encodeURIComponent('Namaste Adarshh ji 🙏 I found you on numericcvaastu.com and would like to know more.'),
 };
 

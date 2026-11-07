@@ -21,7 +21,9 @@ export function bestSale(sales, offer, amountMinor, currency, now = Date.now()) 
   for (const s of sales || []) {
     if (new Date(s.endsAt).getTime() <= now || new Date(s.startsAt).getTime() > now) continue;
     const fam = s.rule?.families || [];
-    if (fam.length && !fam.includes(String(offer.kind).toUpperCase())) continue;
+    const kind = String(offer.kind).toUpperCase();
+    // A blank list means courses and consultations; the report joins a sale only when REPORT is listed.
+    if (fam.length ? !fam.includes(kind) : kind === 'REPORT') continue;
     const d = saleDiscount(s.rule, amountMinor, currency);
     if (d > 0 && (!best || d > best.discountMinor)) best = {sale: s, discountMinor: d, finalMinor: amountMinor - d};
   }

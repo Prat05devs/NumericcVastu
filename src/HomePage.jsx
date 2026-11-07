@@ -16,6 +16,7 @@ import StudentVideos from './components/StudentVideos';
 import {courses, consultations, reportOffer} from './data/offers';
 import VideoBackdrop from './components/VideoBackdrop';
 import TodayTeaser from './components/home/TodayTeaser';
+import PromoBadge from './components/PromoBadge';
 import {dailyGuide} from './lib/daily';
 import Price from './components/Price';
 import {awards, book, heroSlides, marqueeRows, social, videos} from './data/media';
@@ -206,7 +207,7 @@ export default async function HomePage() {
               <em>Open the tool <ArrowUpRight size={16}/></em>
             </Link>
             <Link className="vb-glass vb-glass--tool vb-glass--gold" href="/numerology-calculator">
-              <BookOpen size={24}/><small>Complete report · <Price offer={reportOffer}/></small><b>Your full numerology report</b>
+              <BookOpen size={24}/><PromoBadge offer={reportOffer} className="on-dark"/><small>Complete report · <Price offer={reportOffer}/></small><b>Your full numerology report</b>
               <span>Both methods, missing numbers with remedies and your Maha Dasha, in English or Hindi.</span>
               <em>Get my report <ArrowUpRight size={16}/></em>
             </Link>

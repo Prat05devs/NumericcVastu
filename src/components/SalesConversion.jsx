@@ -33,8 +33,9 @@ function SaleStrip({sale, now}) {
   // Fixed-amount sales apply to rupee payments only, so they are announced as such.
   const off = r.type === 'PERCENT' ? `${r.percentBp / 100}% off` : `₹${Number(r.amountPaise || 0) / 100} off (payments in India)`;
   const fam = r.families || [];
-  const web = fam.length ? fam.filter((f) => WEBSITE_KINDS[f]).map((f) => WEBSITE_KINDS[f]) : Object.values(WEBSITE_KINDS);
-  const reachesShop = !fam.length || fam.some((f) => ['RUDRAKSHA', 'GEMSTONE', 'CRYSTAL', 'YANTRA'].includes(f));
+  const web = fam.length ? fam.filter((f) => WEBSITE_KINDS[f]).map((f) => WEBSITE_KINDS[f]) : [WEBSITE_KINDS.COURSE, WEBSITE_KINDS.CONSULTATION];
+  // The crystal shop is being renovated; its line returns when NEXT_PUBLIC_CRYSTAL_SHOP_OPEN=true.
+  const reachesShop = process.env.NEXT_PUBLIC_CRYSTAL_SHOP_OPEN === 'true' && (!fam.length || fam.some((f) => ['RUDRAKSHA', 'GEMSTONE', 'CRYSTAL', 'YANTRA'].includes(f)));
   const ends = new Date(sale.endsAt);
   const days = Math.max(0, Math.ceil((ends.getTime() - now) / 86_400_000));
   const endDate = ends.toLocaleDateString('en-IN', {day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata'});

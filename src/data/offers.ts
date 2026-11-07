@@ -21,6 +21,11 @@ export type Offer = {
   inclusions: string[];
   pricePaise: number;
   priceUsdCents: number;
+  /** Struck-out comparison price and badge shown until promoUntil (ISO time); the charged price stays pricePaise. */
+  wasPaise?: number;
+  wasUsdCents?: number;
+  promoLabel?: string;
+  promoUntil?: string;
   priceVerified: boolean;
   checkoutEnabled: boolean;
   active: boolean;
@@ -75,6 +80,8 @@ export const reportOffer: Offer = {
   audience:'Anyone who has tried the free calculator',outcome:'A 19-chapter PDF in English or Hindi, ready the moment the payment is confirmed.',
   inclusions:['19-chapter PDF report','English and Hindi','Clickable contents','Missing numbers with remedies'],
   pricePaise:39900,priceUsdCents:1000,priceVerified:true,checkoutEnabled:true,active:true,
+  // Deepawali presentation chosen by the client on 7 November 2026: ₹699 shown struck out, ₹399 as the Deepawali special, until 10 Nov 11:59 PM IST.
+  wasPaise:69900,wasUsdCents:1600,promoLabel:'Deepawali special',promoUntil:'2026-11-10T18:29:59Z',
   source:'₹399 set by the client, 4 November 2026; US price from the pricing rule (₹399 × 2 ÷ 88, rounded up to $10)',
 };
 
@@ -111,6 +118,12 @@ export function formatPrice(offer: Offer, now = new Date(), currency: Currency =
   return new Intl.NumberFormat(currency === 'INR' ? 'en-IN' : 'en-US', {style:'currency',currency,maximumFractionDigits:0}).format(getPrice(offer, currency, now)/100);
 }
 /** Both labels, for pages that are cached once and shown to visitors in and outside India. */
+/** The struck-out price and badge, while the offer's promotion window is open. */
+export function promoFor(offer: Offer, now = new Date()) {
+  if (!offer.wasPaise || !offer.promoUntil || now.getTime() > Date.parse(offer.promoUntil)) return null;
+  return {label: offer.promoLabel ?? '', wasPaise: offer.wasPaise, wasUsdCents: offer.wasUsdCents ?? null};
+}
+
 export function priceLabels(offer: Offer, now = new Date()): Record<Currency, string> {
   return {INR: formatPrice(offer, now, 'INR'), USD: formatPrice(offer, now, 'USD')};
 }

@@ -102,7 +102,7 @@ export function siteGraph() {
         knowsLanguage: ['hi', 'en'],
         hasOccupation: person.jobTitles.map((name) => ({'@type': 'Occupation', name, occupationLocation: {'@type': 'City', name: 'New Delhi'}})),
         award: highlights.map((h) => [h.title, h.by, h.year].filter(Boolean).join(', ')),
-        sameAs: [social.instagram, social.youtube, person.youtubeChannel, person.linkedin, gbp.url],
+        sameAs: [social.instagram, social.youtube, person.youtubeChannel, person.linkedin, social.facebook, gbp.url].filter(Boolean),
       },
       {
         '@type': 'Book',
