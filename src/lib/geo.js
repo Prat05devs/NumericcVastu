@@ -40,7 +40,7 @@ export function countryOfIp(raw) {
   if (n6 === null || n6 === 0n || (n6 >> 57n) === 0x7en) return ''; // unspecified/loopback, fc00::/7 private
   return inRanges(n6, V6, (x) => x) ? 'IN' : 'ZZ';
 }
-/** The visitor's IP as forwarded by the CDN: the first public address in the chain. */
+/** The visitor's IP: Hostinger's CDN sets X-Real-IP itself (visitors cannot override it); X-Forwarded-For is a fallback. */
 export function clientIp(headers) {
   const chain = [headers.get('x-real-ip'), ...(headers.get('x-forwarded-for') || '').split(',')].map((s) => s && s.trim()).filter(Boolean);
   return chain.find((ip) => countryOfIp(ip) !== '') || '';
