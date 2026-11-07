@@ -1,5 +1,6 @@
 import {NextResponse} from 'next/server';
 import {CURRENCY_COOKIE, PREVIEW_COOKIE, countryFromHeaders, currencyForCountry} from './lib/currency';
+import {clientIp} from './lib/geo';
 
 /** Records the visitor's currency (rupees in India, dollars elsewhere) from their country. See lib/currency.js. */
 export function proxy(request) {
@@ -15,6 +16,8 @@ export function proxy(request) {
   }
   const response = NextResponse.next();
   const country = countryFromHeaders(request.headers);
+  // Temporary check (remove after confirming on Hostinger): which address the CDN passes, and the result.
+  response.headers.set('x-nv-geo', `${request.headers.get('x-real-ip') ? 'real-ip' : request.headers.get('x-forwarded-for') ? 'xff' : 'none'};${clientIp(request.headers) || '-'};${country || '-'}`);
   if (!country) return response;
   const currency = currencyForCountry(country);
   if (request.cookies.get(CURRENCY_COOKIE)?.value !== currency) response.cookies.set(CURRENCY_COOKIE, currency, {path: '/', maxAge: 60 * 60 * 24 * 30, sameSite: 'lax'});

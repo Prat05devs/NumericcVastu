@@ -69,7 +69,7 @@ export const navigationGroups = [
         {label: 'Vedic kundli calculator', description: 'Your planetary grid and number reading.', href: '/vedic-numerology-calculator', icon: 'orbit', badge: 'Free'},
       ]},
       {title: 'Your complete reading', links: [
-        {label: 'Combined full report', description: 'Lo Shu, Vedic, name and phone in one report.', href: '/numerology-calculator#report-options', icon: 'report', badge: '₹399'},
+        {label: 'Combined full report', description: 'Lo Shu, Vedic, name and phone in one report.', href: '/numerology-calculator#report-options', icon: 'report', badge: 'PDF'},
         {label: 'Review it with Adarshh', description: 'Bring your questions to a personal session.', href: '/consultations/personal-numerology-blueprint', icon: 'chat'},
       ]},
       {title: 'Understand the method', links: [
@@ -79,7 +79,7 @@ export const navigationGroups = [
       ]},
     ],
     footer: {label: 'Explore both free tools', href: '/#free-tools'},
-    feature: {eyebrow: 'Two methods. One report.', title: 'Get to know your numbers.', text: 'Free calculators, and a complete PDF report for ₹399.', label: 'Start my reading', href: '/numerology-calculator', kind: 'report'},
+    feature: {eyebrow: 'Two methods. One report.', title: 'Get to know your numbers.', text: 'Free calculators, and a complete PDF report.', label: 'Start my reading', href: '/numerology-calculator', kind: 'report'},
   },
   // Opens Adarshh's crystal store (numericcvaastucrystal.in) directly, without a menu.
   {id: 'shop', label: 'Shop', href: store.url},

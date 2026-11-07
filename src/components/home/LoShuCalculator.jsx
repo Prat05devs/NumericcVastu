@@ -1,4 +1,6 @@
 'use client';
+import Price from '../Price';
+import {reportOffer} from '../../data/offers';
 import LocalizedContent from '../../i18n/LocalizedContent';
 
 import {useEffect, useState} from 'react';
@@ -281,7 +283,7 @@ export default function LoShuCalculator({readingHref, full = false, system = 'lo
       </div>
     </div>
     {chart && <CalculationDetails chart={chart} system={system}/>}
-    {full && chart && <p className="nv-combined-cta"><a className="hv-button hv-button--gold" href="#full-report">Get the complete PDF report <ArrowUpRight size={17}/></a><span>Lo Shu and Vedic, remedies and your Maha Dasha · ₹399</span></p>}
+    {full && chart && <p className="nv-combined-cta"><a className="hv-button hv-button--gold" href="#full-report">Get the complete PDF report <ArrowUpRight size={17}/></a><span>Lo Shu and Vedic, remedies and your Maha Dasha · <Price offer={reportOffer}/></span></p>}
     {full && chart && <FullReport chart={readingChart} reportChart={chart} gender={gender} system={system} readingHref={readingHref}/>}
   </></LocalizedContent>;
 }

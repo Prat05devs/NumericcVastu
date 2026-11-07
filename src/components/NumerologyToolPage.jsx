@@ -1,3 +1,5 @@
+import Price from './Price';
+import {reportOffer} from '../data/offers';
 import Link from 'next/link';
 import {ArrowUpRight} from 'lucide-react';
 import LocalizedContent from '../i18n/LocalizedContent';
@@ -20,7 +22,7 @@ export default function NumerologyToolPage({system}) {
           <div><span className="hv-eyebrow">{vedic?'Free Vedic numerology tool':'Free Lo Shu numerology tool'}</span><h1 className="nv-calc-title">{vedic?'Your Vedic kundli,':'Your Lo Shu grid,'} <em>read for free.</em></h1></div>
           <div className="hv-head__aside"><p>{vedic?'Enter your name, phone number and birth date for your Vedic numerology kundli, planetary number readings, name analysis and phone compatibility.':'Enter your name, phone number, birth date and optional Kua gender for your Lo Shu kundli, planes, yogs, name analysis and phone compatibility.'}</p></div>
         </div>
-        <p className="nv-tool-report-note" id="report-options">Both free tools lead to one complete PDF report with Lo Shu and Vedic readings, remedies and your Maha Dasha, for ₹399.</p>
+        <p className="nv-tool-report-note" id="report-options">Both free tools lead to one complete PDF report with Lo Shu and Vedic readings, remedies and your Maha Dasha, for <Price offer={reportOffer}/>.</p>
         <LoShuCalculator key={system} system={system} full readingHref="/consultations/personal-numerology-blueprint"/>
       </div></section>
       <section className="hv-section hv-wrap nv-calc-method" aria-labelledby="method">

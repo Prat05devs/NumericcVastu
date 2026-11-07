@@ -21,7 +21,7 @@ function useOfferClock() {
 }
 
 const CRYSTAL_SHOP = 'https://numericcvaastucrystal.in/';
-const WEBSITE_KINDS = {COURSE: 'courses', CONSULTATION: 'consultations', REPORT: 'the ₹399 report'};
+const WEBSITE_KINDS = {COURSE: 'courses', CONSULTATION: 'consultations', REPORT: 'the full report'};
 const listJoin = (parts) => (parts.length > 1 ? `${parts.slice(0, -1).join(', ')} and ${parts.at(-1)}` : parts[0] || '');
 
 /**
@@ -30,7 +30,8 @@ const listJoin = (parts) => (parts.length > 1 ? `${parts.slice(0, -1).join(', ')
  */
 function SaleStrip({sale, now}) {
   const r = sale.rule || {};
-  const off = r.type === 'PERCENT' ? `${r.percentBp / 100}% off` : `₹${Number(r.amountPaise || 0) / 100} off`;
+  // Fixed-amount sales apply to rupee payments only, so they are announced as such.
+  const off = r.type === 'PERCENT' ? `${r.percentBp / 100}% off` : `₹${Number(r.amountPaise || 0) / 100} off (payments in India)`;
   const fam = r.families || [];
   const web = fam.length ? fam.filter((f) => WEBSITE_KINDS[f]).map((f) => WEBSITE_KINDS[f]) : Object.values(WEBSITE_KINDS);
   const reachesShop = !fam.length || fam.some((f) => ['RUDRAKSHA', 'GEMSTONE', 'CRYSTAL', 'YANTRA'].includes(f));

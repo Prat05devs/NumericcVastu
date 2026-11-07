@@ -1,7 +1,8 @@
 /**
  * Which currency a visitor sees and pays: rupees in India, US dollars everywhere else.
  *
- * - src/proxy.js reads the visitor's country from the host's IP lookup (Vercel or Cloudflare header) and
+ * - src/proxy.js reads the visitor's country from the host's header (Vercel, Cloudflare) or, on Hostinger, from
+ *   the visitor's IP against India's address ranges (lib/geo.js), and
  *   stores the currency in the nv-currency cookie.
  * - `currencyScript` runs in <head> before the page paints and sets <html data-currency>. Without the cookie
  *   (local development, or a host without a country header) it falls back to the device time zone.
@@ -15,7 +16,9 @@
 export const CURRENCY_COOKIE = 'nv-currency';
 export const PREVIEW_COOKIE = 'nv-currency-preview';
 export const currencyForCountry = (country) => (country.toUpperCase() === 'IN' ? 'INR' : 'USD');
-export const countryFromHeaders = (headers) => headers.get('x-vercel-ip-country') || headers.get('cf-ipcountry') || '';
+import {clientIp, countryOfIp} from './geo';
+/** Country from the host's header (Vercel, Cloudflare) or, on Hostinger, from the visitor's IP ('IN' or 'ZZ'). */
+export const countryFromHeaders = (headers) => headers.get('x-vercel-ip-country') || headers.get('cf-ipcountry') || countryOfIp(clientIp(headers));
 
 export function requestCurrency(headers) {
   const cookies = headers.get('cookie') || '';
