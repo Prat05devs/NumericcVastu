@@ -1,6 +1,7 @@
 import {capturePaypalOrder} from '../../../../lib/paypal';
 import {notifyBooking} from '../../../../lib/notify';
 import {recordBooking} from '../../../../lib/bookings';
+import {limit} from '../../../../lib/rateLimit';
 
 const clean = (v, max = 500) => String(v ?? '').replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, max);
 
@@ -9,6 +10,8 @@ const clean = (v, max = 500) => String(v ?? '').replace(/[\u0000-\u001f]/g, ' ')
  * details, so the visitor's details travel with this request; the payment itself is checked with PayPal.
  */
 export async function POST(request) {
+  const slow = limit(request, 'paypal-capture', 20, 10 * 60_000);
+  if (slow) return slow;
   let body;
   try { body = await request.json(); } catch { return Response.json({verified: false}, {status: 400}); }
   try {

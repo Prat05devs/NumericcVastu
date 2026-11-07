@@ -15,9 +15,11 @@ test('consultation page, WhatsApp enquiry and checkout',async({page})=>{
  await page.getByRole('button',{name:/Preview message/}).click();
  const href=await page.locator('a.eq-send').getAttribute('href');
  expect(href).toContain('https://wa.me/919870197315?text=');
- expect(decodeURIComponent(href.split('text=')[1])).toContain(price);
+ // During a sale the card shows the regular price struck through and the sale price last; the message and checkout use the price paid.
+ const paid=price.split(/\s+/).at(-1);
+ expect(decodeURIComponent(href.split('text=')[1])).toContain(paid);
  await page.goto('/checkout?offer=consult-blueprint',{waitUntil:'networkidle'});
- await expect(page.locator('.co-summary__total strong')).toHaveText(price);
+ await expect(page.locator('.co-summary__total strong')).toHaveText(paid);
  await page.getByLabel('Your name').fill('Test Visitor');await page.getByLabel('Your WhatsApp number',{exact:true}).fill('9876543210');await page.getByLabel('Email',{exact:true}).fill('test@example.com');await page.getByLabel('City').fill('Delhi');
  await page.getByLabel('How would you like to meet?').selectOption({index:1});await page.getByLabel('Preferred language').selectOption('Hindi');
  await page.getByLabel('Preferred date').fill(new Date(Date.now()+2*86400000).toISOString().slice(0,10));await page.getByLabel('Preferred time').selectOption({index:1});
@@ -70,7 +72,7 @@ test('pricing redirects to courses',async({page})=>{
 
 test('gallery opens and closes accessibly',async({page})=>{
  await page.goto('/gallery');
- await page.getByRole('button',{name:/Open Portraits photograph, 1 of \d+/}).click();
+ await page.getByRole('button',{name:/Open \w[\w ]* photograph, 1 of \d+/}).click();
  await expect(page.getByRole('dialog',{name:'Image viewer'})).toBeVisible();
  await page.keyboard.press('Escape');
  await expect(page.getByRole('dialog',{name:'Image viewer'})).not.toBeVisible();

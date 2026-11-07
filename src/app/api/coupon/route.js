@@ -2,9 +2,12 @@ import {findOffer, onlinePayment} from '../../../lib/razorpay';
 import {getPrice} from '../../../data/offers';
 import {requestCurrency} from '../../../lib/currency';
 import {quoteCoupon} from '../../../lib/coupons';
+import {limit} from '../../../lib/rateLimit';
 
 /** Shows the buyer what a coupon does before paying. The order route checks it again at payment. */
 export async function POST(request) {
+  const slow = limit(request, 'coupon', 20, 10 * 60_000);
+  if (slow) return slow;
   let body;
   try { body = await request.json(); } catch { return Response.json({valid: false, message: 'Invalid request.'}, {status: 400}); }
   const offer = findOffer(String(body?.offerId || ''));

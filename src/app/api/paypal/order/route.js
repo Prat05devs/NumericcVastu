@@ -1,8 +1,11 @@
 import {createPaypalOrder} from '../../../../lib/paypal';
 import {requestCurrency} from '../../../../lib/currency';
+import {limit} from '../../../../lib/rateLimit';
 
 /** Creates a PayPal order for visitors outside India. The amount always comes from the offer catalogue. */
 export async function POST(request) {
+  const slow = limit(request, 'paypal-order', 15, 10 * 60_000);
+  if (slow) return slow;
   let body;
   try { body = await request.json(); } catch { return Response.json({error: 'Invalid request.'}, {status: 400}); }
   if (requestCurrency(request.headers) !== 'USD') return Response.json({error: 'PayPal is for payments from outside India. Please pay with Razorpay.'}, {status: 409});

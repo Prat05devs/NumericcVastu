@@ -1,9 +1,12 @@
 import {createOrder} from '../../../../lib/razorpay';
 import {requestCurrency} from '../../../../lib/currency';
 import {bindOrder, reportInputs} from '../../../../lib/report/access';
+import {limit} from '../../../../lib/rateLimit';
 
 /** Starts the ₹399 / $10 report payment. The price comes from the catalogue, never from the request. */
 export async function POST(request) {
+  const slow = limit(request, 'report-order', 15, 10 * 60_000);
+  if (slow) return slow;
   let body;
   try { body = await request.json(); } catch { return Response.json({error: 'Invalid request.'}, {status: 400}); }
   try {

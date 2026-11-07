@@ -6,6 +6,9 @@ import {ArrowLeft, ArrowRight, Check, Copy, Pencil} from 'lucide-react';
 import WhatsAppIcon from './WhatsAppIcon';
 import {buildMessage, whatsappUrl} from '../lib/whatsapp';
 import {useCurrency} from '../lib/useCurrency';
+import {getPrice, offerCatalog} from '../data/offers';
+import {bestSale, money} from '../lib/saleMath';
+import {useSales} from './SaleProvider';
 
 const TIMES = ['Morning', 'Afternoon', 'Evening', 'Any time'];
 const LANGUAGES = ['Hindi', 'English', 'Either'];
@@ -48,7 +51,14 @@ export default function EnquiryFlow({consultations, courses, scenarios, number, 
   }, [step]);
 
   const currency = useCurrency();
-  const list = (kind === 'course' ? courses : kind === 'consultation' ? consultations : []).map((o) => ({...o, priceLabel: o.priceLabels[currency]}));
+  const sales = useSales();
+  // During a sale the message quotes the sale price (and the regular one), exactly as the site shows it.
+  const labelFor = (o) => {
+    const full = offerCatalog.offers.find((x) => x.id === o.id);
+    const best = full ? bestSale(sales, full, getPrice(full, currency), currency) : null;
+    return best ? `${money(best.finalMinor, currency)} (${best.sale.name} price; regular ${o.priceLabels[currency]})` : o.priceLabels[currency];
+  };
+  const list = (kind === 'course' ? courses : kind === 'consultation' ? consultations : []).map((o) => ({...o, priceLabel: labelFor(o)}));
   const offer = list.find((o) => o.id === offerId) || null;
   const suggestions = kind === 'course' ? COURSE_GOALS : kind === 'consultation' && offer ? scenarios[offer.id] || [] : [];
   const set = (key) => (value) => setForm((f) => ({...f, [key]: value}));

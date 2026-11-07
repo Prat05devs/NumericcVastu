@@ -1,10 +1,13 @@
 import {createOrder} from '../../../../lib/razorpay';
 import {requestCurrency} from '../../../../lib/currency';
+import {limit} from '../../../../lib/rateLimit';
 
 const clean = (v, max = 500) => String(v ?? '').replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, max);
 
 /** Creates a Razorpay order. The amount always comes from the offer catalogue and the currency from the visitor's country, never from the request body. */
 export async function POST(request) {
+  const slow = limit(request, 'order', 15, 10 * 60_000);
+  if (slow) return slow;
   let body;
   try { body = await request.json(); } catch { return Response.json({error: 'Invalid request.'}, {status: 400}); }
   const customer = {name: clean(body?.customer?.name, 80), email: clean(body?.customer?.email, 120), phone: clean(body?.customer?.phone, 20), city: clean(body?.customer?.city, 60)};

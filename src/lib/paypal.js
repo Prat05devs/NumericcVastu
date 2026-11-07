@@ -1,4 +1,5 @@
 import 'server-only';
+import {createHmac, timingSafeEqual} from 'node:crypto';
 import {canCheckout, formatPrice, getPrice} from '../data/offers';
 import {findOffer} from './razorpay';
 import {getWebsiteSales} from './sale';
@@ -17,6 +18,20 @@ const secret = () => process.env.PAYPAL_CLIENT_SECRET || '';
 const live = () => process.env.PAYPAL_ENV === 'live';
 const api = () => (live() ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com');
 const dollars = (cents) => (cents / 100).toFixed(2);
+/**
+ * The expected amount travels on the PayPal order (custom_id) so the capture can be checked even if a sale ends while
+ * the visitor pays. Anyone with the public client ID can create a PayPal order in a browser, so the amount is signed
+ * with a key derived from the secret: an order not created by this server, or with a changed amount, never verifies.
+ */
+const signKey = () => createHmac('sha256', secret()).update('nv-paypal-custom-id').digest();
+const sign = (offerId, cents) => createHmac('sha256', signKey()).update(`${offerId}|${cents}`).digest('base64url').slice(0, 32);
+export function signedCustomId(offerId, cents) { return `${offerId}|${cents}|${sign(offerId, cents)}`; }
+export function readCustomId(customId) {
+  const [offerId, cents, sig] = String(customId || '').split('|');
+  if (!offerId || !/^\d+$/.test(cents || '') || !sig || !secret()) return null;
+  const a = Buffer.from(sign(offerId, cents)), b = Buffer.from(sig);
+  return a.length === b.length && timingSafeEqual(a, b) ? {offerId, cents: Number(cents)} : null;
+}
 const unavailable = () => Object.assign(new Error('PayPal is temporarily unavailable. Please try again shortly, or send your booking on WhatsApp.'), {status: 502});
 
 export function paypalPayment(offer) {
@@ -48,10 +63,10 @@ export async function createPaypalOrder(offerId) {
   const cents = list - (bestSale(await getWebsiteSales(), offer, list, 'USD')?.discountMinor || 0);
   const order = await call('/v2/checkout/orders', {
     intent: 'CAPTURE',
-    purchase_units: [{reference_id: offer.id, custom_id: `${offer.id}|${cents}`, description: offer.name.slice(0, 127), amount: {currency_code: 'USD', value: dollars(cents)}}],
+    purchase_units: [{reference_id: offer.id, custom_id: signedCustomId(offer.id, cents), description: offer.name.slice(0, 127), amount: {currency_code: 'USD', value: dollars(cents)}}],
     application_context: {brand_name: 'NumericcVaastu', shipping_preference: 'NO_SHIPPING', user_action: 'PAY_NOW'},
   });
-  return {orderId: order.id};
+  return {orderId: order.id, cents};
 }
 
 /** Captures an approved order. `verified` is true only when PayPal completed the exact catalogue amount in USD. */
@@ -59,11 +74,11 @@ export async function capturePaypalOrder(orderId) {
   if (!/^[A-Z0-9]{8,40}$/.test(orderId)) throw Object.assign(new Error('Invalid order.'), {status: 400});
   const data = await call(`/v2/checkout/orders/${orderId}/capture`);
   const capture = data.purchase_units?.[0]?.payments?.captures?.[0];
-  const [offerId, expected] = String(capture?.custom_id || data.purchase_units?.[0]?.reference_id || '').split('|');
-  const offer = findOffer(offerId);
-  const expectedCents = /^\d+$/.test(expected || '') ? Number(expected) : offer ? getPrice(offer, 'USD') : 0;
-  // The order (and its custom_id) is created only by this server, so the expected amount can be trusted; it can never exceed the list price.
-  const verified = Boolean(offer && expectedCents > 0 && expectedCents <= getPrice(offer, 'USD') && data.status === 'COMPLETED' && capture?.status === 'COMPLETED' && capture.amount?.currency_code === 'USD' && capture.amount.value === dollars(expectedCents));
+  const signed = readCustomId(capture?.custom_id ?? data.purchase_units?.[0]?.custom_id);
+  const offer = signed ? findOffer(signed.offerId) : null;
+  // Verified only when: the order was created by this server (signature), PayPal completed it, and the captured
+  // amount is exactly the signed amount in USD, which can never exceed the catalogue price.
+  const verified = Boolean(offer && signed.cents > 0 && signed.cents <= getPrice(offer, 'USD') && data.status === 'COMPLETED' && capture?.status === 'COMPLETED' && capture.amount?.currency_code === 'USD' && capture.amount.value === dollars(signed.cents));
   if (!verified) console.error('PayPal capture needs checking', orderId, data.status, capture?.status, capture?.amount);
   return {verified, captureId: capture?.id || '', offer, amount: capture?.amount?.value || '', priceLabel: offer ? formatPrice(offer, undefined, 'USD') : '', payerEmail: data.payer?.email_address || ''};
 }

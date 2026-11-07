@@ -1,7 +1,7 @@
 'use client';
 import LocalizedContent from '../../i18n/LocalizedContent';
 
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import Link from 'next/link';
 import {ArrowUpRight, FileText, Lock, ShieldCheck} from 'lucide-react';
 import Price from '../Price';
@@ -51,6 +51,56 @@ export default function FullReportGenerator({chart, gender, readingHref}) {
   const inputs = {dob: `${chart.year}-${String(chart.month).padStart(2, '0')}-${String(chart.day).padStart(2, '0')}`, gender: gender || '', name, phone, partnerDob, relationshipStatus};
   const key = keyFor(inputs);
   useEffect(() => { setPass(savedPasses()[key] || null); }, [key]);
+
+  // Visitors abroad: PayPal buttons (and Razorpay in dollars only once it is enabled for international cards).
+  const [abroad, setAbroad] = useState(null);
+  const paypalBox = useRef(null);
+  const latest = useRef({});
+  latest.current = {inputs, email, whatsapp: whatsapp.trim(), updates, ready: Boolean(name && phone && whatsappOk && !partnerProblem)};
+  useEffect(() => {
+    if (currency !== 'USD') return;
+    fetch('/api/report/paypal/order').then((r) => r.json()).then(setAbroad).catch(() => setAbroad({paypal: null, razorpayUsd: false}));
+  }, [currency]);
+  useEffect(() => {
+    if (pass || currency !== 'USD' || !abroad?.paypal || !paypalBox.current) return;
+    let buttons;
+    const src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(abroad.paypal.clientId)}&currency=USD&intent=capture&components=buttons`;
+    const load = window.paypal ? Promise.resolve() : new Promise((resolve, reject) => { const s = document.createElement('script'); s.src = src; s.onload = resolve; s.onerror = () => reject(new Error('Could not load PayPal.')); document.body.appendChild(s); });
+    let binding = '';
+    load.then(() => {
+      if (!paypalBox.current) return;
+      buttons = window.paypal.Buttons({
+        style: {layout: 'vertical', shape: 'pill', label: 'pay'},
+        onClick: (_d, actions) => {
+          if (latest.current.ready) return actions.resolve();
+          setStatus({state: 'error', message: 'Please enter your name, phone number and WhatsApp number first.'});
+          return actions.reject();
+        },
+        createOrder: async () => {
+          const v = latest.current;
+          const res = await fetch('/api/report/paypal/order', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({...v.inputs, email: v.email, whatsapp: v.whatsapp, updates: v.updates})});
+          const order = await res.json();
+          if (!res.ok) { setStatus({state: 'error', message: order.error || 'Could not start the payment.'}); throw new Error(order.error); }
+          binding = order.binding;
+          return order.orderId;
+        },
+        onApprove: async ({orderID}) => {
+          const v = latest.current;
+          setStatus({state: 'busy', message: 'Confirming your payment…'});
+          const check = await fetch('/api/report/paypal/capture', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({orderId: orderID, binding, inputs: v.inputs, email: v.email, whatsapp: v.whatsapp, updates: v.updates})}).then((r) => r.json()).catch(() => ({}));
+          if (!check.pass) { setStatus({state: 'error', message: check.error || `We could not confirm the payment. Contact us with PayPal order ${orderID} and we will send your report.`}); return; }
+          const value = {pass: check.pass, paymentId: check.paymentId};
+          savePass(keyFor(v.inputs), value); setPass(value);
+          setStatus({state: 'done', message: 'Payment received. Your report is ready: open it below in English or Hindi.'});
+        },
+        onCancel: () => setStatus({state: 'idle', message: 'Payment window closed. You can try again whenever you are ready.'}),
+        onError: () => setStatus((s) => (s.state === 'error' ? s : {state: 'error', message: 'PayPal could not complete the payment. No money was taken; please try again.'})),
+      });
+      buttons.render(paypalBox.current);
+    }).catch((e) => setStatus({state: 'error', message: e.message}));
+    return () => { try { buttons?.close(); } catch {} };
+  }, [pass, currency, abroad?.paypal?.clientId]); // eslint-disable-line react-hooks/exhaustive-deps
+  const razorpayHere = currency !== 'USD' || abroad?.razorpayUsd;
 
   const open = (lang) => window.open(`/my-report/open?pass=${encodeURIComponent(pass.pass)}&lang=${lang}`, '_blank', 'noopener');
 
@@ -116,9 +166,11 @@ export default function FullReportGenerator({chart, gender, readingHref}) {
         <div><dt>Phone number analysed</dt><dd translate="no">{phone}</dd></div>
         <div><dt>Second person</dt><dd>{partnerDob && !partnerProblem ? <>Born {fmt(partnerDob)}</> : 'None'}</dd></div>
       </dl><small>To change the name, date of birth or phone, edit the calculator above and choose Show my numbers again.</small></div>}
-      <CouponBox offerId="report-full" phone={whatsapp} applied={coupon} onChange={setCoupon}/>
+      {razorpayHere && <CouponBox offerId="report-full" phone={whatsapp} applied={coupon} onChange={setCoupon}/>}
       {!coupon && <p className="fr-price"><PromoBadge offer={reportOffer}/><b><Price offer={reportOffer}/></b> · one-time payment</p>}
-      <button className="hv-button hv-button--gold" type="submit" disabled={!name || !phone || !whatsappOk || !!partnerProblem || status.state === 'busy'}><Lock size={18}/> {status.state === 'busy' ? 'Please wait…' : coupon ? `Pay ${coupon.total} and get my report` : `Pay ${currency === 'USD' ? '$10' : '₹399'} and get my report`}</button>
+      {currency === 'USD' && abroad?.paypal && <div className="fr-paypal" ref={paypalBox} aria-label="Pay with PayPal"/>}
+      {currency === 'USD' && abroad && !abroad.paypal && !abroad.razorpayUsd && <p className="fr-status">Online payment from outside India is being set up. Message us on WhatsApp to get your report.</p>}
+      {razorpayHere && <button className="hv-button hv-button--gold" type="submit" disabled={!name || !phone || !whatsappOk || !!partnerProblem || status.state === 'busy'}><Lock size={18}/> {status.state === 'busy' ? 'Please wait…' : coupon ? `Pay ${coupon.total} and get my report` : `Pay ${currency === 'USD' ? '$10' : '₹399'} and get my report`}</button>}
       <p className="fr-status"><ShieldCheck size={16} aria-hidden="true"/> Secure payment by Razorpay. Your report opens straight after payment.</p>
     </form>}
     {status.message && <p className={status.state === 'error' ? 'fr-error' : 'fr-status'} role={status.state === 'error' ? 'alert' : 'status'}>{status.message}</p>}

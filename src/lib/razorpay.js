@@ -91,6 +91,24 @@ export async function fetchPaymentWithOrder(paymentId) {
   return order ? {payment, order} : null;
 }
 
+/**
+ * After the signature: ask Razorpay itself whether this payment belongs to this order, went through, and was for the
+ * full order amount in the order's currency (Razorpay's recommended server-side check). Returns true or false, or null
+ * when Razorpay could not be reached (the webhook then records the payment).
+ */
+export async function confirmPayment(orderId, paymentId) {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const found = await fetchPaymentWithOrder(paymentId);
+    if (!found) { if (attempt < 2) await new Promise((r) => setTimeout(r, 700)); continue; }
+    const {payment, order} = found;
+    if (payment.order_id !== orderId || payment.amount !== order.amount || payment.currency !== order.currency) return false;
+    if (['captured', 'authorized'].includes(payment.status)) return true;
+    if (payment.status === 'failed' || payment.status === 'refunded') return false;
+    await new Promise((r) => setTimeout(r, 700)); // created → authorized can take a moment
+  }
+  return null;
+}
+
 export function verifySignature({orderId, paymentId, signature}) {
   if (!orderId || !paymentId || !signature || !keySecret()) return false;
   const expected = createHmac('sha256', keySecret()).update(`${orderId}|${paymentId}`).digest('hex');
